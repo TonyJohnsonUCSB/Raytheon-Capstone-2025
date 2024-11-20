@@ -1,7 +1,7 @@
 Pi4-1
 hostname: rtxcapstone-pi4-1
 password: rtxcapstone
-ipaddress: 
+ipaddress: 169.231.211.210
 
 Pi4-2
 hostname: rtxcapstone-pi4-2
