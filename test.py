@@ -1,6 +1,3 @@
-
-new edits
-
 print("Hello World")
 
 print("This is a new version")
