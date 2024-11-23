@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
-import time
-from picamera2 import Picamera2, Preview
+from picamera2 import Picamera2, QtPreview
 
 # Function to draw axes on markers
 def draw_axis(img, rvec, tvec, camera_matrix, dist_coeffs, length):
@@ -62,8 +61,10 @@ distortion = np.array([-0.43948, 0.18514, 0, 0])
 ARUCO_DICT = {"DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL}
 aruco_type = "DICT_ARUCO_ORIGINAL"
 
-# Initialize Picamera2
+# Initialize Picamera2 with QtPreview
 picam2 = Picamera2()
+picam2.start_preview(QtPreview())
+
 camera_config = picam2.create_preview_configuration(main={"size": (1280, 720), "format": "RGB888"})
 picam2.configure(camera_config)
 picam2.start()
