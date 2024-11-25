@@ -6,13 +6,13 @@
 
 2. Code on it
 
-3. In cmd/powershell (find it by search on your computer), 
+3. In cmd/powershell/git bash (find it by search on your computer), 
 
    ```cmd
-   cd /your-repository/Raytheon-Capstone-2025 # Typically it's in C:\Users\<username>\Raytheon-Capstone-2025
+   cd "C:\<your-directory>\Raytheon-Capstone-2025" # Find it by right click the folder in vscode and click "Copy Path"
    git add .
    git commit -m "Your descriptive commit message"
-   git push origin branch-name # For branch-name you can use "main" or whatever new branches we'll have
+   git push origin branch-name # For branch-name you can use "main" or whatever new branches we'll have later on
    ```
 
 4. Now it should be pushed up to Github. Check on the website.
@@ -21,6 +21,6 @@
 
    ```cmd
    cd Raytheon-Capstone-2025
-   sudo git pull
+   sudo git pull # sudo is required on Pi. For your windows PC, remove sudo
    ```
 
