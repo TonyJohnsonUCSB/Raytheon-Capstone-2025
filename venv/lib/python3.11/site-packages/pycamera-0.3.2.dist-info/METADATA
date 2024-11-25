@@ -1,0 +1,62 @@
+Metadata-Version: 2.1
+Name: pycamera
+Version: 0.3.2
+Summary: An easier solution to computer vision.
+Home-page: https://github.com/IsmaeelAkram/pycamera
+Author: Ismaeel Akram
+License: MIT
+Platform: UNKNOWN
+Requires-Python: >=3.4.0
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: opencv-python
+Requires-Dist: numpy
+
+An easier solution to computer vision.
+
+## What is pycamera?
+
+PyCamera is a computer vision library for people who, don't know how to use OpenCV, don't want to use OpenCV for such a simple project, or want something easier!
+
+## Examples
+
+### Save Picture
+```python
+from pycamera import camera
+
+cam = camera.Camera(0) # Choosing a camera
+snap = cam.snap() # Snapping a picture from that camera
+
+snap.save("output.jpg") # Save picture to output.jpg
+```
+
+### Editing with Pillow
+
+```python
+from pycamera import camera
+from PIL import ImageDraw
+
+cam = camera.Camera(0)  # Choosing a camera
+snap = cam.snap()  # Snap photo
+image = snap.to_pillow()  # Convert pycamera image to Pillow image
+
+draw = ImageDraw.Draw(image)
+white = (255, 255, 255)
+draw.ellipse([(10, 10), (100, 100)], width=3, fill=white, outline=white)  # Draw circle
+image.show()
+```
+
+### Live View
+
+```python
+import pycamera
+from pycamera import camera
+
+cam = camera.Camera(0) # Choosing a camera
+
+while True:
+    snap = cam.read() # (reading is better for loops)
+    snap.show()
+    pycamera.waitForKey() # Wait until key is pressed (default key is Escape)
+```
+

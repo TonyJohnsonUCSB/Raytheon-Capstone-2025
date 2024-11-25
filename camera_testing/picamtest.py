@@ -1,46 +1,21 @@
-import os
-import time
-import subprocess
 from picamera2 import Picamera2
+from libcamera import controls
 
-# Create directory if it doesn't exist
-output_dir = "phototest"
-os.makedirs(output_dir, exist_ok=True)
+# Initialize camera
+picam2 = Picamera2()
 
-# Initialize the camera
-picam = Picamera2()
+# Create a basic configuration without preview
+config = picam2.create_still_configuration()
+picam2.configure(config)
 
-# Configure the camera for video recording
-picam.configure(picam.create_video_configuration())
+# Start camera
+picam2.start()
 
-# Start the camera
-picam.start()
+# Optional: Set some camera controls
+picam2.set_controls({"ExposureTime": 1000, "AnalogueGain": 1.0})
 
-# Temporary H.264 output file
-h264_path = os.path.join(output_dir, "video.h264")
-mp4_path = os.path.join(output_dir, "video.mp4")
+# Capture an image
+picam2.capture_file("test.jpg")
 
-# Start recording
-picam.start_and_record_video(h264_path)
-print("Recording started...")
-
-# Record for 6 seconds while printing "recording" each second
-for i in range(6):
-    print(f"Recording... {i + 1} second(s)")
-    time.sleep(1)
-
-# Stop recording
-picam.stop_recording()
-
-# Stop the camera
-picam.stop()
-
-print(f"Video saved to {h264_path}")
-
-# Convert H.264 to MP4 using ffmpeg
-print("Converting to MP4...")
-subprocess.run([
-    "ffmpeg", "-y", "-i", h264_path, "-c:v", "copy", "-f", "mp4", mp4_path
-])
-
-print(f"MP4 video saved to {mp4_path}")
+# Stop camera
+picam2.stop()
