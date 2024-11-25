@@ -11,7 +11,7 @@ logging.basicConfig(
 )
 
 # Define server details
-SERVER_IP = "192.168.X.X"  # Replace with the receiving Raspberry Pi's IP
+SERVER_IP = "169.231.217.98"  # IT'S #1
 PORT = 65432
 
 # Simulate getting GPS coordinates (replace with GPS RTK module logic)
