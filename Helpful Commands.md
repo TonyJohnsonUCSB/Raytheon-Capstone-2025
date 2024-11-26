@@ -22,7 +22,7 @@
 
    ```cmd
    cd Raytheon-Capstone-2025
-   sudo git pull # sudo is required on Pi. For your windows PC, remove sudo
+   git pull
    ```
    
 ## Running the code...
