@@ -1,6 +1,6 @@
 import socket
 import time
-# import random  # Replace with GPS RTK module in production
+import random  # Replace with GPS RTK module in production
 import logging
 
 # Setup logging
