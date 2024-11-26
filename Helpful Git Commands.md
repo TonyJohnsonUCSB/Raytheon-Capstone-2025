@@ -1,5 +1,5 @@
 # Git Commands
-
+(# is not the proper way to comment in cmd. It's only for reading convenience.)
 ## Editing the code...
 
 1. Clone the repository on **your own computer** https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025.git
@@ -23,4 +23,10 @@
    cd Raytheon-Capstone-2025
    sudo git pull # sudo is required on Pi. For your windows PC, remove sudo
    ```
-
+   
+## Running the code...
+   ```cmd
+   cd Raytheon-Capstone-2025
+   source venv/bin/activate
+   (sudo) python3 your-code.py # Use sudo if necessary (required for Pi communication)
+   ```
