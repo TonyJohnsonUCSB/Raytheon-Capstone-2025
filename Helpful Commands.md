@@ -1,6 +1,7 @@
-# Git Commands
+# Commands
+(# is not the proper way to comment in cmd. It's only for reading convenience.)
 
-## Editing the code...
+## Push/Pull Edit with Git
 
 1. Clone the repository on **your own computer** https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025.git
 
@@ -21,6 +22,12 @@
 
    ```cmd
    cd Raytheon-Capstone-2025
-   sudo git pull # sudo is required on Pi. For your windows PC, remove sudo
+   git pull
    ```
-
+   
+## Running the code...
+   ```cmd
+   cd Raytheon-Capstone-2025
+   source venv/bin/activate # If you see a (venv) before rtxcapstone..., then the environment is successfully set up
+   (sudo) python3 your-code.py # Use sudo if necessary (required for Pi communication)
+   ```

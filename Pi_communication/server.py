@@ -9,7 +9,7 @@ logging.basicConfig(
 )
 
 # Define server parameters
-HOST = "169.231.61.0"  # client ip-address for pi_2
+HOST = ""  # listen all hosts
 PORT = 65432
 
 # Simulated verification function
