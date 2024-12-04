@@ -1,21 +1,31 @@
 from picamera2 import Picamera2
-from libcamera import controls
+from picamera2.encoders import MJPEGEncoder
+from picamera2.outputs import FileOutput
+import time
 
-# Initialize camera
-picam2 = Picamera2()
+def preview_video():
+    # Initialize PiCamera2
+    picam2 = Picamera2()
 
-# Create a basic configuration without preview
-config = picam2.create_still_configuration()
-picam2.configure(config)
+    # Configure the camera for preview
+    preview_config = picam2.create_preview_configuration()
+    picam2.configure(preview_config)
 
-# Start camera
-picam2.start()
+    try:
+        # Start the preview
+        print("Starting preview...")
+        picam2.start_preview()
+        picam2.start()
 
-# Optional: Set some camera controls
-picam2.set_controls({"ExposureTime": 1000, "AnalogueGain": 1.0})
+        # Keep the preview on for 5 seconds
+        time.sleep(5)
 
-# Capture an image
-picam2.capture_file("test.jpg")
+    finally:
+        # Stop the preview
+        print("Stopping preview...")
+        picam2.stop_preview()
+        picam2.close()
 
-# Stop camera
-picam2.stop()
+if __name__ == "__main__":
+    # Ensure the script is running in a GUI or on a connected HDMI display
+    preview_video()
