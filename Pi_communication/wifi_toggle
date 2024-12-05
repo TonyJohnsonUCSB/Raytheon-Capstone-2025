@@ -1,0 +1,42 @@
+#!/bin/bash
+
+INTERFACE="wlan0"  # Replace with your WiFi interface name if different
+
+toggle_wifi() {
+    case "$1" in
+        eduroam)
+            echo "Connecting to eduroam..."
+            sudo wpa_supplicant -B -i "$INTERFACE" -c /etc/wpa_supplicant/wpa_supplicant.conf
+            sudo dhclient "$INTERFACE"
+            if [ $? -eq 0 ]; then
+                echo "Successfully connected to eduroam."
+            else
+                echo "Failed to connect to eduroam. Check your wpa_supplicant configuration."
+            fi
+            ;;
+        hotspot)
+            echo "Disconnecting from eduroam and setting up a hotspot..."
+            # Kill wpa_supplicant
+            sudo killall wpa_supplicant
+            
+            # Set up hotspot
+            nmcli dev wifi hotspot ifname "$INTERFACE" ssid "MyHotspot" password "yourpassword"
+            if [ $? -eq 0 ]; then
+                echo "Hotspot activated. SSID: MyHotspot, Password: yourpassword"
+            else
+                echo "Failed to create hotspot. Check your NetworkManager settings."
+            fi
+            ;;
+        *)
+            echo "Usage: $0 {eduroam|hotspot}"
+            exit 1
+            ;;
+    esac
+}
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 {eduroam|hotspot}"
+    exit 1
+fi
+
+toggle_wifi "$1"
