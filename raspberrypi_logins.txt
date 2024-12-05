@@ -12,3 +12,5 @@ Pi5-1
 hostname: rtxcapstone-pi5-1
 password: rtxcapstone
 ipaddress: 169.231.144.16
+
+** These IP Addresses Seem To Change, Please Update With More Info **
