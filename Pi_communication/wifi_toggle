@@ -1,62 +1,42 @@
 #!/bin/bash
 
-# Function to switch to Eduroam
-switch_to_eduroam() {
-    echo "Switching to Eduroam..."
-    # Stop hostapd and dnsmasq
-    sudo systemctl stop hostapd
-    sudo systemctl stop dnsmasq
+INTERFACE="wlan0"  # Replace with your WiFi interface name if different
 
-    # Enable wpa_supplicant for wlan0
-    sudo sed -i '/^nohook wpa_supplicant/d' /etc/dhcpcd.conf
-    sudo systemctl restart dhcpcd
-    sudo systemctl start wpa_supplicant
-
-    # Restart the Wi-Fi interface
-    sudo ifdown wlan0
-    sudo ifup wlan0
-    sudo hostapd /etc/hostapd/hostapd.conf &
-    sudo dhclient wlan0
-
-    echo "Switched to Eduroam!"
-}
-
-# Function to switch to Hotspot
-switch_to_hotspot() {
-    echo "Switching to Hotspot..."
-    # Stop wpa_supplicant
-    sudo systemctl stop wpa_supplicant
-
-    # Add nohook for wpa_supplicant in dhcpcd.conf
-    if ! grep -q "nohook wpa_supplicant" /etc/dhcpcd.conf; then
-        echo "nohook wpa_supplicant" | sudo tee -a /etc/dhcpcd.conf
-    fi
-    sudo systemctl restart dhcpcd
-
-    # Set static IP for wlan0
-    sudo ifconfig wlan0 192.168.4.1
-
-    # Start hostapd and dnsmasq
-    sudo systemctl start hostapd
-    sudo systemctl start dnsmasq
-
-    echo "Hotspot is now active!"
+toggle_wifi() {
+    case "$1" in
+        eduroam)
+            echo "Connecting to eduroam..."
+            sudo wpa_supplicant -B -i "$INTERFACE" -c /etc/wpa_supplicant/wpa_supplicant.conf
+            sudo dhclient "$INTERFACE"
+            if [ $? -eq 0 ]; then
+                echo "Successfully connected to eduroam."
+            else
+                echo "Failed to connect to eduroam. Check your wpa_supplicant configuration."
+            fi
+            ;;
+        hotspot)
+            echo "Disconnecting from eduroam and setting up a hotspot..."
+            # Kill wpa_supplicant
+            sudo killall wpa_supplicant
+            
+            # Set up hotspot
+            nmcli dev wifi hotspot ifname "$INTERFACE" ssid "MyHotspot" password "yourpassword"
+            if [ $? -eq 0 ]; then
+                echo "Hotspot activated. SSID: MyHotspot, Password: yourpassword"
+            else
+                echo "Failed to create hotspot. Check your NetworkManager settings."
+            fi
+            ;;
+        *)
+            echo "Usage: $0 {eduroam|hotspot}"
+            exit 1
+            ;;
+    esac
 }
 
 if [ $# -ne 1 ]; then
-	echo "Usage: $0 <eduroam|hotspot>"
-	exit 1
+    echo "Usage: $0 {eduroam|hotspot}"
+    exit 1
 fi
 
-case $1 in
-	eduroam)
-		switch_to_eduroam
-		;;
-	hotspot)
-		switch_to_hotspot
-		;;
-	*)
-		echo "Invalid argument. Use 'eduroam' or 'hotspot'."
-		exit 1
-		;;
-esac
+toggle_wifi "$1"
