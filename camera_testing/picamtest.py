@@ -48,13 +48,8 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             draw_axis(frame, rvec, tvec, matrix_coefficients, distortion_coefficients, 0.1)
     return frame
 
-# Camera setup with GStreamer pipeline
-gst_pipeline = (
-    "libcamerasrc ! video/x-raw,width=1280,height=720,framerate=30/1 ! "
-    "videoconvert ! appsink"
-)
-
-cap = cv2.VideoCapture(gst_pipeline, cv2.CAP_GSTREAMER)
+# Use default OpenCV video capture interface
+cap = cv2.VideoCapture(0)  # 0 is the default camera
 
 intrinsic_camera = np.array([[933.15867, 0, 657.59], [0, 933.1586, 400.36993], [0, 0, 1]])
 distortion = np.array([-0.43948, 0.18514, 0, 0])
