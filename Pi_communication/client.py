@@ -52,6 +52,7 @@ def main():
             logging.info(f"Connected to server at {SERVER_IP}:{PORT}")
             print(f"Connected to server at {SERVER_IP}:{PORT}")
         except Exception as e:
+<<<<<<< HEAD
             logging.error(f"Failed to connect to server: {e}")
             print(f"Failed to connect to server: {e}")
             return
@@ -79,3 +80,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+=======
+            logging.error(f"Communication error: {e}")
+            print(f"Communication error: {e}")
+        
+        # Simulate periodic transmission (every 5 seconds)
+        time.sleep(5)
+>>>>>>> 7c5fe954dbc3cd965964dfd8857b5afa2ff62c73
