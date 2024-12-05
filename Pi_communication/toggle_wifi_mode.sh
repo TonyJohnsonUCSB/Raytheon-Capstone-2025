@@ -3,7 +3,7 @@
 # Function to switch to Eduroam
 switch_to_eduroam() {
     echo "Switching to Eduroam..."
-    # Stop hostapd and dnsmasq
+    # Stop hostapd and dnsmasq services
     sudo systemctl stop hostapd
     sudo systemctl stop dnsmasq
 
@@ -12,9 +12,9 @@ switch_to_eduroam() {
     sudo systemctl restart dhcpcd
     sudo systemctl start wpa_supplicant
 
-    # Restart the Wi-Fi interface
-    sudo ifdown wlan0
-    sudo ifup wlan0
+    # Restart the Wi-Fi interface to connect to Eduroam
+    sudo ifdown wlan0 || true
+    sudo ifup wlan0 || true
 
     echo "Switched to Eduroam!"
 }
@@ -22,19 +22,19 @@ switch_to_eduroam() {
 # Function to switch to Hotspot
 switch_to_hotspot() {
     echo "Switching to Hotspot..."
-    # Stop wpa_supplicant
+    # Stop wpa_supplicant service
     sudo systemctl stop wpa_supplicant
 
-    # Add nohook for wpa_supplicant in dhcpcd.conf
+    # Add "nohook" for wpa_supplicant in dhcpcd.conf to disable it for wlan0
     if ! grep -q "nohook wpa_supplicant" /etc/dhcpcd.conf; then
         echo "nohook wpa_supplicant" | sudo tee -a /etc/dhcpcd.conf
     fi
     sudo systemctl restart dhcpcd
 
-    # Set static IP for wlan0
-    sudo ifconfig wlan0 192.168.4.1
+    # Assign a static IP to wlan0 for the hotspot
+    sudo ifconfig wlan0 192.168.4.1 netmask 255.255.255.0
 
-    # Start hostapd and dnsmasq
+    # Start hostapd and dnsmasq services for the hotspot
     sudo systemctl start hostapd
     sudo systemctl start dnsmasq
 
