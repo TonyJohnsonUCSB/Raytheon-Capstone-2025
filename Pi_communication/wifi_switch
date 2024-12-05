@@ -1,0 +1,33 @@
+#!/bin/bash
+
+connect_eduroam() {
+	echo "Switching to eduroam..."
+	sudo wpa_cli -i wlan0 select_network 0
+	sudo dhclient wlan0
+	echo "Connected to eduroam."
+}
+
+connect_hotspot() {
+	echo "Switching to hotspot..."
+	sudo wpa_cli -i wlan0 select_network 1
+	sudo dhclient wlan0
+	echo "Connected to hotspot."
+}
+
+if [ -z "$1" ]; then
+	echo "Usage: wifi_switch <eduroam|hotspot>"
+	exit 1
+fi
+
+case $1 in
+	eduroam)
+		connect_eduroam
+		;;
+	hotspot)
+		connect_hotspot
+		;;
+	*)
+		echo "Invalid argument. Use 'eduroam' or 'hotspot'."
+		exit 1
+		;;
+esac
