@@ -1,6 +1,6 @@
 import socket
 import time
-import random  # Used if mode is random
+import random  # Replace with GPS RTK module in production
 import logging
 import argparse
 
@@ -21,6 +21,13 @@ PORT = 65432
 # added global variable for coordinates
 coordinates = ""
 
+# Simulate getting GPS coordinates (replace with GPS RTK module logic)
+def get_gps_coordinates():
+    latitude = round(random.uniform(-90.0, 90.0), 6)
+    longitude = round(random.uniform(-180.0, 180.0), 6)
+    return latitude, longitude
+
+# Argument parser setup
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Client program to send GPS coordinates to a server.")
     parser.add_argument(
@@ -28,37 +35,7 @@ def parse_arguments():
         choices=["eduroam", "hotspot"], 
         help="Specify the network type to connect (either 'eduroam' or 'hotspot')."
     )
-    parser.add_argument(
-        "mode",
-        choices=["manual", "random"],
-        help="Specify the mode of coordinate entry (either 'manual' or 'random')."
-    )
     return parser.parse_args()
-
-def get_gps_coordinates():
-    """Generate random GPS coordinates."""
-    latitude = round(random.uniform(-90.0, 90.0), 6)
-    longitude = round(random.uniform(-180.0, 180.0), 6)
-    return latitude, longitude
-
-def get_user_coordinates():
-    """Prompt the user for latitude and longitude, validate them, and return valid coords."""
-    while True:
-        try:
-            lat_str = input("Enter latitude (between -90.0 and 90.0): ")
-            lon_str = input("Enter longitude (between -180.0 and 180.0): ")
-
-            # Convert to float
-            latitude = float(lat_str)
-            longitude = float(lon_str)
-
-            # Validate ranges
-            if -90.0 <= latitude <= 90.0 and -180.0 <= longitude <= 180.0:
-                return latitude, longitude
-            else:
-                print("Invalid coordinates. Please ensure the values are within the specified ranges.")
-        except ValueError:
-            print("Invalid input. Please enter numeric values for latitude and longitude.")
 
 def main():
     global coordinates  # Declare global to modify coordinates variable
@@ -85,17 +62,11 @@ def main():
             return
 
         while True:
-            if args.mode == "manual":
-                # Get user-input coordinates
-                latitude, longitude = get_user_coordinates()
-            else:
-                # Get random coordinates
-                latitude, longitude = get_gps_coordinates()
-            
+            # Get GPS-RTK coordinates
+            latitude, longitude = get_gps_coordinates()
             coordinates = f"{latitude},{longitude}"  # Update global variable
-            
-            logging.info(f"Sending GPS coordinates: {coordinates}")
-            print(f"Sending GPS coordinates: {coordinates}")
+            logging.info(f"Sending GPS-RTK coordinates: {coordinates}")
+            print(f"Sending GPS-RTK coordinates: {coordinates}")
             
             try:
                 # Send coordinates to the server
@@ -109,7 +80,6 @@ def main():
                 print(f"Communication error: {e}")
             
             # Simulate periodic transmission (every 5 seconds)
-            print("Waiting 5 seconds before sending the next coordinates...")
             time.sleep(5)
 
 if __name__ == "__main__":
