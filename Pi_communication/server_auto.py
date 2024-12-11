@@ -23,19 +23,39 @@ def verify_coordinates(lat, lon):
 
 # Function to check and restart hotspot if needed
 def monitor_hotspot(interval=30):
-    def check_hotspot_status():
-        try:
-            result = subprocess.run(
-                ["systemctl", "is-active", "hostapd"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
-            return result.stdout.strip() == "active"
-        except Exception as e:
-            logging.error(f"Error checking hotspot status: {e}")
+    def check_hotspot_status(interface="wlan1"):
+    """
+    Check the status of the hotspot on the specified interface.
+    Returns True if the hotspot is on (Mode: Master), False otherwise.
+    """
+    try:
+        # Run iwconfig and capture the output
+        result = subprocess.run(
+            ["iwconfig", interface],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        output = result.stdout
+
+        # Check for Mode: Master (hotspot ON)
+        if "Mode:Master" in output:
+            logging.info(f"Hotspot on {interface} is ON (Mode: Master).")
+            return True
+
+        # Check for Mode: Managed (hotspot OFF)
+        if "Mode:Managed" in output:
+            logging.warning(f"Hotspot on {interface} is OFF (Mode: Managed).")
             return False
 
+        # Handle other unexpected modes
+        logging.error(f"Unexpected mode for {interface}: {output}")
+        return False
+
+    except Exception as e:
+        logging.error(f"Failed to check hotspot status for {interface}: {e}")
+        return False
+        
     def start_hotspot():
         try:
             subprocess.run(["sudo", "systemctl", "start", "hostapd"], check=True)
@@ -52,7 +72,7 @@ def monitor_hotspot(interval=30):
         time.sleep(interval)
 
 # Start the hotspot monitoring in a separate thread
-hotspot_thread = threading.Thread(target=monitor_hotspot, args=(30,), daemon=True)
+hotspot_thread = threading.Thread(target=monitor_hotspot, args=(10,), daemon=True)
 hotspot_thread.start()
 
 # Start server
