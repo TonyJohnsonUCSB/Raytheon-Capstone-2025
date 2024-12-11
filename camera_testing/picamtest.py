@@ -52,7 +52,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
 
     if ids is not None:
         for marker_index in range(len(ids)):
-            rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners[marker_index], 0.175, matrix_coefficients, distortion_coefficients)
+            rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners[marker_index], 0.254, matrix_coefficients, distortion_coefficients)
             draw_axis(frame, rvec, tvec, matrix_coefficients, distortion_coefficients, 0.1)
     return frame
 
@@ -67,8 +67,11 @@ intrinsic_camera = np.array([[933.15867, 0, 657.59], [0, 933.1586, 400.36993], [
 distortion = np.array([-0.43948, 0.18514, 0, 0])
 
 # ArUco dictionary type
-ARUCO_DICT = {"DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL}
-aruco_type = "DICT_ARUCO_ORIGINAL"
+ARUCO_DICT = {
+    "DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL,
+    "DICT_6X6_250": cv2.aruco.DICT_6X6_250
+}
+aruco_type = "DICT_6X6_250"
 
 
 try:
