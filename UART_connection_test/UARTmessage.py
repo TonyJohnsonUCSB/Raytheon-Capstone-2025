@@ -1,23 +1,42 @@
-from pymavlink import mavutil
+import asyncio
+from mavsdk import System
 
-# Connect to the Pixhawk's TELEM1 port
-serial_port = '/dev/ttyAMA0'
-baud_rate = 57600
+async def test_mavsdk_connection():
+    # Connect to the MAVSDK server through a serial UART connection
+    drone = System()
+    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
 
-try:
-    # Establish MAVLink connection
-    connection = mavutil.mavlink_connection(serial_port, baud=baud_rate)
+    print("Waiting for drone to connect...")
+    async for state in drone.core.connection_state():
+        if state.is_connected:
+            print("Drone connected successfully!")
+            break
 
-    # Wait for a message (blocking mode)
-    msg = connection.recv_match(blocking=True, timeout=5)
+    # Wait for a heartbeat from the drone
+    print("Waiting for a heartbeat message...")
+    async for heartbeat in drone.telemetry.heartbeat():
+        print(f"Heartbeat received: {heartbeat}")
+        break
 
-    if msg:
-        # Print the received message as a dictionary
-        print(f"Received MAVLink message: {msg.to_dict()}")
-    else:
-        print("No MAVLink message received.")
+    # Test arming the drone
+    print("Arming the drone...")
+    try:
+        await drone.action.arm()
+        print("Drone armed successfully!")
+    except Exception as e:
+        print(f"Failed to arm the drone: {e}")
+        return
 
-except Exception as e:
-    print(f"Error: {e}")
-finally:
-    print("Connection closed.")
+    # Test disarming the drone
+    print("Disarming the drone...")
+    try:
+        await drone.action.disarm()
+        print("Drone disarmed successfully!")
+    except Exception as e:
+        print(f"Failed to disarm the drone: {e}")
+
+async def main():
+    await test_mavsdk_connection()
+
+if __name__ == "__main__":
+    asyncio.run(main())
