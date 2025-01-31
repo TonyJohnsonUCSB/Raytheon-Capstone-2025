@@ -2,38 +2,28 @@ import serial
 import time
 
 # Configure the serial port
-serial_port = '/dev/ttyAMA0'  # Update if using a different port (e.g., '/dev/serial0')
-from pymavlink import mavutil
-
-# Open the connection to the Pixhawk's telemetry port
-connection = mavutil.mavlink_connection('/dev/ttyAMA0', baud=57600)
-
-while True:
-    # Wait for and receive a MAVLink message
-    msg = connection.recv_match(blocking=True)
-    if msg:
-        print(f"Received MAVLink message: {msg.to_dict()}")
+serial_port = '/dev/ttyAMA0'  # Adjust this if using a different port
 baud_rate = 57600
 
 try:
     # Open the serial port
-    ser = serial.Serial(port=serial_port, baudrate=baud_rate, timeout=1)
+    ser = serial.Serial(port=serial_port, baudrate=baud_rate, timeout=2)
 
     if ser.is_open:
         print(f"Serial port {serial_port} opened successfully at {baud_rate} baud.")
 
-        # Send test data
+        # Send a single message
         test_message = "Hello, Pixhawk!\n"
         ser.write(test_message.encode('utf-8'))
         print(f"Sent: {test_message.strip()}")
 
-        # Wait for a response (if any)
-        time.sleep(1)  # Adjust if necessary
+        # Give some time to receive a response
+        time.sleep(1)
 
-        # Read response
-        response = ser.read(ser.in_waiting or 1)
+        # Read the response (if any)
+        response = ser.read(ser.in_waiting).decode('latin-1', errors='ignore')
         if response:
-            print(f"Received (raw bytes): {response.strip()}")
+            print(f"Received: {response.strip()}")
         else:
             print("No response received.")
 
