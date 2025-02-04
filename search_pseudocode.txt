@@ -1,0 +1,68 @@
+# MAVSDK Search Algorithm Pseudocode
+
+# Initialize MAVSDK drone
+initialize_drone()
+
+# Define waypoints (GPS coordinates)
+waypoints = [
+    (latitude1, longitude1),
+    (latitude2, longitude2),
+    ...  # Add more waypoints as needed
+]
+
+# Function to take off
+def takeoff():
+    drone.arm()
+    drone.takeoff()
+    wait_until_altitude_reached(target_altitude)
+
+# Function to fly to a specific waypoint
+def fly_to_waypoint(gps_coordinate):
+    drone.fly_to(gps_coordinate)
+    wait_until_position_reached(gps_coordinate)
+
+# Function to scan for target marker
+def scan_for_target():
+    # Use drone's camera to search for the marker
+    marker_found, marker_position = drone.camera.detect_target_marker()
+    return marker_found, marker_position
+
+# Function to relay position to ground vehicle
+def relay_position_to_ground(marker_position):
+    lora_transmitter.send(marker_position)
+
+# Main search algorithm
+def search_algorithm():
+    takeoff()
+    
+    # Iterate through waypoints in a snake pattern
+    for waypoint in waypoints:
+        fly_to_waypoint(waypoint)
+        marker_found, marker_position = scan_for_target()
+
+        if marker_found:
+            print("Target marker found!")
+            print(f"Position: {marker_position}")
+            relay_position_to_ground(marker_position)
+            return  # Stop search after marker is found
+
+    # If the entire field is scanned without finding the marker, return to start
+    print("Target marker not found. Returning to initial waypoint.")
+    fly_to_waypoint(waypoints[0])
+    
+    # Retry search if desired
+    # Optionally add code to retry after a certain delay or user command
+
+# Execute the search algorithm
+search_algorithm()
+
+# ---
+# State Diagram Description
+
+# 1. **Takeoff State**: The drone arms and ascends to a predetermined altitude.
+# 2. **Navigate State**: The drone flies to the next waypoint.
+# 3. **Scan State**: The drone scans the environment for the target marker.
+# 4. **Target Detected State**: If the target marker is found, the drone calculates its position and transitions to relaying the data.
+# 5. **Relay Position State**: The position of the marker is transmitted to the ground vehicle using the LoRa antenna.
+# 6. **Waypoint Transition State**: If the marker is not found, the drone transitions to the next waypoint in the path.
+# 7. **Retry State**: If the search completes without finding the marker, the drone returns to the starting waypoint and may retry the process.
