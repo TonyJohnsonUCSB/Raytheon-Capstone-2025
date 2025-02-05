@@ -7,7 +7,7 @@ initialize_drone()
 waypoints = [
     (latitude1, longitude1),
     (latitude2, longitude2),
-    ...  # Add more waypoints as needed
+    ... 
 ]
 
 # Function to take off
