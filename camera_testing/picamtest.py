@@ -2,10 +2,12 @@ import numpy as np
 import cv2
 from picamera2 import Picamera2
 import time
-
 import logging
-logging.basicConfig(level=logging.DEBUG)
 
+# Enable or disable GUI display
+ENABLE_GUI = False
+
+logging.basicConfig(level=logging.DEBUG)
 
 # Draw Axis on Markers
 def draw_axis(img, rvec, tvec, camera_matrix, dist_coeffs, length):
@@ -39,7 +41,7 @@ def aruco_display(corners, ids, rejected, image):
             cv2.circle(image, (cX, cY), 4, (0, 0, 255), -1)
 
             cv2.putText(image, str(markerID), (topLeft[0], topLeft[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-            print(f"[Inference] ArUco marker ID: {markerID}")
+            logging.info(f"[Inference] ArUco marker ID: {markerID}")
     return image
 
 # Pose Estimation
@@ -73,16 +75,22 @@ ARUCO_DICT = {
 }
 aruco_type = "DICT_6X6_250"
 
-
 try:
     while True:
         img = picam2.capture_array()
         output = pose_estimation(img, ARUCO_DICT[aruco_type], intrinsic_camera, distortion)
-        cv2.imshow("Estimated Pose", output)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        if ENABLE_GUI:
+            # Show frame in a window if GUI is enabled
+            cv2.imshow("Estimated Pose", output)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+        else:
+            # Log a message when GUI is disabled
+            logging.info("Processed frame without GUI display.")
+
 finally:
     picam2.stop()
     picam2.close()
-    cv2.destroyAllWindows()
+    if ENABLE_GUI:
+        cv2.destroyAllWindows()
