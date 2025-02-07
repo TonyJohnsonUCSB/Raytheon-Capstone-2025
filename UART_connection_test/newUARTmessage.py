@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+import asyncio
+from mavsdk import System
+
+
+async def run():
+    drone = System()
+    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
+
+    print("Waiting for drone to connect...")
+    async for state in drone.core.connection_state():
+        if state.is_connected:
+            print("-- Connected to drone!")
+            break
+
+    try:
+        print("Waiting for telemetry data...")
+        async for position in drone.telemetry.position():
+            print(f"Received telemetry data: {position}")
+            break
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        print("Connection closed.")
+
+
+if __name__ == "__main__":
+    # Run the asyncio loop
+    asyncio.run(run())
