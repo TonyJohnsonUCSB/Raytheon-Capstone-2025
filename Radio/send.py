@@ -13,4 +13,4 @@ while True:
     coordinates = f"{latitude},{longitude}\n".encode('utf-8')
     ser.write(coordinates)
     print(f"Sending coordinates: {latitude},{longitude}")
-    time.sleep(1)
+    time.sleep(0.2)
