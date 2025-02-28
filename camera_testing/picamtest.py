@@ -4,9 +4,6 @@ from picamera2 import Picamera2
 import time
 import logging
 
-# Enable or disable GUI display
-ENABLE_GUI = False
-
 logging.basicConfig(level=logging.DEBUG)
 
 # Draw Axis on Markers
@@ -80,17 +77,12 @@ try:
         img = picam2.capture_array()
         output = pose_estimation(img, ARUCO_DICT[aruco_type], intrinsic_camera, distortion)
 
-        if ENABLE_GUI:
-            # Show frame in a window if GUI is enabled
-            cv2.imshow("Estimated Pose", output)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-        else:
-            # Log a message when GUI is disabled
-            logging.info("Processed frame without GUI display.")
+        # Always display GUI
+        cv2.imshow("Estimated Pose", output)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
 finally:
     picam2.stop()
     picam2.close()
-    if ENABLE_GUI:
-        cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
