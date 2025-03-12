@@ -2,6 +2,8 @@ import asyncio
 from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityNedYaw
 
+VEL = 1
+
 async def run():
     drone = System()
     await drone.connect(system_address="udp://:14540")
@@ -23,7 +25,7 @@ async def run():
 
     print("-- Taking off")
     await drone.action.takeoff()
-    await asyncio.sleep(10)
+    await asyncio.sleep(20)
 
     print("-- Starting offboard mode")
     try:
@@ -37,10 +39,37 @@ async def run():
         await drone.action.disarm()
         return
 
-    print("-- Moving North at 5 mph")
-    velocity_north = 2.2352  # 5 mph converted to m/s
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(velocity_north, 0.0, 0.0, 0.0))
+    print("-- Moving North at 1 m/s")
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(VEL, 0.0, 0.0, 0.0))
     await asyncio.sleep(5)
+    print("-- Waiting for 2 seconds")
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
+    await asyncio.sleep(2)
+
+    print("-- Moving East at 1 m/s")
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, VEL, 0.0, 0.0))
+    await asyncio.sleep(5)
+    print("-- Waiting for 2 seconds")
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
+    await asyncio.sleep(2)
+
+
+    print("-- Moving South at 1 m/s")
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(-VEL, 0.0, 0.0, 0.0))
+    await asyncio.sleep(5)
+    print("-- Waiting for 2 seconds")
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
+    await asyncio.sleep(2)
+
+
+    print("-- Moving West at 1 m/s")
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, -VEL, 0.0, 0.0))
+    await asyncio.sleep(5)
+    print("-- Waiting for 2 seconds")
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
+    await asyncio.sleep(2)
+
+
 
     print("-- Stopping offboard mode")
     try:
