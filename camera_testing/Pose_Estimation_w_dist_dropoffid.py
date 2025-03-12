@@ -35,12 +35,16 @@ def show_fallback_image(image):
     plt.show()
     print("Matplotlib display successful")
 
+# In reality we just need pose estimation the other functions are to visualize what the code is doing
+# All we would really need is identification of the correct marker
 def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coefficients, drop_zoneID, marker_size):
+
     """ Detect and estimate pose of ArUco markers. """
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     aruco_dict = cv2.aruco.getPredefinedDictionary(aruco_dict_type)
-    parameters = cv2.aruco.DetectorParameters()
 
+    parameters = cv2.aruco.DetectorParameters()
+    
     corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
 
     if ids is not None:
@@ -78,6 +82,7 @@ distortion = np.array([-0.43948, 0.18514, 0, 0, 0], dtype=np.float32).reshape(1,
 picam2 = Picamera2()
 print("Camera has been configured")
 picam2.start()
+time.sleep(2)
 
 drop_zoneID = 1
 marker_size = 0.254  # Size of the physical marker in meters
@@ -114,5 +119,5 @@ try:
 
 finally:
     picam2.stop()
+    picam2.close()
     cv2.destroyAllWindows()
-
