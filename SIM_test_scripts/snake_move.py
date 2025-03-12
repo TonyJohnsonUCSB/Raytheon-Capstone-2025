@@ -31,7 +31,7 @@ async def run():
 
     print("-- Starting offboard mode")
     try:
-        await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, 0.0))  # Set initial velocity setpoint
+        await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, 0.0))
         await drone.offboard.start()
     except OffboardError as error:
         print(f"Starting offboard mode failed: {error._result.result}")
@@ -41,48 +41,26 @@ async def run():
         await drone.action.disarm()
         return
 
-    print("-- Moving East")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0,VEL, 0.0, 0.0))
-    await asyncio.sleep(5)
-    print("-- Waiting for 2 seconds")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
+    moves = [
+        (0, VEL, 5, "Moving East"),
+        (0, 0, 2, "Pausing"),
+        (VEL, 0, 2.5, "Moving South"),
+        (0, 0, 2, "Pausing"),
+        (0, -VEL, 5, "Moving West"),
+        (0, 0, 2, "Pausing"),
+        (VEL, 0, 2.5, "Moving South"),
+        (0, 0, 2, "Pausing"),
+        (0, VEL, 5, "Moving East"),
+        (0, 0, 2, "Pausing"),
+        (-math.sqrt(5/2), -math.sqrt(5/2), 5, "Returning Home"),
+        (0, 0, 2, "Pausing")
+    ]
+
+    for north, east, duration, action_text in moves:
+        print(f"-- {action_text}")
+        await drone.offboard.set_velocity_ned(VelocityNedYaw(north, east, 0.0, 0.0))
+        await asyncio.sleep(duration)
     
-    print("-- Moving South")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(VEL,0, 0.0, 0.0))
-    await asyncio.sleep(2.5)
-    print("-- Waiting for 2 seconds")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
-
-    print("-- Moving West")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0,-VEL, 0.0, 0.0))
-    await asyncio.sleep(5)
-    print("-- Waiting for 2 seconds")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
-
-    print("-- Moving South")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(VEL,0, 0.0, 0.0))
-    await asyncio.sleep(2.5)
-    print("-- Waiting for 2 seconds")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
-
-    print("-- Moving East")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0,VEL, 0.0, 0.0))
-    await asyncio.sleep(5)
-    print("-- Waiting for 2 seconds")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
-
-    print("-- Returning to Start")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(-math.sqrt(5/2),-math.sqrt(5/2), 0.0, 0.0))
-    await asyncio.sleep(5)
-    print("-- Waiting for 2 seconds")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
-
     print("-- Stopping offboard mode")
     try:
         await drone.offboard.stop()
