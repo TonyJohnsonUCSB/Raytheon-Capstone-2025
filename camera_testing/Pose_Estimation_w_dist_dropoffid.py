@@ -2,6 +2,8 @@ import numpy as np
 import cv2
 import sys
 import time
+from picamera2 import Picamera2
+
 def draw_axis(img, rvec, tvec, camera_matrix, dist_coeffs, length):
     """
     Draw 3D axes on the marker for visualization.
