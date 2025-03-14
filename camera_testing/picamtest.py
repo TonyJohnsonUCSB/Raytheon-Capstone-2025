@@ -76,13 +76,10 @@ try:
     while True:
         img = picam2.capture_array()
         output = pose_estimation(img, ARUCO_DICT[aruco_type], intrinsic_camera, distortion)
-
-        # Always display GUI
-        cv2.namedWindow("Estimated Pose", cv2.WINDOW_NORMAL)
         cv2.imshow("Estimated Pose", output)
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-
 finally:
     picam2.stop()
     picam2.close()

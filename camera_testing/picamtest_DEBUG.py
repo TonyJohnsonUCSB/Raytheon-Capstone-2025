@@ -46,7 +46,7 @@ def aruco_display(corners, ids, rejected, image):
 def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coefficients):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     aruco_dict = cv2.aruco.getPredefinedDictionary(aruco_dict_type)
-    parameters = cv2.aruco.DetectorParameters()
+    parameters = cv2.aruco.DetectorParameters_create()
     corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
     frame = aruco_display(corners, ids, rejected_img_points, frame)
 
@@ -67,9 +67,11 @@ intrinsic_camera = np.array([[933.15867, 0, 657.59], [0, 933.1586, 400.36993], [
 distortion = np.array([-0.43948, 0.18514, 0, 0])
 
 # ArUco dictionary type
-ARUCO_DICT = {"DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL}
-aruco_type = "DICT_ARUCO_ORIGINAL"
-
+ARUCO_DICT = {
+    "DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL,
+    "DICT_6X6_250": cv2.aruco.DICT_6X6_250
+}
+aruco_type = "DICT_6X6_250"
 
 try:
     while True:
