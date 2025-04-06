@@ -42,8 +42,6 @@ The new Wi-Fi in the Barn is eleg_capstone, password: jyg7aqiqkg.
 
 The setup for the 80W LiPo battery charger is already set so you typically don't need to change it.
 
-![image-20250406131956281](C:\Users\Haoyan Duan\AppData\Roaming\Typora\typora-user-images\image-20250406131956281.png)
-
 To charge the LiPo battery, make sure to connect both of these cables. On the charger, press "START/ENTER" and hold for about 3 seconds until you hear a sound and the screen shows "R: 6SER..." Press "START/ENTER" one more time and the battery will start charging. This charger will stop charging after the battery is full, and the "Li6S" section on the charger will alternate between displaying "Li6S" and "FULL".
 
 To stop charging at any time, press "ESC/STOP". 
