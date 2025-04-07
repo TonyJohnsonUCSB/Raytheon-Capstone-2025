@@ -7,7 +7,8 @@ def get_gps_coordinates():
     longitude = round(random.uniform(-180.0, 180.0), 6)
     return latitude, longitude
 
-ser = serial.Serial(port='/dev/ttyUSB0',baudrate=57600)
+ser = serial.Serial(port='/dev/ttyUSB0'
+,baudrate=57600)
 while True:
     latitude, longitude = get_gps_coordinates()
     coordinates = f"{latitude},{longitude}\n".encode('utf-8')

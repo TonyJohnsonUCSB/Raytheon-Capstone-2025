@@ -3,7 +3,7 @@ from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityNedYaw
 import math
 
-VEL = 1
+VEL = 3
 VELDIAG = math.sqrt(2)/2
 
 async def run():
@@ -52,7 +52,7 @@ async def run():
         (0, 0, 2, "Pausing"),
         (0, VEL, 5, "Moving East"),
         (0, 0, 2, "Pausing"),
-        (-math.sqrt(5/2), -math.sqrt(5/2), 5, "Returning Home"),
+        (-VEL*math.sqrt(5/2), -VEL*math.sqrt(5/2), 5, "Returning Home"),
         (0, 0, 2, "Pausing")
     ]
 

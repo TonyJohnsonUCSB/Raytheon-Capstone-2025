@@ -25,7 +25,7 @@ async def run():
 
     print("-- Taking off")
     await drone.action.takeoff()
-    await asyncio.sleep(20)
+    await asyncio.sleep(10)
 
     print("-- Starting offboard mode")
     try:
@@ -39,19 +39,19 @@ async def run():
         await drone.action.disarm()
         return
 
-    print("-- Moving North at 1 m/s")
+    print("-- Moving North at 5 m/s")
     await drone.offboard.set_velocity_ned(VelocityNedYaw(VEL, 0.0, 0.0, 0.0))
     await asyncio.sleep(5)
     print("-- Waiting for 2 seconds")
     await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
+    await asyncio.sleep(0.1)
 
-    print("-- Moving East at 1 m/s")
+    print("-- Moving East at 5 m/s")
     await drone.offboard.set_velocity_ned(VelocityNedYaw(0, VEL, 0.0, 0.0))
     await asyncio.sleep(5)
     print("-- Waiting for 2 seconds")
     await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
+    await asyncio.sleep(0.1)
 
 
     print("-- Moving South at 1 m/s")
@@ -59,7 +59,7 @@ async def run():
     await asyncio.sleep(5)
     print("-- Waiting for 2 seconds")
     await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
+    await asyncio.sleep(0.1)
 
 
     print("-- Moving West at 1 m/s")
@@ -67,7 +67,7 @@ async def run():
     await asyncio.sleep(5)
     print("-- Waiting for 2 seconds")
     await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
+    await asyncio.sleep(0.1)
 
 
 
