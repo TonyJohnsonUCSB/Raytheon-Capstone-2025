@@ -29,9 +29,16 @@ async def run():
     print("-- Taking off")
     await drone.action.takeoff()
 
-    await asyncio.sleep(40)
+    await asyncio.sleep(10)  # Wait to ensure drone is airborne
+
+    print("-- Ensuring landing gear is down")
+    await drone.action.set_landing_gear_position(0)  # 0 = down
+
+    await asyncio.sleep(10)  # Hover time
 
     print("-- Landing")
+    # Ensure landing gear remains down before landing
+    await drone.action.set_landing_gear_position(0)
     await drone.action.land()
 
     status_text_task.cancel()
@@ -46,5 +53,4 @@ async def print_status_text(drone):
 
 
 if __name__ == "__main__":
-    # Run the asyncio loop
     asyncio.run(run())
