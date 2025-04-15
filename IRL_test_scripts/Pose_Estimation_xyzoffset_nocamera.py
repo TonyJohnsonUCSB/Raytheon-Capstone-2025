@@ -10,8 +10,6 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
         print("-- Empty frame received")
         return
 
-    print(f"-- Frame captured: shape = {frame.shape}")
-
     try:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -77,7 +75,6 @@ print("-- Camera started")
 try:
     while True:
         img = picam2.capture_array()
-        print("-- Frame captured from camera")
         pose_estimation(img, ARUCO_DICT[aruco_type], intrinsic_camera, distortion, drop_zoneID, marker_size)
 except KeyboardInterrupt:
     print("-- Interrupted by user.")
