@@ -12,7 +12,7 @@ ARUCO_DICT = {
     "DICT_6X6_250": cv2.aruco.DICT_6X6_250
 }
 ARUCO_TYPE = "DICT_6X6_250"
-MARKER_SIZE = 0.06611  # meters
+MARKER_SIZE = 0.254  # 10 in = 0.254 m meters
 DROP_ZONE_ID = 1
 
 INTRINSIC_CAMERA = np.array([
@@ -67,36 +67,39 @@ async def main():
             if ids is not None:
                 ids = ids.flatten()
                 for marker_index, marker_id in enumerate(ids):
-                    if marker_index >= len(corners):
-                        continue
-
-                    marker_corners = corners[marker_index]
-                    if marker_corners is None or len(marker_corners) == 0:
-                        continue
-
                     rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                         [marker_corners], MARKER_SIZE, INTRINSIC_CAMERA, DISTORTION
                     )
+                    x, y, z = tvecs[0][0]
+                    print(f"-- [Marker ID: {int(marker_id)}] X: {x:.3f} m | Y: {y:.3f} m | Z: {z:.3f} m")
 
-                    if tvecs is not None and len(tvecs) > 0:
-                        x, y, z = tvecs[0][0]
-                        print(f"-- [Marker ID: {int(marker_id)}] X: {x:.3f} m | Y: {y:.3f} m | Z: {z:.3f} m")
+                    if marker_id == DROP_ZONE_ID:
+                        # Trying to get actual GPS coordinates we can use from this can be hard, we need to know our heading then the math can get complicated.
+                        # I think we should add a step where we calibrate the drone to spin in place til its heading is 0 degrees north. This gets rid of our need to
+                        # calculate gps coordinates relative to our position and heading. 
 
-                        if marker_id == DROP_ZONE_ID:
-                            current_lat = position.latitude_deg
-                            current_lon = position.longitude_deg
-                            meters_per_deg_lon = METERS_PER_DEG_LAT * math.cos(math.radians(current_lat))
+                        # Calibration Step 
+                        # mavsdk.offboard.PositionNedYaw(0,0,0,0) #This sets the drone to point 0 degrees north
 
-                            d_north = -y  # ArUco coordinate: forward is -Y
-                            d_east = x    # ArUco coordinate: right is +X
+                        # Now if our camera is aligned correctly with the drone the following code would work
+                        # Also we can remove this we don't need to know actual GPS coordinates with the function above we can specify distances in meters from our current position
+                        # mavsdk.offboard.PositionNedYaw(X meters North , Y meters East, Z Meters Down, yaw relative to true north)
+                        # with the added calibration, y of marker becomes North/south movement and X of marker becomes East/west movement
+                        
+                        current_lat = position.latitude_deg
+                        current_lon = position.longitude_deg
+                        meters_per_deg_lon = METERS_PER_DEG_LAT * math.cos(math.radians(current_lat))
 
-                            delta_lat = d_north / METERS_PER_DEG_LAT
-                            delta_lon = d_east / meters_per_deg_lon
+                        d_north = -y  # ArUco coordinate: forward is -Y
+                        d_east = x    # ArUco coordinate: right is +X
 
-                            marker_lat = current_lat + delta_lat
-                            marker_lon = current_lon + delta_lon
+                        delta_lat = d_north / METERS_PER_DEG_LAT
+                        delta_lon = d_east / meters_per_deg_lon
 
-                            print(f"--   ↳ Estimated Marker GPS: ({marker_lat:.6f}, {marker_lon:.6f})")
+                        marker_lat = current_lat + delta_lat
+                        marker_lon = current_lon + delta_lon
+
+                        print(f"--   ↳ Estimated Marker GPS: ({marker_lat:.6f}, {marker_lon:.6f})")
 
             # Show preview
             cv2.imshow("Camera Preview", frame)
