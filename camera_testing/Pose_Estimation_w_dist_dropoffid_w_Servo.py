@@ -27,6 +27,9 @@ def set_servo_angle(channel, angle):
     :param channel: PCA9685 channel where the servo is connected.
     :param angle: Desired angle in degrees (-90 to 90).
     """
+    # Clamp angle to prevent out-of-range duty values
+    angle = max(-90, min(90, angle))
+
     pulse = int(SERVO_MIN + (angle + 90) * (SERVO_MAX - SERVO_MIN) / 180)
     duty = int(pulse / 20000 * 65535)
     pca.channels[channel].duty_cycle = duty
@@ -181,7 +184,7 @@ def move_camera(angle_y):
     
     # Angle Y is not None only when Marker is found 
     if angle_y is not None:  # If marker is found
-        anle = angle_y +last_angle
+        angle = angle_y +last_angle
         if angle > 180:
             angle = 180
         elif angle < 0:
