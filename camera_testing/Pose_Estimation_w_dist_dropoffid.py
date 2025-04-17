@@ -4,6 +4,30 @@ import sys
 import time
 from picamera2 import Picamera2
 
+import yaml  # Requires: pip install pyyaml
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
+def load_calibration(filename):
+    """
+    Load the calibration coefficients from a YAML file.
+    Expects the YAML file to have keys:
+      - "camera_matrix": a 3x3 matrix
+      - "distortion_coefficients": a list/array of distortion coefficients
+    """
+    try:
+        with open(filename, "r") as f:
+            calib_data = yaml.safe_load(f)
+        camera_matrix = np.array(calib_data["camera_matrix"])
+        dist_coeffs = np.array(calib_data["distortion_coefficients"])
+        logging.info(f"Loaded camera matrix:\n{camera_matrix}")
+        logging.info(f"Loaded distortion coefficients:\n{dist_coeffs}")
+        return camera_matrix, dist_coeffs
+    except Exception as e:
+        logging.error(f"Failed to load calibration file {filename}: {e}")
+        sys.exit(1)
+        
 def draw_axis(img, rvec, tvec, camera_matrix, dist_coeffs, length):
     """
     Draw 3D axes on the marker for visualization.
@@ -117,16 +141,17 @@ ARUCO_DICT = {
 }
 aruco_type = "DICT_6X6_250"
 
-intrinsic_camera = np.array(((933.15867, 0, 657.59),(0,933.1586, 400.36993),(0,0,1)))
-distortion = np.array((-0.43948,0.18514,0,0))
 
+ # Load calibration coefficients from YAML instead of hardcoding them.
+calibration_file = "calibration_output.yaml"
+intrinsic_camera, distortion = load_calibration(calibration_file)
 picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(raw={"size": (1640, 1232)}, main={"format": 'RGB888', "size": (640, 480)}))
 picam2.start()
 time.sleep(2)
 
 drop_zoneID = 1
-marker_size = 0.06611 #Size of physical marker in meters
+marker_size = 0.254 #Size of physical marker in meters
 
 try:
     while True:

@@ -1,9 +1,56 @@
+#!/usr/bin/env python3 
+
 import numpy as np
 import cv2
 import sys
-from gpiozero import AngularServo
 from time import sleep
 import time
+from picamera2 import Picamera2
+from adafruit_pca9685.pca9685 import PCA9685
+
+from board import SCL, SDA
+import busio
+
+# Initialize PCA9685
+i2c = busio.I2C(SCL, SDA)
+pca = PCA9685(i2c)
+pca.frequency = 50  # Set frequency to 50Hz for servos
+
+# Servo configuration
+SERVO_CHANNEL = 0  # Channel on PCA9685 where the servo is connected
+SERVO_MIN = 600    # Minimum pulse length for the servo (adjust as needed)
+SERVO_MAX = 2400    # Maximum pulse length for the servo (adjust as needed)
+
+def set_servo_angle(channel, angle):
+    """
+    Set the servo angle using PCA9685.
+    :param channel: PCA9685 channel where the servo is connected.
+    :param angle: Desired angle in degrees (-90 to 90).
+    """
+    pulse = int(SERVO_MIN + (angle + 90) * (SERVO_MAX - SERVO_MIN) / 180)
+    duty = int(pulse / 20000 * 65535)
+    pca.channels[channel].duty_cycle = duty
+
+# Servo sweep function
+def servo_sweep(channel):
+    """
+    Sweep the servo from its minimum to maximum position and back to the default position.
+    :param channel: PCA9685 channel where the servo is connected.
+    """
+    print("Performing servo sweep...")
+    # Sweep from minimum to maximum
+    for angle in range(-90, 91, 5):  # Increment by 10 degrees
+        set_servo_angle(channel, angle)
+        time.sleep(0.05)  # Small delay for smooth movement
+
+    # Sweep back from maximum to minimum
+    for angle in range(90, -91, -5):  # Decrement by 10 degrees
+        set_servo_angle(channel, angle)
+        time.sleep(0.05)
+
+    # Return to default position
+    set_servo_angle(channel, default_pos)
+    print("Servo sweep complete.")
 
 def draw_axis(img, rvec, tvec, camera_matrix, dist_coeffs, length):
     """
@@ -70,6 +117,7 @@ def aruco_display(corners, ids, rejected, image, drop_zoneID):
 # All we would really need is identification of the correct marker
 def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coefficients, drop_zoneID, marker_size):
     drop_zone_found = False
+    angle_y = None  # Initialize angle_y to None ###############################################################
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Process image to black and white
     aruco_dict = cv2.aruco.getPredefinedDictionary(aruco_dict_type)  # Specify ArUco library
     parameters = cv2.aruco.DetectorParameters_create()
@@ -118,6 +166,12 @@ def move_camera(angle_y):
     """
     Will center camera over marker using the servo
     """
+    global detect_time  # Declare detect_time as global to persist its value across calls
+    global last_angle  # Declare last_angle as global to persist its value across calls
+
+    if 'detect_time' not in globals():
+        detect_time = start_time  # Initialize detect_time with start_time if not already defined
+
     # Three cases that must be accounted for 
     # 1) Marker is not in Frame -> Do nothing stay at default position
     # 2) Marker is Found -> move camera accordingly 
@@ -126,14 +180,19 @@ def move_camera(angle_y):
     #    by having a timer to actually make sure marker is not lost. and is just flickering
     
     # Angle Y is not None only when Marker is found 
-    if angle_y is not None: # If marker is found
-        servo.angle = angle_y + last_angle # Move servo x degrees from last position
+    if angle_y is not None:  # If marker is found
+        anle = angle_y +last_angle
+        if angle > 180:
+            angle = 180
+        elif angle < 0:
+            angle = 0
+        set_servo_angle(SERVO_CHANNEL, angle_y + last_angle)  # Move servo x degrees from last position
         last_angle = angle_y + last_angle  # Save servo's last position
-        detect_time = time.time()
-    elif angle_y is None and detect_time - start_time < 5: # If marker is flickering -> angle_y is none but the last time the marker was found was less than 5 seconds ago
-        servo.angle = last_angle # Keep servo at the last recorded angle before marker was lost
-    else:
-        servo.angle = default_pos # if marker is not found stay at default position
+        detect_time = time.time()  # Update detect_time to the current time
+    # elif angle_y is None and time.time() - detect_time < 5:  # If marker is flickering
+        # set_servo_angle(SERVO_CHANNEL, last_angle)  # Keep servo at the last recorded angle before marker was lost
+    # else:
+        # set_servo_angle(SERVO_CHANNEL, default_pos)  # If marker is not found, stay at default position
                 
             
 ARUCO_DICT = {
@@ -152,17 +211,16 @@ time.sleep(2)
 
 # Variables
 drop_zoneID = 1
-marker_size = 0.06611 #Size of physical marker in meters (10in)
-
-#Connect servo signal pin to pin GPIO 17/Pin 11
-servo = AngularServo(17, min_angle=-90, max_angle=90) #Connect servo signal pin to pin GPIO 17
-# We can use function servo.angle(angle in degrees) to move servo.
+marker_size = 0.254 #Size of physical marker in meters (10in)
 
 #We will have a default Servo Position
 angle_y = None
 default_pos = 0
 last_angle = 0
 start_time = time.time()
+
+# Perform servo sweep at the start
+servo_sweep(SERVO_CHANNEL)
 
 try:
     while True:
@@ -180,3 +238,4 @@ finally:
     picam2.stop()
     picam2.close()
     cv2.destroyAllWindows()
+    pca.deinit()
