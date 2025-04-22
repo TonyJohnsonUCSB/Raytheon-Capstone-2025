@@ -7,7 +7,7 @@ from time import sleep
 import time
 from picamera2 import Picamera2
 from adafruit_pca9685.pca9685 import PCA9685
-
+import yaml  # Requires: pip install pyyaml
 from board import SCL, SDA
 import busio
 
@@ -164,66 +164,62 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
                 drop_zone_found = False
     return frame, drop_zone_found, angle_y
 
-# To move the camera we need to extract the angle of the marker with rexpect to the center of the camera
-def move_camera(angle_y):
-    """
-    Will center camera over marker using the servo
-    """
-    global detect_time  # Declare detect_time as global to persist its value across calls
-    global last_angle  # Declare last_angle as global to persist its value across calls
+# PID controller class
+class PIDController:
+    def __init__(self, kp, ki, kd, setpoint=0):
+        self.kp = kp
+        self.ki = ki
+        self.kd = kd
+        self.setpoint = setpoint
+        self.integral = 0.0
+        self.prev_error = 0.0
+        self.prev_time = time.time()
 
-    if 'detect_time' not in globals():
-        detect_time = start_time  # Initialize detect_time with start_time if not already defined
+    def update(self, measurement):
+        current_time = time.time()
+        dt = current_time - self.prev_time if current_time - self.prev_time > 0 else 1e-16
+        error = self.setpoint - measurement
+        self.integral += error * dt
+        derivative = (error - self.prev_error) / dt
+        output = self.kp * error + self.ki * self.integral + self.kd * derivative
+        
+        self.prev_error = error
+        self.prev_time = current_time
+        return output   
 
-    # Three cases that must be accounted for 
-    # 1) Marker is not in Frame -> Do nothing stay at default position
-    # 2) Marker is Found -> move camera accordingly 
-    # 3) Marker is in frame but flickering -> We can use a timer to account for
-    #    flickering meaning if marker is lost for a split second the servo won't trip up 
-    #    by having a timer to actually make sure marker is not lost. and is just flickering
-    
-    # Angle Y is not None only when Marker is found 
-    if angle_y is not None:  # If marker is found
-        angle = angle_y +last_angle
-        if angle > 180:
-            angle = 180
-        elif angle < 0:
-            angle = 0
-        set_servo_angle(SERVO_CHANNEL, angle_y + last_angle)  # Move servo x degrees from last position
-        last_angle = angle_y + last_angle  # Save servo's last position
-        detect_time = time.time()  # Update detect_time to the current time
-    # elif angle_y is None and time.time() - detect_time < 5:  # If marker is flickering
-        # set_servo_angle(SERVO_CHANNEL, last_angle)  # Keep servo at the last recorded angle before marker was lost
-    # else:
-        # set_servo_angle(SERVO_CHANNEL, default_pos)  # If marker is not found, stay at default position
-                
-            
+# ArUco Setup
 ARUCO_DICT = {
     "DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL,
     "DICT_6X6_250": cv2.aruco.DICT_6X6_250  
 }
 aruco_type = "DICT_6X6_250"
+drop_zoneID = 1
+marker_size = 0.254 #Size of physical marker in meters (10in)
 
-intrinsic_camera = np.array(((933.15867, 0, 657.59),(0,933.1586, 400.36993),(0,0,1)))
-distortion = np.array((-0.43948,0.18514,0,0))
-
+# Camera Setup 
+calibration_file = "calibration_output.yaml"
+intrinsic_camera, distortion = load_calibration(calibration_file)
 picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(raw={"size": (1640, 1232)}, main={"format": 'RGB888', "size": (640, 480)}))
 picam2.start()
 time.sleep(2)
 
-# Variables
-drop_zoneID = 1
-marker_size = 0.254 #Size of physical marker in meters (10in)
+# Servo/Camera setup 
+camera_desired_angle = 0 
+camera_PID = PIDController(Kp = 8.0, Ki = 0.0, kd = 0.0, setpoint = camera_desired_angle)
+SERVO_CHANNEL = 0  # Channel on PCA9685 where the servo is connected
+SERVO_MIN = 600    # Minimum pulse length for the servo (adjust as needed)
+SERVO_MAX = 2400    # Maximum pulse length for the servo (adjust as needed)
 
-#We will have a default Servo Position
-angle_y = None
-default_pos = 0
-last_angle = 0
-start_time = time.time()
-
+# Initialize PCA9685
+i2c = busio.I2C(SCL, SDA)
+pca = PCA9685(i2c)
+pca.frequency = 50  # Set frequency to 50Hz for servos
+current_angle = 0
 # Perform servo sweep at the start
 servo_sweep(SERVO_CHANNEL)
+set_servo_angle(SERVO_CHANNEL,current_angle)
+
 
 try:
     while True:
@@ -232,7 +228,22 @@ try:
 
         # Always display GUI
         cv2.imshow("Estimated Pose", output)
-        move_camera(angle_y)
+        
+        #If ArUco is Detected
+        if angle_y is not None:
+            # Update servo angle
+            u = camera_PID.update(setpoint,angle_y) # we get u update from controller
+            new_angle = current_angle + u           # update angle 
+            
+            #Bottleneck new angle to servo bounds
+            if new_angle > 90:
+                new_angle = 90
+            elif new_angle <-90:
+                new_angle = -90
+        
+            # Set the new servo angle
+            set_servo_angle(SERVO_CHANNEL,new_angle)# Set the servo to updated angle
+            current_angle = new_angle               # Update the current angle
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
