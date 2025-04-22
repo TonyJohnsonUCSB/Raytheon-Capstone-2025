@@ -7,7 +7,7 @@ from mavsdk import System
 async def run():
 
     drone = System()
-    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
+    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")  # Connect to the drone via serial port
 
     status_text_task = asyncio.ensure_future(print_status_text(drone))
 
@@ -26,19 +26,14 @@ async def run():
     print("-- Arming")
     await drone.action.arm()
 
+
     print("-- Taking off")
+    await drone.action.set_takeoff_altitude(2.0)  # Set altitude to 5 meters
     await drone.action.takeoff()
 
-    await asyncio.sleep(10)  # Wait to ensure drone is airborne
-
-    print("-- Ensuring landing gear is down")
-    await drone.action.set_landing_gear_position(0)  # 0 = down
-
-    await asyncio.sleep(10)  # Hover time
+    await asyncio.sleep(10)
 
     print("-- Landing")
-    # Ensure landing gear remains down before landing
-    await drone.action.set_landing_gear_position(0)
     await drone.action.land()
 
     status_text_task.cancel()
@@ -53,4 +48,5 @@ async def print_status_text(drone):
 
 
 if __name__ == "__main__":
+    # Run the asyncio loop
     asyncio.run(run())
