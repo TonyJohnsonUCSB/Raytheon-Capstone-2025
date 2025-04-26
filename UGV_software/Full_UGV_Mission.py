@@ -231,19 +231,19 @@ async def main():
             print("Rover connected!")
             break
 
-    # Waypoint Mission
-    print("Waiting for global position estimate...")
-    async for health in rover.telemetry.health():
-        # For a rover we only need the global position to be ok
-        if health.is_global_position_ok:
-            print("-- Global position estimate OK")
-            break
+    # Waypoint Mission 
+    # print("Waiting for global position estimate...")
+    # async for health in rover.telemetry.health():
+    #     # For a rover we only need the global position to be ok
+    #     if health.is_global_position_ok:
+    #         print("-- Global position estimate OK")
+    #         break
 
-    print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
-    await rover.action.goto_location(TARGET_LATITUDE,
-                                     TARGET_LONGITUDE,
-                                     TARGET_ALTITUDE,
-                                     TARGET_YAW)
+    # print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
+    # await rover.action.goto_location(TARGET_LATITUDE,
+    #                                  TARGET_LONGITUDE,
+    #                                  TARGET_ALTITUDE,
+    #                                  TARGET_YAW)
   
     try:
         # Main computer vision loop
