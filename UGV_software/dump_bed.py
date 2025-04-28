@@ -1,60 +1,54 @@
-import RPi.GPIO as GPIO
+import lgpio
 import time
 
-GPIO.setmode(GPIO.BOARD) #physical pin numbering
+# Open a connection to the GPIO chip
+h = lgpio.gpiochip_open(0)  # '0' is the default GPIO chip
 
-#initialize pins 
-ENA = 32    
-IN1 = 36    
-IN2 = 38    
+# Initialize pins
+ENA = 12   # Physical pin 32 is GPIO12
+IN1 = 16   # Physical pin 36 is GPIO16
+IN2 = 20   # Physical pin 38 is GPIO20
 
-#setup GPIO pins
-GPIO.setup(IN1, GPIO.OUT)  
-GPIO.setup(IN2, GPIO.OUT)  
-GPIO.setup(ENA, GPIO.OUT)
+# Set modes for pins
+lgpio.gpio_claim_output(h, IN1, 0)
+lgpio.gpio_claim_output(h, IN2, 0)
+lgpio.gpio_claim_output(h, ENA, 0)
 
-#set up PWM
-pwm = GPIO.PWM(ENA, 10000)  #frequency of pwm set to 10000 Hz
-pwm.start(0)  				#start pwm w 0% duty cycle
-speed = 50 					#motor at half speed (50%)
+# Setup PWM
+freq = 10000  # 10 kHz
+duty_cycle = 0
+lgpio.tx_pwm(h, ENA, freq, duty_cycle)
 
-#forward
+speed = 100  # Motor speed in % duty cycle
+
 def move_forward():
-    GPIO.output(IN1, GPIO.HIGH)
-    GPIO.output(IN2, GPIO.LOW)
-    pwm.ChangeDutyCycle(speed)
+    lgpio.gpio_write(h, IN1, 1)
+    lgpio.gpio_write(h, IN2, 0)
+    lgpio.tx_pwm(h, ENA, freq, speed)
 
-#backward
 def move_backward():
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.HIGH)
-    pwm.ChangeDutyCycle(speed)
+    lgpio.gpio_write(h, IN1, 0)
+    lgpio.gpio_write(h, IN2, 1)
+    lgpio.tx_pwm(h, ENA, freq, speed)
 
-#stop motor
 def stop_motor():
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.LOW)
-    pwm.ChangeDutyCycle(0)
+    lgpio.gpio_write(h, IN1, 0)
+    lgpio.gpio_write(h, IN2, 0)
+    lgpio.tx_pwm(h, ENA, freq, 0)
 
-#loop to test motor control
 try:
-    #enable H-Bridge
-    GPIO.output(ENA, GPIO.HIGH)
-
-    #forward for 5s
+    # enable H-Bridge (already done by writing to ENA)
     print("Moving forward")
     move_forward()
-    time.sleep(5)
+    time.sleep(2)
 
-    #backward for 5s
     print("Moving backward")
     move_backward()
-    time.sleep(5)
+    time.sleep(2)
 
-    #stop motor
     print("Stopping")
     stop_motor()
 
 finally:
-    # Clean up GPIO settings before exiting
-    GPIO.cleanup()
+    # Cleanup
+    lgpio.gpiochip_close(h)
