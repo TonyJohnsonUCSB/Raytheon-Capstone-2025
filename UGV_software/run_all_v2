@@ -14,6 +14,45 @@ from adafruit_pca9685.pca9685 import PCA9685
 import yaml  # Requires: pip install pyyaml
 from board import SCL, SDA
 import busio
+import lgpio # dump truck
+
+# Dump Truck: Open a connection to the GPIO chip 
+h = lgpio.gpiochip_open(0)  # '0' is the default GPIO chip
+
+# Dump Truck:  Initialize pins
+ENA = 12   # Physical pin 32 is GPIO12
+IN1 = 16   # Physical pin 36 is GPIO16
+IN2 = 20   # Physical pin 38 is GPIO20
+
+# Dump Truck:  Set modes for pins
+lgpio.gpio_claim_output(h, IN1, 0)
+lgpio.gpio_claim_output(h, IN2, 0)
+lgpio.gpio_claim_output(h, ENA, 0)
+
+# Dump Truck:  Setup PWM
+freq = 10000  # 10 kHz
+duty_cycle = 0
+lgpio.tx_pwm(h, ENA, freq, duty_cycle)
+
+speed = 100  # Motor speed in % duty cycle
+
+# Dump Truck: 
+def open_truckbed():
+    lgpio.gpio_write(h, IN1, 1)
+    lgpio.gpio_write(h, IN2, 0)
+    lgpio.tx_pwm(h, ENA, freq, speed)
+
+# Dump Truck: 
+def close_truckbed():
+    lgpio.gpio_write(h, IN1, 0)
+    lgpio.gpio_write(h, IN2, 1)
+    lgpio.tx_pwm(h, ENA, freq, speed)
+
+# Dump Truck: 
+def stop_motor():
+    lgpio.gpio_write(h, IN1, 0)
+    lgpio.gpio_write(h, IN2, 0)
+    lgpio.tx_pwm(h, ENA, freq, 0)
 
 def draw_axis(img, rvec, tvec, camera_matrix, dist_coeffs, length):
     """
@@ -325,6 +364,16 @@ async def main():
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
+
+            #opening truck bed in distance is less than 1m
+            if distance < 1: 
+                open_truckbed()
+                time.sleep(2)
+                motor_stop()
+                time.sleep(5)
+                close_truckbed()
+                time.sleep(2)
+                motor_stop()
 
     finally:
         picam2.stop()
