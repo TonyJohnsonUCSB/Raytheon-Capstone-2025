@@ -356,6 +356,16 @@ async def main():
                 velocity_command = VelocityBodyYawspeed(forward_velocity, 0, 0.0, lateral_velocity)
                 await rover.offboard.set_velocity_body(velocity_command)
 
+                #opening truck bed in distance is less than 1m
+                if distance < 1: 
+                open_truckbed()
+                time.sleep(2)
+                motor_stop()
+                time.sleep(5)
+                close_truckbed()
+                time.sleep(2)
+                motor_stop()
+
             else: #If marker is not found stop car
                 initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
                 await rover.offboard.set_velocity_body(initial_velocity)
@@ -364,16 +374,6 @@ async def main():
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
-
-            #opening truck bed in distance is less than 1m
-            if distance < 1: 
-                open_truckbed()
-                time.sleep(2)
-                motor_stop()
-                time.sleep(5)
-                close_truckbed()
-                time.sleep(2)
-                motor_stop()
 
     finally:
         picam2.stop()
