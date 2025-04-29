@@ -7,25 +7,38 @@ from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityBodyYawspeed
 
 # --- ArUco & camera calibration setup ---
-ARUCO_DICT = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)  # ArUco dictionary
-parameters = cv2.aruco.DetectorParameters_create()  # Detector params
+ARUCO_DICT = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+parameters = cv2.aruco.DetectorParameters_create()
 
-# Camera intrinsic parameters and distortion coefficients
 camera_matrix = np.array([[933.15867, 0, 657.59],
                           [0, 933.1586, 400.36993],
                           [0, 0, 1]])
 dist_coeffs = np.array([-0.43948, 0.18514, 0, 0])
 
-# Physical marker size (meters) and target ID
 marker_size = 0.06611
 drop_zone_id = 1
 
-# Control gains for centering the marker
-k_x = 1.0    # Gain for horizontal (left/right) control
-k_y = 1.0    # Gain for vertical (up/down) control
-max_vel = 1.0  # Maximum velocity command (m/s)
+# Control gains & limits (unused here; logic is hard-coded per your original)
+max_vel = 1.0
 
-# Initialize PiCamera2
+# Helper functions (from your first script)
+def compute_vel_east(pos):
+    if abs(pos) < 0.01:
+        return 0.0
+    elif abs(pos) < 0.3:
+        return -np.sign(pos)
+    else:
+        return -pos
+
+def compute_vel_north(pos):
+    if abs(pos) < 0.01:
+        return 0.0
+    elif abs(pos) < 0.3:
+        return np.sign(pos)
+    else:
+        return pos
+
+# Initialize PiCamera2 + window
 picam2 = Picamera2()
 config = picam2.create_preview_configuration(
     raw={"size": (1640, 1232)},
@@ -33,47 +46,37 @@ config = picam2.create_preview_configuration(
 )
 picam2.configure(config)
 picam2.start()
-# Allow camera sensor to warm up
 time.sleep(2)
 
+cv2.namedWindow("Preview", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("Preview", 640, 480)
+
 async def connect_and_arm():
-    """
-    Connects to the drone, waits for health checks, arms, and takes off to ~2 m.
-    Returns the System instance.
-    """
     drone = System()
     await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
 
-    # Wait until connected
     print("Waiting for drone connection...")
     async for state in drone.core.connection_state():
         if state.is_connected:
             print("-- Connected")
             break
 
-    # Wait for GPS & home position
     print("Waiting for GPS and home position...")
     async for health in drone.telemetry.health():
         if health.is_global_position_ok and health.is_home_position_ok:
             print("-- Global position OK")
             break
 
-    # Arm and take off
     print("-- Arming")
     await drone.action.arm()
     print("-- Taking off")
+    await drone.action.set_takeoff_altitude(3.0)  # Set altitude to 5 meters
     await drone.action.takeoff()
-    # Give time to reach ~2 m altitude
     await asyncio.sleep(6)
-
     return drone
 
 async def offboard_loop(drone):
-    """
-    Starts offboard mode and continuously sends velocity commands to center the ArUco marker.
-    Exits on cancel, then lands and disarms.
-    """
-    # Initialize offboard with zero velocities
+    # initialize offboard with zero velocities
     await drone.offboard.set_velocity_body(VelocityBodyYawspeed(0, 0, 0, 0))
     try:
         await drone.offboard.start()
@@ -84,45 +87,65 @@ async def offboard_loop(drone):
     print("-- Entering tracking loop --")
     try:
         while True:
-            # Capture a frame (off main thread)
+            # capture & detect in a thread
             frame = await asyncio.to_thread(picam2.capture_array)
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-            # Detect markers
+            gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT, parameters=parameters)
 
-            # Default no movement
-            vx = vy = vz = 0.0
+            # default
+            vel_east  = 0.0
+            vel_north = 0.0
+            x_cam = y_cam = z_cam = None
+
             if ids is not None:
                 ids = ids.flatten()
-                for idx, marker_id in enumerate(ids):
-                    if marker_id != drop_zone_id:
+                for idx, mid in enumerate(ids):
+                    if mid != drop_zone_id:
                         continue
-                    # Estimate pose of the detected marker
+
+                    # draw & pose-estimate
+                    cv2.aruco.drawDetectedMarkers(frame, [corners[idx]])
                     rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                         [corners[idx]], marker_size, camera_matrix, dist_coeffs
                     )
                     tvec = tvecs[0][0]
                     x_cam, y_cam, z_cam = tvec
 
-                    # Compute velocity setpoints in drone body frame:
-                    # Positive x_cam → marker to right → move right (vy positive)
-                    vy = np.clip(k_x * x_cam, -max_vel, max_vel)
-                    # Positive y_cam → marker above center → move up (vz negative is up)
-                    vz = np.clip(-k_y * y_cam, -max_vel, max_vel)
+                    # piecewise velocities
+                    vel_east  = compute_vel_east(x_cam)
+                    vel_north = compute_vel_north(y_cam)
                     break
 
-            # Send velocity command (forward/backward vx = 0, yaw rate = 0)
+            # overlay
+            font, fs, th = cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2
+            if x_cam is not None:
+                texts = [
+                    f"x={x_cam:.3f} m, y={y_cam:.3f} m, z={z_cam:.3f} m",
+                    f"vel_east={vel_east:.3f} m/s, vel_north={vel_north:.3f} m/s"
+                ]
+                for i, txt in enumerate(texts):
+                    cv2.putText(frame, txt, (10, 30 + i*30), font, fs,
+                                (0,255,0) if i==0 else (255,0,0), th)
+                print(f"Pose: x={x_cam:.3f}, y={y_cam:.3f}, z={z_cam:.3f} | "
+                      f"Setpoints → east: {vel_east:.3f}, north: {vel_north:.3f}")
+            else:
+                cv2.putText(frame, "No marker detected", (10,60), font, fs, (0,0,255), th)
+                print("No marker detected. Setpoints all zero.")
+
+            # send offboard (body-x = north, body-y = east, body-z = 0, yawspeed=0)
             await drone.offboard.set_velocity_body(
-                VelocityBodyYawspeed(0.0, vy, vz, 0.0)
+                VelocityBodyYawspeed(vel_north, vel_east, 0.0, 0.0)
             )
-            await asyncio.sleep(0.1)
+
+            cv2.imshow("Preview", frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+            await asyncio.sleep(0.05)
 
     except asyncio.CancelledError:
-        # Loop cancelled (e.g., on user interrupt)
         pass
     finally:
-        # Clean up: stop offboard, land, disarm
         print("-- Stopping offboard, landing")
         try:
             await drone.offboard.stop()
@@ -133,16 +156,11 @@ async def offboard_loop(drone):
         await drone.action.disarm()
 
 async def main():
-    """
-    Main entry: connect, arm, then run the offboard tracking loop until interrupted.
-    """
     drone = await connect_and_arm()
     task = asyncio.create_task(offboard_loop(drone))
-
     try:
         await task
     except KeyboardInterrupt:
-        # Cancel tracking loop on Ctrl-C
         task.cancel()
         await task
 

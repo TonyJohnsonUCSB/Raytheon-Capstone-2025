@@ -8,7 +8,7 @@ def compute_velocity(pos):
     if abs(pos) < 0.01:
         return 0
     elif abs(pos) < 0.3:
-        return np.sign(pos)  # +1 or -1
+        return -np.sign(pos)
     else:
         return -pos
 
@@ -33,14 +33,14 @@ max_vel = 1.0  # m/s
 picam2 = Picamera2()
 config = picam2.create_preview_configuration(
     raw={"size": (1640, 1232)},
-    main={"format": 'RGB888', "size": (1280, 960)}  # <-- larger main frame
+    main={"format": 'RGB888', "size": (1280, 960)}
 )
 picam2.configure(config)
 picam2.start()
 time.sleep(2)
 
-cv2.namedWindow("Preview", cv2.WINDOW_NORMAL)  # <-- allow resizing
-cv2.resizeWindow("Preview", 1280, 960)          # <-- set window size
+cv2.namedWindow("Preview", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("Preview", 1280, 960)
 print("Starting marker tracking. Press 'q' to exit.")
 
 try:
@@ -49,7 +49,7 @@ try:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT, parameters=parameters)
-        vx = vy = vz = 0.0
+        vel_east = vel_north = 0.0
 
         if ids is not None:
             ids = ids.flatten()
@@ -64,14 +64,24 @@ try:
                 )
                 xyadjust = np.array([-0.06204336, -0.02906156, 0])
                 tvec = np.array(tvecs[0][0])
-                #tvec -= xyadjust
                 x_cam, y_cam, z_cam = tvec
+                
+                if abs(x_cam) < 0.01:
+                    vel_east = 0
+                elif abs(x_cam) < 0.3:
+                    vel_east = -np.sign(x_cam)
+                else:
+                    vel_east = -x_cam
+                    
+                if abs(y_cam) < 0.01:
+                    vel_north = 0
+                elif abs(y_cam) < 0.3:
+                    vel_north = np.sign(y_cam)
+                else:
+                    vel_north = y_cam
 
-                vx = compute_velocity(x_cam)
-                vy = compute_velocity(y_cam)
                 break
 
-            # Display pose and velocities separately
             font = cv2.FONT_HERSHEY_SIMPLEX
             font_scale = 1.0
             thickness = 2
@@ -79,9 +89,8 @@ try:
             cv2.putText(frame, f"x = {x_cam:.4f} m", (10, 40), font, font_scale, (0, 255, 0), thickness)
             cv2.putText(frame, f"y = {y_cam:.4f} m", (10, 90), font, font_scale, (0, 255, 0), thickness)
             cv2.putText(frame, f"z = {z_cam:.4f} m", (10, 140), font, font_scale, (0, 255, 0), thickness)
-            cv2.putText(frame, f"vx = {vx:.4f} m/s", (10, 190), font, font_scale, (255, 0, 0), thickness)
-            cv2.putText(frame, f"vy = {vy:.4f} m/s", (10, 240), font, font_scale, (255, 0, 0), thickness)
-            cv2.putText(frame, f"vz = {vz:.4f} m/s", (10, 290), font, font_scale, (255, 0, 0), thickness)
+            cv2.putText(frame, f"vel_east = {vel_east:.4f} m/s", (10, 190), font, font_scale, (255, 0, 0), thickness)
+            cv2.putText(frame, f"vel_north = {vel_north:.4f} m/s", (10, 240), font, font_scale, (255, 0, 0), thickness)
 
         else:
             font = cv2.FONT_HERSHEY_SIMPLEX
@@ -89,15 +98,13 @@ try:
             thickness = 2
             cv2.putText(frame, "No marker detected", (10, 60), font, font_scale, (0, 0, 255), thickness)
 
-        # show preview
         cv2.imshow("Preview", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        # terminal log
         if ids is not None and drop_zone_id in ids:
             print(f"Pose: x={x_cam:.3f}, y={y_cam:.3f}, z={z_cam:.3f}\n"
-                  f"Setpoints → vx: {vx:.4f}, vy: {vy:.4f}, vz: {vz:.4f}")
+                  f"Setpoints → vel_east: {vel_east:.4f}, vel_north: {vel_north:.4f}")
         else:
             print("No marker detected. Setpoints all zero.")
 
