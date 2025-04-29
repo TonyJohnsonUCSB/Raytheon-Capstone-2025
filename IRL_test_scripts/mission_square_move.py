@@ -1,7 +1,7 @@
 import asyncio
 from mavsdk import System
 from mavsdk.offboard import OffboardError, PositionNedYaw
-from mavsdk.geofence import Point, Polygon, FenceType
+from mavsdk.geofence import Point, Polygon, FenceType, GeofenceData
 
 # List of (latitude, longitude) coordinates to form a square path
 coordinates = [
@@ -10,7 +10,6 @@ coordinates = [
     (34.4189722, -119.8551667),
     (34.4189167, -119.8551667)
 ]
-
 # Geofence polygon
 geofence_points = [
     Point(34.418606, -119.855929),
@@ -39,24 +38,25 @@ async def run():
 
     print("-- Uploading geofence")
     polygon = Polygon(geofence_points, FenceType.INCLUSION)
-    await drone.geofence.upload_geofence([polygon])
+    geofence_data = GeofenceData(polygons=[polygon], circles=[]) 
+    await drone.geofence.upload_geofence(geofence_data)
 
     print("-- Arming")
     await drone.action.arm()
 
     print("-- Taking off")
+    await drone.action.set_takeoff_altitude(3.0)  # Set altitude to 5 meters
     await drone.action.takeoff()
-    await asyncio.sleep(10)
+    await asyncio.sleep(15)
 
-    print("-- Flying to waypoints with pauses")
+    print("-- Flying to waypoints")
     for idx, (lat, lon) in enumerate(coordinates):
         print(f"-- Going to waypoint {idx + 1}: ({lat}, {lon})")
         await drone.action.goto_location(lat, lon, ALTITUDE, 0.0)
-        await asyncio.sleep(15) ### This can be changed depending on how long it takes the drone to get to each waypoint
+        await asyncio.sleep(15)
 
-    first_lat, first_lon = coordinates[0]
     print("-- Returning to first waypoint")
-    await drone.action.goto_location(first_lat, first_lon, ALTITUDE, 0.0)
+    await drone.action.goto_location(coordinates[0][0], coordinates[0][1], ALTITUDE, 0.0)
     await asyncio.sleep(15)
 
     print("-- Landing")
