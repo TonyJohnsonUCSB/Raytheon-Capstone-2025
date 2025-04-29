@@ -333,4 +333,8 @@ async def main():
         pca.deinit()
 
 # Call the main coroutine using await (preferred in Jupyter)
-await main()
+#await main()
+if __name__ == '__main__':
+    import asyncio
+    asyncio.run(main())
+    
