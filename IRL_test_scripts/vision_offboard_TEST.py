@@ -5,12 +5,12 @@ from picamera2 import Picamera2
 
 # Helper functions
 def compute_velocity(pos):
-    if 0.01 < pos < 1:
-        return 1
-    elif pos > 0.01:
-        return -pos
-    else:
+    if abs(pos) < 0.01:
         return 0
+    elif abs(pos) < 0.3:
+        return np.sign(pos)  # +1 or -1
+    else:
+        return -pos
 
 # --- ArUco & camera calibration setup ---
 ARUCO_DICT = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
@@ -33,13 +33,14 @@ max_vel = 1.0  # m/s
 picam2 = Picamera2()
 config = picam2.create_preview_configuration(
     raw={"size": (1640, 1232)},
-    main={"format": 'RGB888', "size": (640, 480)}
+    main={"format": 'RGB888', "size": (1280, 960)}  # <-- larger main frame
 )
 picam2.configure(config)
 picam2.start()
 time.sleep(2)
 
-cv2.namedWindow("Preview", cv2.WINDOW_AUTOSIZE)
+cv2.namedWindow("Preview", cv2.WINDOW_NORMAL)  # <-- allow resizing
+cv2.resizeWindow("Preview", 1280, 960)          # <-- set window size
 print("Starting marker tracking. Press 'q' to exit.")
 
 try:
@@ -56,29 +57,37 @@ try:
                 if marker_id != drop_zone_id:
                     continue
 
-                # draw detected marker
                 cv2.aruco.drawDetectedMarkers(frame, [corners[idx]])
 
-                # pose estimation
                 rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                     [corners[idx]], marker_size, camera_matrix, dist_coeffs
                 )
                 xyadjust = np.array([-0.06204336, -0.02906156, 0])
                 tvec = np.array(tvecs[0][0])
-                tvec -= xyadjust
+                #tvec -= xyadjust
                 x_cam, y_cam, z_cam = tvec
-                
+
                 vx = compute_velocity(x_cam)
                 vy = compute_velocity(y_cam)
                 break
 
-            # overlay pose and setpoints on frame
-            text = f"x={x_cam:.4f}m y={y_cam:.4f}m  →  vy={vy:.4f}, vz={vz:.4f}"
-            cv2.putText(frame, text, (10, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+            # Display pose and velocities separately
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            font_scale = 1.0
+            thickness = 2
+
+            cv2.putText(frame, f"x = {x_cam:.4f} m", (10, 40), font, font_scale, (0, 255, 0), thickness)
+            cv2.putText(frame, f"y = {y_cam:.4f} m", (10, 90), font, font_scale, (0, 255, 0), thickness)
+            cv2.putText(frame, f"z = {z_cam:.4f} m", (10, 140), font, font_scale, (0, 255, 0), thickness)
+            cv2.putText(frame, f"vx = {vx:.4f} m/s", (10, 190), font, font_scale, (255, 0, 0), thickness)
+            cv2.putText(frame, f"vy = {vy:.4f} m/s", (10, 240), font, font_scale, (255, 0, 0), thickness)
+            cv2.putText(frame, f"vz = {vz:.4f} m/s", (10, 290), font, font_scale, (255, 0, 0), thickness)
+
         else:
-            cv2.putText(frame, "No marker detected", (10, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            font_scale = 1.0
+            thickness = 2
+            cv2.putText(frame, "No marker detected", (10, 60), font, font_scale, (0, 0, 255), thickness)
 
         # show preview
         cv2.imshow("Preview", frame)
@@ -87,7 +96,7 @@ try:
 
         # terminal log
         if ids is not None and drop_zone_id in ids:
-            print(f"Pose: x={x_cam:.3f}, y={y_cam:.3f}, z={z_cam:.3f} m | "
+            print(f"Pose: x={x_cam:.3f}, y={y_cam:.3f}, z={z_cam:.3f}\n"
                   f"Setpoints → vx: {vx:.4f}, vy: {vy:.4f}, vz: {vz:.4f}")
         else:
             print("No marker detected. Setpoints all zero.")
