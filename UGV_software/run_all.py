@@ -37,19 +37,19 @@ lgpio.tx_pwm(h, ENA, freq, duty_cycle)
 speed = 100  # Motor speed in % duty cycle
 
 # Dump Truck: 
-def open_truckbed():
+async def open_truckbed():
     lgpio.gpio_write(h, IN1, 1)
     lgpio.gpio_write(h, IN2, 0)
     lgpio.tx_pwm(h, ENA, freq, speed)
 
 # Dump Truck: 
-def close_truckbed():
+async def close_truckbed():
     lgpio.gpio_write(h, IN1, 0)
     lgpio.gpio_write(h, IN2, 1)
     lgpio.tx_pwm(h, ENA, freq, speed)
 
 # Dump Truck: 
-def stop_motor():
+async def stop_motor():
     lgpio.gpio_write(h, IN1, 0)
     lgpio.gpio_write(h, IN2, 0)
     lgpio.tx_pwm(h, ENA, freq, 0)
@@ -356,15 +356,16 @@ async def main():
                 velocity_command = VelocityBodyYawspeed(forward_velocity, 0, 0.0, lateral_velocity)
                 await rover.offboard.set_velocity_body(velocity_command)
 
-                #opening truck bed in distance is less than 1m
-                if distance < 1: 
-                open_truckbed()
-                time.sleep(2)
-                motor_stop()
-                time.sleep(5)
-                close_truckbed()
-                time.sleep(2)
-                motor_stop()
+            # Delivering Package when vectorial distance from marker to camera is less than 1 m
+                if distance < 1:
+                    await open_truckbed()
+                    await asyncio.sleep(2)
+                    await stop_motor()
+                    await asyncio.sleep(5)
+                    await close_truckbed()
+                    await asyncio.sleep(2)
+                    await stop_motor()
+
 
             else: #If marker is not found stop car
                 initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
