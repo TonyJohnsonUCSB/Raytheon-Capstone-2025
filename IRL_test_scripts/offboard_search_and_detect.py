@@ -168,8 +168,7 @@ async def offboard_loop(drone):
     #     await asyncio.sleep(5)
     #     await drone.action.disarm()
 
-async def main():
-    drone = await connect_and_arm()
+async def waypoint_search():
     task = asyncio.create_task(offboard_loop(drone))
     # waypoint loop
     print("-- Starting waypoint loop")
@@ -190,6 +189,10 @@ async def main():
     print("-- Marker not found at any waypoint :( Landing")
     await drone.action.land()
     await asyncio.sleep(10)
+
+async def main():
+    drone = await connect_and_arm()
+    await waypoint_search
 
 if __name__ == "__main__":
     asyncio.run(main())
