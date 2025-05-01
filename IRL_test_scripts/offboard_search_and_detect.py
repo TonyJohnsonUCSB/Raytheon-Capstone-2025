@@ -5,6 +5,7 @@ import numpy as np
 from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityBodyYawspeed
+from mavsdk.geofence import Point, Polygon, FenceType, GeofenceData
 
 # --- params ---
 WAYPOINTS = [
@@ -16,6 +17,15 @@ WAYPOINTS = [
 ALTITUDE      = 3.0
 DROP_ZONE_ID  = 1
 MARKER_SIZE   = 0.06611
+
+# geofence polygon points
+GEOFENCE_POLYGON = [
+    Point(34.419215, -119.854763),
+    Point(34.418600, -119.854763),
+    Point(34.418602, -119.855852),
+    Point(34.419218, -119.855850),
+]
+
 ARUCO_DICT    = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
 CAM_MAT       = np.array([[933.15867, 0, 657.59],
@@ -59,6 +69,13 @@ async def connect_and_arm():
         if health.is_global_position_ok and health.is_home_position_ok:
             print("Global position OK and home position set")
             break
+
+    # upload geofence
+    print("-> Uploading geofence polygon...")
+    fence = Polygon(GEOFENCE_POLYGON, FenceType.INCLUSION)
+    geofence_data = GeofenceData([fence], [])
+    result = await drone.geofence.upload_geofence(geofence_data)
+    print("Geofence upload result:", result)
 
     print("-> Arming motors...")
     await drone.action.arm()
