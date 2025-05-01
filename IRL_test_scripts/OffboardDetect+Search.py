@@ -178,16 +178,16 @@ async def main():
         await drone.action.goto_location(lat, lon, ALTITUDE, 0.0)
         await asyncio.sleep(5)
         try:
-            await task
+            marker_found = await task
         except KeyboardInterrupt:
             task.cancel()
-            await task
+            marker_found = await task
         if marker_found:
             print("-- Marker found! Landing")
             await drone.action.land()
             await asyncio.sleep(10)
             return
-    print("-- Marker not found at any waypoint :( Landing)")
+    print("-- Marker not found at any waypoint :( Landing")
     await drone.action.land()
     await asyncio.sleep(10)
 
