@@ -35,7 +35,7 @@ def compute_vel_north(pos):
     else:
         return pos
 
-# Initialize PiCamera2 + window
+# Initialize PiCamera2 (no preview window)
 picam2 = Picamera2()
 config = picam2.create_preview_configuration(
     raw={"size": (1640, 1232)},
@@ -43,10 +43,8 @@ config = picam2.create_preview_configuration(
 )
 picam2.configure(config)
 picam2.start()
+# allow camera to warm up
 time.sleep(2)
-
-cv2.namedWindow("Preview", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Preview", 640, 480)
 
 async def connect_and_arm():
     drone = System()
@@ -67,7 +65,7 @@ async def connect_and_arm():
     print("-- Arming")
     await drone.action.arm()
     print("-- Taking off")
-    await drone.action.set_takeoff_altitude(3.0)  # Set altitude to 5 meters
+    await drone.action.set_takeoff_altitude(3.0)  # Set altitude to 3 meters
     await drone.action.takeoff()
     await asyncio.sleep(6)
     return drone
@@ -84,13 +82,13 @@ async def offboard_loop(drone):
     print("-- Entering tracking loop --")
     try:
         while True:
-            # capture & detect in a thread
+            # capture frame on separate thread
             frame = await asyncio.to_thread(picam2.capture_array)
             gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT, parameters=parameters)
 
-            # default
-            vel_east  = 0.0
+            # default setpoints
+            vel_east = 0.0
             vel_north = 0.0
             x_cam = y_cam = z_cam = None
 
@@ -100,44 +98,31 @@ async def offboard_loop(drone):
                     if mid != drop_zone_id:
                         continue
 
-                    # draw & pose-estimate
-                    cv2.aruco.drawDetectedMarkers(frame, [corners[idx]])
+                    # pose estimation
                     rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                         [corners[idx]], marker_size, camera_matrix, dist_coeffs
                     )
                     tvec = tvecs[0][0]
                     x_cam, y_cam, z_cam = tvec
 
-                    # piecewise velocities
-                    vel_east  = compute_vel_east(x_cam)
+                    # compute velocities
+                    vel_east = compute_vel_east(x_cam)
                     vel_north = compute_vel_north(y_cam)
                     break
 
-            # overlay
-            font, fs, th = cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2
+            # logging
             if x_cam is not None:
-                texts = [
-                    f"x={x_cam:.3f} m, y={y_cam:.3f} m, z={z_cam:.3f} m",
-                    f"vel_east={vel_east:.3f} m/s, vel_north={vel_north:.3f} m/s"
-                ]
-                for i, txt in enumerate(texts):
-                    cv2.putText(frame, txt, (10, 30 + i*30), font, fs,
-                                (0,255,0) if i==0 else (255,0,0), th)
                 print(f"Pose: x={x_cam:.3f}, y={y_cam:.3f}, z={z_cam:.3f} | "
                       f"Setpoints → east: {vel_east:.3f}, north: {vel_north:.3f}")
             else:
-                cv2.putText(frame, "No marker detected", (10,60), font, fs, (0,0,255), th)
                 print("No marker detected. Setpoints all zero.")
 
-            # send offboard (body-x = north, body-y = east, body-z = 0, yawspeed=0)
+            # send offboard commands (body-x = north, body-y = east)
             await drone.offboard.set_velocity_body(
                 VelocityBodyYawspeed(vel_north, vel_east, 0.0, 0.0)
             )
 
-            cv2.imshow("Preview", frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
+            # brief delay
             await asyncio.sleep(0.05)
 
     except asyncio.CancelledError:
