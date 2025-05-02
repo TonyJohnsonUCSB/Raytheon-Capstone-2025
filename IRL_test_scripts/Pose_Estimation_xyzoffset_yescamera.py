@@ -24,6 +24,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
                 if marker_corners is None or len(marker_corners) == 0:
                     continue
 
+                # Estimate pose
                 rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                     [marker_corners], marker_size, matrix_coefficients, distortion_coefficients
                 )
@@ -31,12 +32,21 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
                 if tvecs is not None and len(tvecs) > 0:
                     tvec = tvecs[0][0]
                     x, y, z = tvec
-                    print(f"-- [Marker ID: {int(marker_id)}] X: {x:.3f} m | Y: {y:.3f} m | Z: {z:.3f} m")
+
+                    # Calculate center of marker in image
+                    corners_arr = marker_corners.reshape((4, 2))
+                    cX = int(corners_arr[:, 0].mean())
+                    cY = int(corners_arr[:, 1].mean())
+
+                    # Overlay pose information
+                    text = f"ID:{int(marker_id)} X:{x:.2f}m Y:{y:.2f}m Z:{z:.2f}m"
+                    cv2.putText(frame, text, (cX - 60, cY - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
                     if marker_id == drop_zoneID:
                         distance = np.linalg.norm(tvec)
                         angle_x = np.degrees(np.arctan2(x, z))
-                        print(f"--   ↳ Drop-Zone → Distance: {distance:.2f} m | Angle X: {angle_x:.2f}°")
+                        dz_text = f"DZ Dist:{distance:.2f}m Ang:{angle_x:.2f}\u00b0"
+                        cv2.putText(frame, dz_text, (cX - 60, cY + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
     except Exception:
         print("-- Unexpected error in pose_estimation:")
@@ -65,11 +75,22 @@ picam2.start()
 time.sleep(2)
 print("-- Camera started")
 
+# Setup video writer
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+fps = 20.0
+frame_size = (640, 480) 
+out = cv2.VideoWriter('aruco_vision.mp4', fourcc, fps, frame_size)
+
 try:
     while True:
         img = picam2.capture_array()
         pose_estimation(img, ARUCO_DICT[aruco_type], intrinsic_camera, distortion, drop_zoneID, marker_size)
+
+        # Display
         cv2.imshow("Live Feed", img)
+        # Write frame to file
+        out.write(img)
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 except KeyboardInterrupt:
@@ -78,4 +99,5 @@ finally:
     print("-- Cleaning up...")
     picam2.stop()
     picam2.close()
+    out.release()
     cv2.destroyAllWindows()
