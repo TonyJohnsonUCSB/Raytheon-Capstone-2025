@@ -6,9 +6,17 @@ from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityBodyYawspeed
 
+# --- Vibration Mitigation Parameters ---
+ALPHA = 0.5                       # pose smoothing factor
+prev_tvecs = {}                  # store previous tvecs per marker
+prev_gray = None                 # for frame-to-frame stabilization
+
 # --- ArUco & camera calibration setup ---
 ARUCO_DICT = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
 parameters = cv2.aruco.DetectorParameters_create()
+# Detector tweaks for robustness
+parameters.adaptiveThreshConstant = 7
+parameters.minMarkerPerimeterRate = 0.03
 
 camera_matrix = np.array([[933.15867, 0, 657.59],
                           [0, 933.1586, 400.36993],
@@ -35,6 +43,15 @@ def compute_vel_north(pos):
     else:
         return pos
 
+def smooth_tvec(marker_id, new_tvec):
+    global prev_tvecs
+    if marker_id in prev_tvecs:
+        tvec = ALPHA * new_tvec + (1 - ALPHA) * prev_tvecs[marker_id]
+    else:
+        tvec = new_tvec
+    prev_tvecs[marker_id] = tvec
+    return tvec
+
 # Initialize PiCamera2 + window
 picam2 = Picamera2()
 config = picam2.create_preview_configuration(
@@ -42,15 +59,20 @@ config = picam2.create_preview_configuration(
     main={"format": 'RGB888', "size": (640, 480)}
 )
 picam2.configure(config)
+# manual exposure controls for less motion blur
+time.sleep(0.1)
 picam2.start()
+picam2.set_controls({
+    "ExposureTime": 20000,    # 20ms shutter
+    "AnalogueGain": 4.0       # boost ISO
+})
 time.sleep(2)
 
-# --- set up video writer
+# Video writer
 frame_width, frame_height = 640, 480
 fps = 20.0
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 video_writer = cv2.VideoWriter('output2.avi', fourcc, fps, (frame_width, frame_height))
-# --------------------------------
 
 cv2.namedWindow("Preview", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("Preview", frame_width, frame_height)
@@ -88,52 +110,70 @@ async def offboard_loop(drone):
         return
 
     print("-- Entering tracking loop --")
+    global prev_gray
     try:
         while True:
             frame = await asyncio.to_thread(picam2.capture_array)
-            gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT, parameters=parameters)
+            # Frame stabilization
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            if prev_gray is None:
+                stabilized = frame.copy()
+            else:
+                prev_pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=200,
+                                                   qualityLevel=0.01, minDistance=30)
+                M = None
+                if prev_pts is not None:
+                    curr_pts, status, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, prev_pts, None)
+                    idx = status.reshape(-1) == 1
+                    if np.count_nonzero(idx) >= 6:
+                        src = prev_pts[idx]
+                        dst = curr_pts[idx]
+                        M, _ = cv2.estimateAffinePartial2D(src, dst)
+                if M is not None:
+                    h, w = frame.shape[:2]
+                    stabilized = cv2.warpAffine(frame, M, (w, h))
+                else:
+                    stabilized = frame.copy()
+            prev_gray = gray
+
+            # ArUco detection on stabilized frame
+            gray_stab = cv2.cvtColor(stabilized, cv2.COLOR_BGR2GRAY)
+            corners, ids, _ = cv2.aruco.detectMarkers(gray_stab, ARUCO_DICT, parameters=parameters)
 
             vel_east = vel_north = 0.0
             x_cam = y_cam = z_cam = None
 
             if ids is not None:
-                ids = ids.flatten()
-                for idx, mid in enumerate(ids):
-                    if mid != drop_zone_id:
+                for idx, mid in enumerate(ids.flatten()):
+                    if int(mid) != drop_zone_id:
                         continue
-                    cv2.aruco.drawDetectedMarkers(frame, [corners[idx]])
+                    cv2.aruco.drawDetectedMarkers(stabilized, [corners[idx]])
                     rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
-                        [corners[idx]], marker_size, camera_matrix, dist_coeffs
-                    )
-                    x_cam, y_cam, z_cam = tvecs[0][0]
-                    vel_east  = compute_vel_east(x_cam)
+                        [corners[idx]], marker_size, camera_matrix, dist_coeffs)
+                    new_tvec = tvecs[0][0]
+                    x_cam, y_cam, z_cam = smooth_tvec(int(mid), new_tvec)
+                    vel_east = compute_vel_east(x_cam)
                     vel_north = compute_vel_north(y_cam)
                     break
 
+            # Overlay text
             font, fs, th = cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2
             if x_cam is not None:
-                texts = [
-                    f"x={x_cam:.3f} m, y={y_cam:.3f} m, z={z_cam:.3f} m",
-                    f"vel_east={vel_east:.3f} m/s, vel_north={vel_north:.3f} m/s"
-                ]
-                for i, txt in enumerate(texts):
-                    cv2.putText(frame, txt, (10, 30 + i*30), font, fs,
-                                (0,255,0) if i==0 else (255,0,0), th)
-                print(f"Pose: x={x_cam:.3f}, y={y_cam:.3f}, z={z_cam:.3f} | "
-                      f"Setpoints → east: {vel_east:.3f}, north: {vel_north:.3f}")
+                cv2.putText(stabilized, f"x={x_cam:.3f}m y={y_cam:.3f}m z={z_cam:.3f}m",
+                            (10, 30), font, fs, (0,255,0), th)
+                cv2.putText(stabilized, f"vx={vel_east:.3f}m/s vy={vel_north:.3f}m/s",
+                            (10, 60), font, fs, (255,0,0), th)
             else:
-                cv2.putText(frame, "No marker detected", (10,60), font, fs, (0,0,255), th)
-                print("No marker detected. Setpoints all zero.")
+                cv2.putText(stabilized, "No marker detected",
+                            (10, 60), font, fs, (0,0,255), th)
 
-            # record this frame
-            video_writer.write(frame)
-
+            # Record & command
+            video_writer.write(stabilized)
             await drone.offboard.set_velocity_body(
                 VelocityBodyYawspeed(vel_north, vel_east, 0.0, 0.0)
             )
 
-            cv2.imshow("Preview", frame)
+            cv2.imshow("Preview", stabilized)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
@@ -150,7 +190,6 @@ async def offboard_loop(drone):
         await drone.action.land()
         await asyncio.sleep(5)
         await drone.action.disarm()
-        # release the video writer
         video_writer.release()
         cv2.destroyAllWindows()
 
