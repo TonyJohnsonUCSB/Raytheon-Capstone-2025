@@ -365,7 +365,7 @@ async def main():
 
             # Delivering Package when vectorial distance from marker to camera is less than 1 m
                 if distance < 1.1:
-                    await dump_package()
+                    asyncio.dump_package()
 
             else: #If marker is not found stop car
                 initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
