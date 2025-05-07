@@ -48,11 +48,6 @@ camera_config = picam2.create_preview_configuration(
     main={"format": 'RGB888', "size": (640, 480)}
 )
 picam2.configure(camera_config)
-# manual controls: lower exposure time, increase gain
-picam2.set_controls({
-    "ExposureTime": 20000,    # 20ms shutter
-    "AnalogueGain": 4.0       # boost ISO
-})
 
 print("-- Camera starting...")
 picam2.start()

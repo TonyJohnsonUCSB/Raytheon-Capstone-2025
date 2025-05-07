@@ -67,10 +67,7 @@ camera_config = picam2.create_preview_configuration(
     main={"format": 'RGB888', "size": (640, 480)}
 )
 picam2.configure(camera_config)
-picam2.set_controls({
-    "ExposureTime": 20000,
-    "AnalogueGain": 4.0
-})
+
 
 print("-- Camera starting...")
 picam2.start()
@@ -81,7 +78,7 @@ print("-- Camera started")
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 fps = 20.0
 frame_size = (640, 480)
-out = cv2.VideoWriter('Barebones5HotBarn.mp4', fourcc, fps, frame_size)
+out = cv2.VideoWriter('/home/rtxcapstone/Desktop/testVideo.mp4', fourcc, fps, frame_size)
 
 try:
     while True:
