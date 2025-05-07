@@ -83,7 +83,8 @@ picam2.configure(camera_config)
 # manual controls: lower exposure time, increase gain
 picam2.set_controls({
     "ExposureTime": 20000,    # 20ms shutter
-    "AnalogueGain": 4.0       # boost ISO
+    "AnalogueGain": 4.0,       # boost ISO
+    "FrameRate": 60.0   #FPS
 })
 
 print("-- Camera starting...")
@@ -96,7 +97,7 @@ print("-- Camera started")
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 fps = 20.0
 frame_size = (640, 480)
-out = cv2.VideoWriter('aruco_vision.mp4', fourcc, fps, frame_size)
+out = cv2.VideoWriter('/home/rtxcapstone/testvid.mp4', fourcc, fps, frame_size)
 
 try:
     while True:

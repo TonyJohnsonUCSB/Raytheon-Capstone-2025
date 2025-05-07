@@ -77,20 +77,30 @@ picam2.start()
 time.sleep(2)
 print("-- Camera started")
 
+# Video writer
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+fps = 20.0
+frame_size = (640, 480)
+out = cv2.VideoWriter('Barebones5HotBarn.mp4', fourcc, fps, frame_size)
+
 try:
     while True:
         img = picam2.capture_array()
 
         pose_estimation(img, ARUCO_DICT[aruco_type], intrinsic_camera, distortion, drop_zoneID, marker_size)
 
+        out.write(img)  # Save frame to file
         cv2.imshow("Aruco Feed", img)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
 except KeyboardInterrupt:
     print("-- Interrupted by user.")
 finally:
     print("-- Cleaning up...")
     picam2.stop()
     picam2.close()
+    out.release()  # Release the video file properly
     cv2.destroyAllWindows()
+

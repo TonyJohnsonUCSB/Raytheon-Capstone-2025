@@ -41,6 +41,27 @@ dist_coeffs = np.array([-0.43948, 0.18514, 0, 0])
 marker_size = 0.06611  # meters
 drop_zone_id = 1      # ArUco ID to track
 
+picam2 = Picamera2()
+# configure with manual exposure for faster shutter
+camera_config = picam2.create_preview_configuration(
+    raw={"size": (1640, 1232)},
+    main={"format": 'RGB888', "size": (640, 480)}
+)
+picam2.configure(camera_config)
+# manual controls: lower exposure time, increase gain
+picam2.set_controls({
+    "ExposureTime": 20000,    # 20ms shutter
+    "AnalogueGain": 4.0       # boost ISO
+})
+
+print("-- Camera starting...")
+picam2.start()
+# allow sensor to adjust
+time.sleep(2)
+print("-- Camera started")
+
+
+
 # --- PID controller functions ---
 def pid_east(error_x: float, dt: float) -> float:
     """
@@ -93,7 +114,7 @@ async def connect_and_arm() -> System:
     print("-- Arming")
     await drone.action.arm()
     print("-- Taking off to 6m")
-    await drone.action.set_takeoff_altitude(6)
+    #await drone.action.set_takeoff_altitude(6)
     await drone.action.takeoff()
     await asyncio.sleep(6)
     return drone
@@ -184,7 +205,6 @@ async def offboard_loop(drone: System):
                             (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
             # Record and display
-            video_writer.write(stabilized)
             cv2.imshow("Preview", stabilized)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -202,7 +222,6 @@ async def offboard_loop(drone: System):
         await drone.action.land()
         await asyncio.sleep(5)
         await drone.action.disarm()
-        video_writer.release()
         cv2.destroyAllWindows()
 
 # --- Entry point ---
@@ -213,6 +232,11 @@ async def main():
         await task
     except KeyboardInterrupt:
         task.cancel()
+        print("-- Cleaning up...")
+        picam2.stop()
+        picam2.close()
+        out.release()
+        cv2.destroyAllWindows()
         await task
 
 if __name__ == "__main__":
