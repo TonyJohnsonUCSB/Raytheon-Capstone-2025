@@ -109,7 +109,7 @@ async def connect_and_arm() -> System:
     print("-- Arming")
     await drone.action.arm()
     print("-- Taking off to 6m")
-    #await drone.action.set_takeoff_altitude(6)
+    await drone.action.set_takeoff_altitude(6)
     await drone.action.takeoff()
     await asyncio.sleep(6)
     return drone
