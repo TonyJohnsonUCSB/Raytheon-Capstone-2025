@@ -64,10 +64,15 @@ marker_size = 0.06611  # meters
 
 print("-- Initializing camera...")
 picam2 = Picamera2()
-picam2.configure(picam2.create_preview_configuration(
-    raw={"size": (1640, 1232)},
-    main={"format": 'RGB888', "size": (640, 480)}
-))
+camera_config = picam2.create_preview_configuration(
+    main={"format":"RGB888", "size":(640,480)}  # or (1280, 720) if you prefer
+)
+picam2.configure(camera_config)
+# choose your target frame‑rate
+fps = 100
+frame_duration = int(1_000_000 / fps)  # microseconds per frame
+
+picam2.set_controls({"FrameDurationLimits": (frame_duration, frame_duration)})
 picam2.start()
 time.sleep(2)
 print("-- Camera started")

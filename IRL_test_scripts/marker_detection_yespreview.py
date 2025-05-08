@@ -1,61 +1,67 @@
+import os
+# Suppress libpng incorrect sRGB profile warnings
+os.environ['OPENCV_IO_ENABLE_PNG_WARNINGS'] = '0'
+
 import numpy as np
 import cv2
 import time
 import traceback
 from picamera2 import Picamera2
 
+# Top-level video file name
+VIDEO_NAME = '/home/rtxcapstone/Desktop/testVideo.avi'
+
 # --- Vibration Mitigation Parameters ---
-ALPHA = 0.5                       # pose smoothing factor (0 < ALPHA <= 1)
-prev_tvecs = {}                  # store previous tvecs per marker
-prev_gray = None                 # for frame-to-frame stabilization
+ALPHA = 0.5                    # pose smoothing factor (0 < ALPHA <= 1)
+prev_tvecs = {}                # store previous tvecs per marker
+prev_gray = None               # for frame-to-frame stabilization
+
+# --- Recording Settings ---
+CAPTURE_FPS = 30               # camera capture rate (Hz)
 
 # --- Pose Estimation with Smoothing ---
-def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coefficients, drop_zoneID, marker_size):
+def pose_estimation(frame, aruco_dict_type, matrix_coeffs, dist_coeffs, drop_zoneID, marker_size):
+    global prev_tvecs
     try:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         dictionary = cv2.aruco.getPredefinedDictionary(aruco_dict_type)
-        parameters = cv2.aruco.DetectorParameters_create()
-        # Tweak detector parameters for robustness
-        parameters.adaptiveThreshConstant = 7
-        parameters.minMarkerPerimeterRate = 0.03
+        params = cv2.aruco.DetectorParameters_create()
+        params.adaptiveThreshConstant = 7
+        params.minMarkerPerimeterRate = 0.03
 
-        corners, ids, _ = cv2.aruco.detectMarkers(gray, dictionary, parameters=parameters)
+        corners, ids, _ = cv2.aruco.detectMarkers(gray, dictionary, parameters=params)
         if ids is None:
             return
 
-        ids = ids.flatten()
-        for idx, marker_id in enumerate(ids):
-            marker_corners = corners[idx]
-            if marker_corners is None or len(marker_corners) == 0:
+        for idx, marker_id in enumerate(ids.flatten()):
+            c = corners[idx]
+            if c is None or len(c) == 0:
                 continue
 
-            # Estimate pose
             rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
-                [marker_corners], marker_size, matrix_coefficients, distortion_coefficients
+                [c], marker_size, matrix_coeffs, dist_coeffs
             )
             if tvecs is None or len(tvecs) == 0:
                 continue
 
             tvec = tvecs[0][0]
-            # Smooth translation vectors
             if marker_id in prev_tvecs:
                 tvec = ALPHA * tvec + (1 - ALPHA) * prev_tvecs[marker_id]
             prev_tvecs[marker_id] = tvec
 
             x, y, z = tvec
-            # Overlay pose text at marker center
-            corners_arr = marker_corners.reshape((4, 2))
-            cX = int(corners_arr[:, 0].mean())
-            cY = int(corners_arr[:, 1].mean())
+            pts = c.reshape((4,2))
+            cX = int(pts[:,0].mean())
+            cY = int(pts[:,1].mean())
 
-            pose_text = f"ID:{int(marker_id)} X:{x:.2f}m Y:{y:.2f}m Z:{z:.2f}m"
-            cv2.putText(frame, pose_text, (cX - 80, cY - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            text1 = f"ID:{marker_id} X:{x:.2f}m Y:{y:.2f}m Z:{z:.2f}m"
+            cv2.putText(frame, text1, (cX-80, cY-20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
 
             if marker_id == drop_zoneID:
-                distance = np.linalg.norm(tvec)
-                angle_x = np.degrees(np.arctan2(x, z))
-                dz_text = f"DZ:{distance:.2f}m Ang:{angle_x:.1f}\u00b0"
-                cv2.putText(frame, dz_text, (cX - 80, cY + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                dist = np.linalg.norm(tvec)
+                ang = np.degrees(np.arctan2(x, z))
+                dz_t = f"DZ:{dist:.2f}m Ang:{ang:.1f}\u00b0"
+                cv2.putText(frame, dz_t, (cX-80, cY+20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
     except Exception:
         print("-- Error in pose_estimation:")
         traceback.print_exc()
@@ -63,80 +69,73 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
 # --- Camera & Recorder Setup ---
 ARUCO_DICT = {
     "DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL,
-    "DICT_6X6_250": cv2.aruco.DICT_6X6_250
+    "DICT_6X6_250":      cv2.aruco.DICT_6X6_250
 }
 aruco_type = "DICT_6X6_250"
-
-intrinsic_camera = np.array([[933.15867, 0, 657.59], [0, 933.1586, 400.36993], [0, 0, 1]])
+intrinsic = np.array([[933.15867, 0, 657.59],
+                     [0, 933.1586, 400.36993],
+                     [0, 0, 1]])
 distortion = np.array([-0.43948, 0.18514, 0, 0])
-
 drop_zoneID = 1
 marker_size = 0.06611  # meters
 
 picam2 = Picamera2()
-# configure with manual exposure for faster shutter
-camera_config = picam2.create_preview_configuration(
-    raw={"size": (1640, 1232)},
-    main={"format": 'RGB888', "size": (640, 480)}
+config = picam2.create_preview_configuration(
+    main={"format":"RGB888","size":(640,480)}
 )
-picam2.configure(camera_config)
-# manual controls: lower exposure time, increase gain
-picam2.set_controls({
-    "FrameRate": 60.0   #FPS
-})
+picam2.configure(config)
+
+# lock capture rate to CAPTURE_FPS
+dur = int(1e6 / CAPTURE_FPS)
+picam2.set_controls({"FrameDurationLimits":(dur, dur)})
+
+# Setup recording at CAPTURE_FPS with MJPG codec
+FRAME_SIZE = (640, 480)
+fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+writer = cv2.VideoWriter(VIDEO_NAME, fourcc, CAPTURE_FPS, FRAME_SIZE)
+if not writer.isOpened():
+    raise RuntimeError(f"Failed to open VideoWriter with codec MJPG at {CAPTURE_FPS} Hz")
 
 print("-- Camera starting...")
 picam2.start()
-# allow sensor to adjust
 time.sleep(2)
 print("-- Camera started")
 
-# Video writer
-fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-fps = 20.0
-frame_size = (640, 480)
-out = cv2.VideoWriter('/home/rtxcapstone/Desktop/testVideo.mp4', fourcc, fps, frame_size)
-
 try:
     while True:
-        img = picam2.capture_array()
-        h, w = img.shape[:2]
+        frame = picam2.capture_array()
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # frame stabilization
         if prev_gray is None:
-            stabilized = img.copy()
+            stab = frame.copy()
         else:
-            # feature-based stabilization
-            prev_pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=200, qualityLevel=0.01, minDistance=30)
+            pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=200,
+                                           qualityLevel=0.01, minDistance=30)
             M = None
-            if prev_pts is not None:
-                curr_pts, status, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, prev_pts, None)
-                # select good matches
-                idx = status.reshape(-1) == 1
-                if np.count_nonzero(idx) >= 6:
-                    src = prev_pts[idx]
-                    dst = curr_pts[idx]
+            if pts is not None:
+                curr, status, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, pts, None)
+                good = status.reshape(-1) == 1
+                if np.count_nonzero(good) >= 6:
+                    src = pts[good]
+                    dst = curr[good]
                     M, _ = cv2.estimateAffinePartial2D(src, dst)
-            if M is not None:
-                stabilized = cv2.warpAffine(img, M, (w, h))
-            else:
-                stabilized = img.copy()
+            stab = cv2.warpAffine(frame, M, FRAME_SIZE) if M is not None else frame.copy()
 
         prev_gray = gray
+        pose_estimation(stab, ARUCO_DICT[aruco_type], intrinsic, distortion, drop_zoneID, marker_size)
+        cv2.imshow("Stabilized Feed", stab)
 
-        # detect & overlay on stabilized frame
-        pose_estimation(stabilized, ARUCO_DICT[aruco_type], intrinsic_camera, distortion, drop_zoneID, marker_size)
-
-        cv2.imshow("Stabilized Feed", stabilized)
-        out.write(stabilized)
+        writer.write(stab)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
 except KeyboardInterrupt:
     print("-- Interrupted by user.")
 finally:
     print("-- Cleaning up...")
     picam2.stop()
     picam2.close()
-    out.release()
+    writer.release()
     cv2.destroyAllWindows()
