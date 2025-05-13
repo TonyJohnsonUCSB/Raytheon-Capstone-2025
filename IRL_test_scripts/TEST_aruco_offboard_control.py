@@ -8,7 +8,7 @@ from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, PositionNedYaw
 
-# -- Calibration (hard-coded) --
+# -- Calibration (hard‑coded) --
 INTRINSIC = np.array([
     [653.1070007239106,   0.0,               339.2952147845755],
     [0.0,                 650.7753992788821, 258.1165494889447],
@@ -41,10 +41,13 @@ picam2.configure(config)
 picam2.start()
 time.sleep(2)
 
+# set up video writer to record preview
 fourcc = cv2.VideoWriter_fourcc(*"XVID")
 out    = cv2.VideoWriter(
     "/home/rtxcapstone/Desktop/testVideo.avi",
-    fourcc, 20.0, (640, 480)
+    fourcc,
+    20.0,
+    (640, 480)
 )
 
 async def connect_and_arm():
@@ -64,7 +67,6 @@ async def connect_and_arm():
 
 async def offboard_position_loop(drone: System):
     await drone.telemetry.set_rate_position_velocity_ned(10)
-    # seed first NED setpoint
     async for odom in drone.telemetry.position_velocity_ned():
         init_north = odom.position.north_m
         init_east  = odom.position.east_m
@@ -114,14 +116,12 @@ async def offboard_position_loop(drone: System):
                 )
                 x_cam, y_cam, z_cam = tvecs[0][0]
 
-                # fetch current NED
                 async for odom in drone.telemetry.position_velocity_ned():
                     curr_north = odom.position.north_m
                     curr_east  = odom.position.east_m
                     curr_down  = odom.position.down_m
                     break
 
-                # +X to east, +Y to north, +Z to down
                 target_north = curr_north + y_cam
                 target_east  = curr_east  + x_cam
                 target_down  = curr_down  + z_cam
