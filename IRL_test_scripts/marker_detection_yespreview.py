@@ -10,19 +10,20 @@ from picamera2 import Picamera2
 
 # Top-level video file name
 VIDEO_NAME = '/home/rtxcapstone/Desktop/testVideo.avi'
-RESOLUTION = (640,480)
-#RESOLUTION = (2304, 1296)
+RESOLUTION = (640, 480)
+
+# Conversion factor
+METERS_TO_CM = 100
+
 # --- Vibration Mitigation Parameters ---
 ALPHA = 0.5                    # pose smoothing factor (0 < ALPHA <= 1)
 prev_tvecs = {}                # store previous tvecs per marker
 prev_gray = None               # for frame-to-frame stabilization
 
-# --- Recording Settings ---
-REQUESTED_FPS = 35            # desired camera capture rate (Hz)
-FRAME_INTERVAL = None          # will be set after calibration
-
-# --- Pose Estimation with Smoothing ---
 def pose_estimation(frame, aruco_dict_type, matrix_coeffs, dist_coeffs, drop_zoneID, marker_size):
+    """
+    Detects the drop zone marker and overlays x, y, z offsets in centimeters.
+    """
     global prev_tvecs
     try:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -36,34 +37,32 @@ def pose_estimation(frame, aruco_dict_type, matrix_coeffs, dist_coeffs, drop_zon
             return
 
         for idx, marker_id in enumerate(ids.flatten()):
-            c = corners[idx]
-            if c is None or len(c) == 0:
+            if marker_id != drop_zoneID:
                 continue
 
+            c = corners[idx]
             rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                 [c], marker_size, matrix_coeffs, dist_coeffs
             )
             if tvecs is None or len(tvecs) == 0:
                 continue
 
+            # Smooth translation vector
             tvec = tvecs[0][0]
             if marker_id in prev_tvecs:
                 tvec = ALPHA * tvec + (1 - ALPHA) * prev_tvecs[marker_id]
             prev_tvecs[marker_id] = tvec
 
+            # Compute offsets and convert to centimeters
             x, y, z = tvec
-            pts = c.reshape((4,2))
-            cX = int(pts[:,0].mean())
-            cY = int(pts[:,1].mean())
+            x_cm, y_cm, z_cm = x * METERS_TO_CM, y * METERS_TO_CM, z * METERS_TO_CM
 
-            text1 = f"ID:{marker_id} X:{x:.2f}m Y:{y:.2f}m Z:{z:.2f}m"
-            cv2.putText(frame, text1, (cX-80, cY-20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
-
-            if marker_id == drop_zoneID:
-                dist = np.linalg.norm(tvec)
-                ang = np.degrees(np.arctan2(x, z))
-                dz_t = f"DZ:{dist:.2f}m Ang:{ang:.1f}\u00b0"
-                cv2.putText(frame, dz_t, (cX-80, cY+20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
+            # Overlay text at marker center
+            pts = c.reshape((4, 2))
+            cX = int(pts[:, 0].mean())
+            cY = int(pts[:, 1].mean())
+            text = f"X:{x_cm:.1f}cm Y:{y_cm:.1f}cm Z:{z_cm:.1f}cm"
+            cv2.putText(frame, text, (cX - 100, cY), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
     except Exception:
         print("-- Error in pose_estimation:")
         traceback.print_exc()
@@ -84,7 +83,7 @@ marker_size = 0.06611  # meters
 # Initialize camera
 picam2 = Picamera2()
 config = picam2.create_preview_configuration(
-    main={"format":"RGB888","size":RESOLUTION}
+    main={"format": "RGB888", "size": RESOLUTION}
 )
 picam2.configure(config)
 
@@ -93,44 +92,17 @@ picam2.start()
 print("-- Camera started, warming up...")
 time.sleep(2)
 
-# --- Calibration: measure achievable FPS ---
-warmup_frames = 15
-timestamps = []
-print(f"-- Calibrating over {warmup_frames} frames...")
-for _ in range(warmup_frames):
-    timestamps.append(time.time())
-    _ = picam2.capture_array()
-timestamps.append(time.time())
-intervals = [t2 - t1 for t1, t2 in zip(timestamps, timestamps[1:])]
-avg_dt = sum(intervals) / len(intervals)
-max_fps = 1.0 / avg_dt if avg_dt > 0 else REQUESTED_FPS
-effective_fps = min(REQUESTED_FPS, max_fps)
-if effective_fps < REQUESTED_FPS:
-    print(f"-- Warning: max achievable fps ~{max_fps:.1f}, using {effective_fps:.1f} fps instead of requested {REQUESTED_FPS} fps")
-else:
-    print(f"-- Using requested fps: {REQUESTED_FPS} fps")
-
-# Set capture parameters based on calibration
-CAPTURE_FPS = effective_fps
-FRAME_INTERVAL = 1.0 / CAPTURE_FPS
-# Lock sensor frame duration
-dur = int(1e6 / CAPTURE_FPS)
-picam2.set_controls({"FrameDurationLimits":(dur, dur)})
-
-# Setup recording at calibrated FPS
-FRAME_SIZE = (640,480)
+# Setup recording
+FRAME_SIZE = RESOLUTION
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-writer = cv2.VideoWriter(VIDEO_NAME, fourcc, CAPTURE_FPS, FRAME_SIZE)
+default_fps = 30.0
+writer = cv2.VideoWriter(VIDEO_NAME, fourcc, default_fps, FRAME_SIZE)
 if not writer.isOpened():
-    raise RuntimeError(f"Failed to open VideoWriter at {CAPTURE_FPS:.2f} Hz")
-
-print(f"-- Recording at {CAPTURE_FPS:.2f} fps")
+    raise RuntimeError(f"Failed to open VideoWriter at {default_fps:.2f} FPS")
+print(f"-- Recording at default {default_fps:.2f} FPS")
 
 try:
     while True:
-        loop_start = time.time()
-
-        # Capture and stabilize
         frame = picam2.capture_array()
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if prev_gray is None:
@@ -149,20 +121,14 @@ try:
             stab = cv2.warpAffine(frame, M, FRAME_SIZE) if M is not None else frame.copy()
         prev_gray = gray
 
-        # Pose estimation
+        # Pose estimation (X, Y, Z offsets in cm)
         pose_estimation(stab, ARUCO_DICT[aruco_type], intrinsic, distortion, drop_zoneID, marker_size)
 
-        # Display & write
         cv2.imshow("Stabilized Feed", stab)
         writer.write(stab)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-
-        # Throttle loop to calibrated FPS
-        elapsed = time.time() - loop_start
-        if elapsed < FRAME_INTERVAL:
-            time.sleep(FRAME_INTERVAL - elapsed)
 
 except KeyboardInterrupt:
     print("-- Interrupted by user.")

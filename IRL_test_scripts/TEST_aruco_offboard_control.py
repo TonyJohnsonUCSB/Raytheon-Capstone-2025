@@ -1,6 +1,4 @@
-import os
-# suppress libpng incorrect sRGB profile warnings
-os.environ['OPENCV_IO_ENABLE_PNG_WARNINGS'] = '0'
+#!/usr/bin/env python3
 
 import asyncio
 import time
@@ -8,78 +6,48 @@ import cv2
 import numpy as np
 from picamera2 import Picamera2
 from mavsdk import System
-from mavsdk.offboard import OffboardError, VelocityNedYaw
+from mavsdk.offboard import OffboardError, PositionNedYaw
 
-# --- PID Controller Parameters for Vibration-Resistant Tracking ---
-Kp_x, Ki_x, Kd_x = 1.0, 0.0, 0.4  # updated gains
-Kp_y, Ki_y, Kd_y = 1.0, 0.0, 0.4
-prev_error_x = prev_error_y = 0.0
-integral_x = integral_y = 0.0
-last_time = time.time()
+# -- Calibration (hard-coded) --
+INTRINSIC = np.array([
+    [653.1070007239106,   0.0,               339.2952147845755],
+    [0.0,                 650.7753992788821, 258.1165494889447],
+    [0.0,                 0.0,               1.0]
+], dtype=np.float32)
+DIST_COEFFS = np.array([
+    -0.03887864427953473,
+     0.6888798469690414,
+     0.00815702400928161,
+     0.010438854120041072,
+    -1.713270699000528
+], dtype=np.float32)
 
-# velocity limits & slow-zone
-MAX_VEL = 0.5       # m/s
-SLOW_DIST = 0.10    # m (10 cm)
-
-# --- Frame stabilization state ---
-prev_gray = None
-
-# --- ArUco & Camera Calibration setup ---
-ARUCO_DICT = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
-parameters = cv2.aruco.DetectorParameters_create()
+# -- Params --
+ARUCO_DICT   = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+parameters   = cv2.aruco.DetectorParameters_create()
 parameters.adaptiveThreshConstant = 7
-parameters.minMarkerPerimeterRate = 0.03
+parameters.minMarkerPerimeterRate  = 0.03
 
-camera_matrix = np.array([[933.15867, 0, 657.59],
-                          [0, 933.1586, 400.36993],
-                          [0, 0, 1]])
-dist_coeffs = np.array([-0.43948, 0.18514, 0, 0])
-marker_size = 0.06611  # meters
-drop_zone_id = 1       # ArUco ID to track
+MARKER_SIZE   = 0.06611  # meters
+DROP_ZONE_ID  = 1        # ArUco ID to track
 
-# --- Video settings ---
-VIDEO_NAME = '/home/rtxcapstone/Desktop/5.13.2025Field4_north_plusK_rightcamera.avi'
-FRAME_SIZE = (640, 480)
-FPS = 30.0
-
-# --- Picamera2 setup ---
+# -- Camera setup & recording --
 picam2 = Picamera2()
 config = picam2.create_preview_configuration(
-    main={"format": 'RGB888', "size": FRAME_SIZE}
+    raw  = {"size": (1640, 1232)},
+    main = {"format": "RGB888", "size": (640, 480)}
 )
 picam2.configure(config)
-
-# Start camera
-print("-- Camera starting...")
 picam2.start()
 time.sleep(2)
-print("-- Camera started")
 
-# Setup VideoWriter
-fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-out = cv2.VideoWriter(VIDEO_NAME, fourcc, FPS, FRAME_SIZE)
-if not out.isOpened():
-    raise RuntimeError(f"Cannot open VideoWriter at {VIDEO_NAME}")
+fourcc = cv2.VideoWriter_fourcc(*"XVID")
+out    = cv2.VideoWriter(
+    "/home/rtxcapstone/Desktop/testVideo.avi",
+    fourcc, 20.0, (640, 480)
+)
 
-# --- PID functions ---
-def pid_east(error_x: float, dt: float) -> float:
-    global prev_error_x, integral_x
-    integral_x += error_x * dt
-    derivative = (error_x - prev_error_x) / dt if dt > 0 else 0.0
-    outp = Kp_x * error_x + Ki_x * integral_x + Kd_x * derivative
-    prev_error_x = error_x
-    return -outp  # x>0 -> move west
-
- def pid_north(error_y: float, dt: float) -> float:
-    global prev_error_y, integral_y
-    integral_y += error_y * dt
-    derivative = (error_y - prev_error_y) / dt if dt > 0 else 0.0
-    outp = Kp_y * error_y + Ki_y * integral_y + Kd_y * derivative
-    prev_error_y = error_y
-    return -outp  # y>0 -> move south
-
-# --- Drone connection and takeoff ---
-async def connect_and_arm() -> System:
+async def connect_and_arm():
     drone = System()
     await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
     async for state in drone.core.connection_state():
@@ -89,84 +57,94 @@ async def connect_and_arm() -> System:
         if health.is_global_position_ok and health.is_home_position_ok:
             break
     await drone.action.arm()
-    print("-- Taking off to 6m altitude")
     await drone.action.set_takeoff_altitude(6)
     await drone.action.takeoff()
-    await asyncio.sleep(20)
+    await asyncio.sleep(6)
     return drone
 
-# --- Main offboard tracking loop ---
-async def offboard_loop(drone: System):
-    global prev_gray, last_time, integral_x, integral_y, prev_error_x, prev_error_y
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0, 0, 0, 0))
+async def offboard_position_loop(drone: System):
+    await drone.telemetry.set_rate_position_velocity_ned(10)
+    # seed first NED setpoint
+    async for odom in drone.telemetry.position_velocity_ned():
+        init_north = odom.position.north_m
+        init_east  = odom.position.east_m
+        init_down  = odom.position.down_m
+        break
+
+    await drone.offboard.set_position_ned(
+        PositionNedYaw(init_north, init_east, init_down, 0.0)
+    )
     try:
         await drone.offboard.start()
-    except OffboardError:
+    except OffboardError as e:
+        print(f"Offboard start failed: {e._result.result}")
+        await drone.action.disarm()
         return
 
-    print("-- Entering PID tracking loop --")
+    prev_gray = None
     try:
         while True:
-            now = time.time()
-            dt = now - last_time if last_time else 0.01
-            last_time = now
-
             frame = await asyncio.to_thread(picam2.capture_array)
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            if prev_gray is None:
-                stabilized = frame.copy()
-            else:
-                prev_pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=200,
-                                                   qualityLevel=0.01, minDistance=30)
+            gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            # stabilize
+            if prev_gray is not None:
+                pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=200,
+                                              qualityLevel=0.01, minDistance=30)
                 M = None
-                if prev_pts is not None:
-                    curr_pts, status, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, prev_pts, None)
+                if pts is not None:
+                    curr_pts, status, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, pts, None)
                     valid = status.reshape(-1) == 1
                     if np.count_nonzero(valid) >= 6:
-                        src = prev_pts[valid]
-                        dst = curr_pts[valid]
-                        M, _ = cv2.estimateAffinePartial2D(src, dst)
-                stabilized = cv2.warpAffine(frame, M, FRAME_SIZE) if M is not None else frame.copy()
+                        M, _ = cv2.estimateAffinePartial2D(pts[valid], curr_pts[valid])
+                stab = cv2.warpAffine(frame, M, frame.shape[1::-1]) if M is not None else frame.copy()
+            else:
+                stab = frame.copy()
             prev_gray = gray
 
-            corners, ids, _ = cv2.aruco.detectMarkers(
-                cv2.cvtColor(stabilized, cv2.COLOR_BGR2GRAY), ARUCO_DICT, parameters=parameters)
-            vel_east = vel_north = 0.0
-            x_cam = y_cam = z_cam = None
-            if ids is not None:
-                for idx, mid in enumerate(ids.flatten()):
-                    if int(mid) != drop_zone_id:
-                        continue
-                    _, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
-                        [corners[idx]], marker_size, camera_matrix, dist_coeffs)
-                    x_cam, y_cam, z_cam = tvecs[0][0]
-                    ve = pid_east(x_cam, dt)
-                    vn = pid_north(y_cam, dt)
-                    vel_east = np.clip(ve, -MAX_VEL, MAX_VEL)
-                    vel_north = np.clip(vn, -MAX_VEL, MAX_VEL)
-                    cv2.aruco.drawDetectedMarkers(stabilized, [corners[idx]])
+            # detect ArUco
+            gray_stab = cv2.cvtColor(stab, cv2.COLOR_BGR2GRAY)
+            corners, ids, _ = cv2.aruco.detectMarkers(gray_stab, ARUCO_DICT, parameters=parameters)
+
+            if ids is not None and DROP_ZONE_ID in ids:
+                idx = list(ids.flatten()).index(DROP_ZONE_ID)
+                cv2.aruco.drawDetectedMarkers(stab, [corners[idx]])
+                _, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
+                    [corners[idx]], MARKER_SIZE, INTRINSIC, DIST_COEFFS
+                )
+                x_cam, y_cam, z_cam = tvecs[0][0]
+
+                # fetch current NED
+                async for odom in drone.telemetry.position_velocity_ned():
+                    curr_north = odom.position.north_m
+                    curr_east  = odom.position.east_m
+                    curr_down  = odom.position.down_m
                     break
+
+                # +X to east, +Y to north, +Z to down
+                target_north = curr_north + y_cam
+                target_east  = curr_east  + x_cam
+                target_down  = curr_down  + z_cam
+
+                await drone.offboard.set_position_ned(
+                    PositionNedYaw(target_north, target_east, target_down, 0.0)
+                )
+                cv2.putText(stab,
+                            f"DeltaN={y_cam:.2f} DeltaE={x_cam:.2f} DeltaD={z_cam:.2f}",
+                            (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
             else:
-                integral_x = integral_y = 0.0
-                prev_error_x = prev_error_y = 0.0
+                cv2.putText(stab, "No marker", (10, 60),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 2)
 
-            await drone.offboard.set_velocity_ned(
-                VelocityNedYaw(vel_north, vel_east, 0.0, 0.0)
-            )
+            cv2.imshow("Preview", stab)
+            out.write(stab)
 
-            text = f"x={x_cam:.3f} y={y_cam:.3f} z={z_cam:.3f}" if x_cam is not None else "No marker detected"
-            cv2.putText(stabilized, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
-            cv2.putText(stabilized, f"vx={vel_east:.2f} vy={vel_north:.2f}",
-                        (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,0,0), 2)
-
-            out.write(stabilized)
-            cv2.imshow("Preview", stabilized)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
-
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.1)
 
     finally:
+        out.release()
         try:
             await drone.offboard.stop()
         except OffboardError:
@@ -174,17 +152,11 @@ async def offboard_loop(drone: System):
         await drone.action.land()
         await asyncio.sleep(5)
         await drone.action.disarm()
-        picam2.stop()
-        picam2.close()
-        out.release()
         cv2.destroyAllWindows()
 
 async def main():
     drone = await connect_and_arm()
-    try:
-        await offboard_loop(drone)
-    except KeyboardInterrupt:
-        pass
+    await offboard_position_loop(drone)
 
 if __name__ == "__main__":
     asyncio.run(main())

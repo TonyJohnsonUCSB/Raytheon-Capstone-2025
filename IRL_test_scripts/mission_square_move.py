@@ -45,7 +45,7 @@ async def run():
     await drone.action.arm()
 
     print("-- Taking off")
-    await drone.action.set_takeoff_altitude(3.0)  # Set altitude to 5 meters
+    await drone.action.set_takeoff_altitude(3.0)  
     await drone.action.takeoff()
     await asyncio.sleep(15)
 
