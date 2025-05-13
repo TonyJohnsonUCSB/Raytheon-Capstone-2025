@@ -11,11 +11,15 @@ from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityNedYaw
 
 # --- PID Controller Parameters for Vibration-Resistant Tracking ---
-Kp_x, Ki_x, Kd_x = 0.6, 0.0, 0.4
-Kp_y, Ki_y, Kd_y = 0.6, 0.0, 0.4
+Kp_x, Ki_x, Kd_x = 1.0, 0.0, 0.4  # updated gains
+Kp_y, Ki_y, Kd_y = 1.0, 0.0, 0.4
 prev_error_x = prev_error_y = 0.0
 integral_x = integral_y = 0.0
 last_time = time.time()
+
+# velocity limits & slow-zone
+MAX_VEL = 0.5       # m/s
+SLOW_DIST = 0.10    # m (10 cm)
 
 # --- Frame stabilization state ---
 prev_gray = None
@@ -31,12 +35,12 @@ camera_matrix = np.array([[933.15867, 0, 657.59],
                           [0, 0, 1]])
 dist_coeffs = np.array([-0.43948, 0.18514, 0, 0])
 marker_size = 0.06611  # meters
-drop_zone_id = 1  # ArUco ID to track
+drop_zone_id = 1       # ArUco ID to track
 
 # --- Video settings ---
 VIDEO_NAME = '/home/rtxcapstone/Desktop/5.13.2025Field4_north_plusK_rightcamera.avi'
 FRAME_SIZE = (640, 480)
-REQUESTED_FPS = 30.0  # desired capture rate
+REQUESTED_FPS = 30.0   # desired capture rate
 
 # --- Picamera2 setup ---
 picam2 = Picamera2()
@@ -75,14 +79,22 @@ out = cv2.VideoWriter(VIDEO_NAME, fourcc, CAPTURE_FPS, FRAME_SIZE)
 if not out.isOpened():
     raise RuntimeError(f"Cannot open VideoWriter at {VIDEO_NAME} with {CAPTURE_FPS:.2f} FPS")
 
-# --- PID controller functions ---
+# (Duplicate controls in case of restart)
+picam2.set_controls({"FrameDurationLimits": (dur, dur)})
+
+print("-- Camera starting...")
+picam2.start()
+time.sleep(2)
+print("-- Camera started")
+
+# --- PID functions ---
 def pid_east(error_x: float, dt: float) -> float:
     global prev_error_x, integral_x
     integral_x += error_x * dt
     derivative = (error_x - prev_error_x) / dt if dt > 0 else 0.0
     outp = Kp_x * error_x + Ki_x * integral_x + Kd_x * derivative
     prev_error_x = error_x
-    return outp
+    return -outp  # x>0 -> move west (negative east)
 
 def pid_north(error_y: float, dt: float) -> float:
     global prev_error_y, integral_y
@@ -90,28 +102,21 @@ def pid_north(error_y: float, dt: float) -> float:
     derivative = (error_y - prev_error_y) / dt if dt > 0 else 0.0
     outp = Kp_y * error_y + Ki_y * integral_y + Kd_y * derivative
     prev_error_y = error_y
-    return -outp
+    return -outp  # y>0 -> move south (negative north)
 
 # --- Drone connection and takeoff ---
 async def connect_and_arm() -> System:
     drone = System()
     await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
-    print("Waiting for drone connection...")
     async for state in drone.core.connection_state():
         if state.is_connected:
-            print("-- Connected")
             break
-
-    print("Waiting for GPS and home position...")
     async for health in drone.telemetry.health():
         if health.is_global_position_ok and health.is_home_position_ok:
-            print("-- Global position OK")
             break
-
-    print("-- Arming")
     await drone.action.arm()
     print("-- Taking off to 12m")
-    await drone.action.set_takeoff_altitude(4)
+    await drone.action.set_takeoff_altitude(6)
     await drone.action.takeoff()
     await asyncio.sleep(20)
     return drone
@@ -123,8 +128,7 @@ async def offboard_loop(drone: System):
     await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, 0.0))
     try:
         await drone.offboard.start()
-    except OffboardError as e:
-        print(f"Offboard start failed: {e._result.result}")
+    except OffboardError:
         return
 
     print("-- Entering PID tracking loop --")
@@ -163,11 +167,11 @@ async def offboard_loop(drone: System):
                 for idx, mid in enumerate(ids.flatten()):
                     if int(mid) != drop_zone_id:
                         continue
-                    _, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers([
-                        corners[idx]], marker_size, camera_matrix, dist_coeffs)
+                    _, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
+                        [corners[idx]], marker_size, camera_matrix, dist_coeffs)
                     x_cam, y_cam, z_cam = tvecs[0][0]
-                    vel_east = pid_east(x_cam, dt)
-                    vel_north = pid_north(y_cam, dt)
+                    vel_east = np.clip(pid_east(x_cam, dt), -MAX_VEL, MAX_VEL)
+                    vel_north = np.clip(pid_north(y_cam, dt), -MAX_VEL, MAX_VEL)
                     cv2.aruco.drawDetectedMarkers(stabilized, [corners[idx]])
                     break
             else:
@@ -202,20 +206,19 @@ async def offboard_loop(drone: System):
             if sleep_time > 0:
                 await asyncio.sleep(sleep_time)
 
-    except asyncio.CancelledError:
-        pass
     finally:
-        print("-- Stopping offboard, landing")
         try:
             await drone.offboard.stop()
-        except OffboardError as e:
-            print(f"Offboard stop failed: {e._result.result}")
+        except OffboardError:
+            pass
         await drone.action.land()
         await asyncio.sleep(5)
         await drone.action.disarm()
+        picam2.stop()
+        picam2.close()
+        out.release()
         cv2.destroyAllWindows()
 
-# --- Entry point ---
 async def main():
     drone = await connect_and_arm()
     off_task = asyncio.create_task(offboard_loop(drone))
@@ -223,12 +226,6 @@ async def main():
         await off_task
     except KeyboardInterrupt:
         off_task.cancel()
-    finally:
-        print("-- Cleaning up camera & writer")
-        picam2.stop()
-        picam2.close()
-        out.release()
-        cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     asyncio.run(main())
