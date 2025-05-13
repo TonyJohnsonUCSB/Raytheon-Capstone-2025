@@ -10,14 +10,16 @@ from picamera2 import Picamera2
 
 # Top-level video file name
 VIDEO_NAME = '/home/rtxcapstone/Desktop/testVideo.avi'
-
+RESOLUTION = (640,480)
+#RESOLUTION = (2304, 1296)
 # --- Vibration Mitigation Parameters ---
 ALPHA = 0.5                    # pose smoothing factor (0 < ALPHA <= 1)
 prev_tvecs = {}                # store previous tvecs per marker
 prev_gray = None               # for frame-to-frame stabilization
 
 # --- Recording Settings ---
-CAPTURE_FPS = 30               # camera capture rate (Hz)
+REQUESTED_FPS = 35            # desired camera capture rate (Hz)
+FRAME_INTERVAL = None          # will be set after calibration
 
 # --- Pose Estimation with Smoothing ---
 def pose_estimation(frame, aruco_dict_type, matrix_coeffs, dist_coeffs, drop_zoneID, marker_size):
@@ -79,34 +81,58 @@ distortion = np.array([-0.43948, 0.18514, 0, 0])
 drop_zoneID = 1
 marker_size = 0.06611  # meters
 
+# Initialize camera
 picam2 = Picamera2()
 config = picam2.create_preview_configuration(
-    main={"format":"RGB888","size":(640,480)}
+    main={"format":"RGB888","size":RESOLUTION}
 )
 picam2.configure(config)
 
-# lock capture rate to CAPTURE_FPS
+# Start camera and warm up sensor
+picam2.start()
+print("-- Camera started, warming up...")
+time.sleep(2)
+
+# --- Calibration: measure achievable FPS ---
+warmup_frames = 15
+timestamps = []
+print(f"-- Calibrating over {warmup_frames} frames...")
+for _ in range(warmup_frames):
+    timestamps.append(time.time())
+    _ = picam2.capture_array()
+timestamps.append(time.time())
+intervals = [t2 - t1 for t1, t2 in zip(timestamps, timestamps[1:])]
+avg_dt = sum(intervals) / len(intervals)
+max_fps = 1.0 / avg_dt if avg_dt > 0 else REQUESTED_FPS
+effective_fps = min(REQUESTED_FPS, max_fps)
+if effective_fps < REQUESTED_FPS:
+    print(f"-- Warning: max achievable fps ~{max_fps:.1f}, using {effective_fps:.1f} fps instead of requested {REQUESTED_FPS} fps")
+else:
+    print(f"-- Using requested fps: {REQUESTED_FPS} fps")
+
+# Set capture parameters based on calibration
+CAPTURE_FPS = effective_fps
+FRAME_INTERVAL = 1.0 / CAPTURE_FPS
+# Lock sensor frame duration
 dur = int(1e6 / CAPTURE_FPS)
 picam2.set_controls({"FrameDurationLimits":(dur, dur)})
 
-# Setup recording at CAPTURE_FPS with MJPG codec
-FRAME_SIZE = (640, 480)
+# Setup recording at calibrated FPS
+FRAME_SIZE = (640,480)
 fourcc = cv2.VideoWriter_fourcc(*'MJPG')
 writer = cv2.VideoWriter(VIDEO_NAME, fourcc, CAPTURE_FPS, FRAME_SIZE)
 if not writer.isOpened():
-    raise RuntimeError(f"Failed to open VideoWriter with codec MJPG at {CAPTURE_FPS} Hz")
+    raise RuntimeError(f"Failed to open VideoWriter at {CAPTURE_FPS:.2f} Hz")
 
-print("-- Camera starting...")
-picam2.start()
-time.sleep(2)
-print("-- Camera started")
+print(f"-- Recording at {CAPTURE_FPS:.2f} fps")
 
 try:
     while True:
+        loop_start = time.time()
+
+        # Capture and stabilize
         frame = picam2.capture_array()
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        # frame stabilization
         if prev_gray is None:
             stab = frame.copy()
         else:
@@ -121,15 +147,22 @@ try:
                     dst = curr[good]
                     M, _ = cv2.estimateAffinePartial2D(src, dst)
             stab = cv2.warpAffine(frame, M, FRAME_SIZE) if M is not None else frame.copy()
-
         prev_gray = gray
-        pose_estimation(stab, ARUCO_DICT[aruco_type], intrinsic, distortion, drop_zoneID, marker_size)
-        cv2.imshow("Stabilized Feed", stab)
 
+        # Pose estimation
+        pose_estimation(stab, ARUCO_DICT[aruco_type], intrinsic, distortion, drop_zoneID, marker_size)
+
+        # Display & write
+        cv2.imshow("Stabilized Feed", stab)
         writer.write(stab)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+        # Throttle loop to calibrated FPS
+        elapsed = time.time() - loop_start
+        if elapsed < FRAME_INTERVAL:
+            time.sleep(FRAME_INTERVAL - elapsed)
 
 except KeyboardInterrupt:
     print("-- Interrupted by user.")
