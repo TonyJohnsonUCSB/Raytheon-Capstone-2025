@@ -15,6 +15,10 @@ import yaml  # Requires: pip install pyyaml
 from board import SCL, SDA
 import busio
 import lgpio # dump truck
+import serial #radio
+import re #radio
+
+ser = serial.Serial(port='/dev/ttyUSB0', baudrate=57600, timeout=1) #radio
 
 # Dump Truck: Open a connection to the GPIO chip 
 h = lgpio.gpiochip_open(0)  # '0' is the default GPIO chip
@@ -257,14 +261,6 @@ pca.frequency = 50  # Set frequency to 50Hz for servos
 current_angle = 0
 set_servo_angle(SERVO_CHANNEL,current_angle) #set servo to an initial angle
 
-# Mission setup
-TARGET_LATITUDE = 34.414893950 # degrees
-TARGET_LONGITUDE = -119.843535639 # degrees
-TARGET_ALTITUDE = 0                  # for rovers, altitude is usually set to ground level
-TARGET_YAW = 0                       # desired heading in degrees
-loop_marker = 0
-
-
 async def main():
     # Connecting to Rover via USB (adjust port/baud as needed)
     print("Waiting for rover to connect via USB...")
@@ -277,19 +273,31 @@ async def main():
             print("Rover connected!")
             break
 
-    # Waypoint Mission 
-    # print("Waiting for global position estimate...")
-    # async for health in rover.telemetry.health():
-    #     # For a rover we only need the global position to be ok
-    #     if health.is_global_position_ok:
-    #         print("-- Global position estimate OK")
-    #         break
+     Waypoint Mission 
+     print("Waiting for global position estimate...")
+     async for health in rover.telemetry.health():
+         # For a rover we only need the global position to be ok
+         if health.is_global_position_ok:
+             print("-- Global position estimate OK")
+             break
+    
+    while True:
+        # Read serial data
+        b = ser.read(1000).decode(errors='ignore')
+    
+        # Find latitude and longitude pairs using regex
+        coordinates = re.findall(r'(-?\d+\.\d+),\s*(-?\d+\.\d+)', b)
 
-    # print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
-    # await rover.action.goto_location(TARGET_LATITUDE,
-    #                                  TARGET_LONGITUDE,
-    #                                  TARGET_ALTITUDE,
-    #                                  TARGET_YAW)
+        # Print extracted coordinates
+        for lat, lon in coordinates:
+        print(f"GPS coordinates received: {lat}, {lon}")
+
+    
+     print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
+     await rover.action.goto_location(TARGET_LATITUDE,
+                                      TARGET_LONGITUDE,
+                                      TARGET_ALTITUDE,
+                                      TARGET_YAW)
   
     try:
         # Main computer vision loop
