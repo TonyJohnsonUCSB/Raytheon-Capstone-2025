@@ -126,11 +126,13 @@ async def offboard_position_loop(drone: System):
 
                 target_north = curr_north + y_cam
                 target_east  = curr_east  + x_cam
-                target_down  = curr_down  + z_cam
+                # Commenting this line out and replacing the target_down with curr_down in the next line
+                # target_down  = curr_down  + z_cam
 
                 await drone.offboard.set_position_ned(
-                    PositionNedYaw(target_north, target_east, target_down, 0.0)
+                    PositionNedYaw(target_north, target_east, curr_down, 0.0)
                 )
+                await asyncio.sleep(5) # Give it enough time to reach the marker before landing
                 cv2.putText(stab,
                             f"DeltaN={y_cam:.2f} DeltaE={x_cam:.2f} DeltaD={z_cam:.2f}",
                             (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
