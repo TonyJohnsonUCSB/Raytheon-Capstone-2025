@@ -31,6 +31,10 @@ DETECT_PARAMS.minMarkerPerimeterRate  = 0.03
 MARKER_SIZE   = 0.06611  # meters
 TARGET_ID     = 1
 
+# -- Flight & tolerance params --
+ALTITUDE      = 10.0     # meters for takeoff and waypoints
+TOLERANCE     = 0.10     # meters tolerance in N/E before landing
+
 # -- Waypoints & geofence --
 coordinates = [
     (34.418953, -119.855332),
@@ -44,7 +48,6 @@ geofence_points = [
     Point(34.419221, -119.855198),
     Point(34.419228, -119.855931)
 ]
-ALTITUDE = 10.0
 
 # -- Camera setup --
 picam2 = Picamera2()
@@ -89,10 +92,8 @@ async def search_marker(timeout=10.0):
     prev_gray = None
     while time.time() - t0 < timeout:
         frame = await asyncio.to_thread(picam2.capture_array)
-        # record frame
         writer.write(frame)
-        gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        # stabilize
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if prev_gray is not None:
             pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=100,
                                           qualityLevel=0.01, minDistance=20)
@@ -101,9 +102,10 @@ async def search_marker(timeout=10.0):
                 valid = st.reshape(-1) == 1
                 if np.count_nonzero(valid) >= 6:
                     M, _ = cv2.estimateAffinePartial2D(pts[valid], curr[valid])
-                    frame = cv2.warpAffine(frame, M, frame.shape[1::-1])
+                    if M is not None:
+                        frame = cv2.warpAffine(frame, M, frame.shape[1::-1])
         prev_gray = gray
-        # detect
+
         gray2 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = cv2.aruco.detectMarkers(gray2, ARUCO_DICT, parameters=DETECT_PARAMS)
         if ids is not None and TARGET_ID in ids:
@@ -115,29 +117,41 @@ async def search_marker(timeout=10.0):
     return None
 
 async def approach_and_land(drone, offset):
-    await drone.offboard.set_position_ned(PositionNedYaw(0,0,0,0))
+    # Start offboard to move in N/E only, hold altitude
+    await drone.offboard.set_position_ned(PositionNedYaw(0, 0, 0, 0))
     try:
         await drone.offboard.start()
     except OffboardError:
         return
+    # get current NED
     async for odom in drone.telemetry.position_velocity_ned():
         north0 = odom.position.north_m
         east0  = odom.position.east_m
         down0  = odom.position.down_m
         break
-    target = PositionNedYaw(
-        north0 + offset[1],
-        east0  + offset[0],
-        down0  + offset[2],
-        0.0
+
+    target_n = north0 + offset[1]
+    target_e = east0  + offset[0]
+    # command move to target N/E, keep down0
+    await drone.offboard.set_position_ned(
+        PositionNedYaw(target_n, target_e, down0, 0.0)
     )
-    await drone.offboard.set_position_ned(target)
-    await asyncio.sleep(8)
-    try:
-        await drone.offboard.stop()
-    except OffboardError:
-        pass
-    await drone.action.land()
+
+    # wait until within tolerance
+    while True:
+        await asyncio.sleep(0.5)
+        async for od in drone.telemetry.position_velocity_ned():
+            err_n = abs(od.position.north_m - target_n)
+            err_e = abs(od.position.east_m  - target_e)
+            break
+        if err_n < TOLERANCE and err_e < TOLERANCE:
+            print("Reached within tolerance, landing...")
+            try:
+                await drone.offboard.stop()
+            except OffboardError:
+                pass
+            await drone.action.land()
+            return
 
 async def run():
     drone = await connect_and_arm()
@@ -147,7 +161,7 @@ async def run():
         print(f"Searching for marker at {lat},{lon}")
         tvec = await search_marker(10.0)
         if tvec is not None:
-            print("Marker found, approaching...")
+            print("Marker found, approaching and landing...")
             await approach_and_land(drone, tvec)
             return
     await drone.action.return_to_launch()
