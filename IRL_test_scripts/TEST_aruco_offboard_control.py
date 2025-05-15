@@ -23,13 +23,14 @@ DIST_COEFFS = np.array([
 ], dtype=np.float32)
 
 # -- Params --
-ARUCO_DICT   = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
-parameters   = cv2.aruco.DetectorParameters_create()
-parameters.adaptiveThreshConstant = 7
-parameters.minMarkerPerimeterRate  = 0.03
+ARUCO_DICT     = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+parameters     = cv2.aruco.DetectorParameters_create()
+parameters.adaptiveThreshConstant   = 7
+parameters.minMarkerPerimeterRate    = 0.03
 
-MARKER_SIZE   = 0.06611  # meters
-DROP_ZONE_ID  = 1        # ArUco ID to track
+MARKER_SIZE    = 0.06611  # meters
+DROP_ZONE_ID   = 1        # ArUco ID to track
+TOLERANCE      = 0.10     # meters, 10 cm tolerance for N/E before landing
 
 # -- Camera setup & recording --
 picam2 = Picamera2()
@@ -67,10 +68,11 @@ async def connect_and_arm():
 
 async def offboard_position_loop(drone: System):
     await drone.telemetry.set_rate_position_velocity_ned(10)
+    # get initial position in NED frame (scaled)
     async for odom in drone.telemetry.position_velocity_ned():
-        init_north = odom.position.north_m /12
-        init_east  = odom.position.east_m /12
-        init_down  = odom.position.down_m /12
+        init_north = odom.position.north_m / 12
+        init_east  = odom.position.east_m / 12
+        init_down  = odom.position.down_m / 12
         break
 
     await drone.offboard.set_position_ned(
@@ -86,8 +88,6 @@ async def offboard_position_loop(drone: System):
     prev_gray = None
     try:
         while True:
-            print(odom.position.down_m)
-            
             frame = await asyncio.to_thread(picam2.capture_array)
             gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -118,28 +118,46 @@ async def offboard_position_loop(drone: System):
                 )
                 x_cam, y_cam, z_cam = tvecs[0][0]
 
+                # get current NED
                 async for odom in drone.telemetry.position_velocity_ned():
                     curr_north = odom.position.north_m
                     curr_east  = odom.position.east_m
                     curr_down  = odom.position.down_m
                     break
 
+                # compute target N/E, hold altitude
                 target_north = curr_north + y_cam
                 target_east  = curr_east  + x_cam
-                # Commenting this line out and replacing the target_down with curr_down in the next line
-                # target_down  = curr_down  + z_cam
 
+                # command offboard with current down
                 await drone.offboard.set_position_ned(
                     PositionNedYaw(target_north, target_east, curr_down, 0.0)
                 )
-                await asyncio.sleep(5) # Give it enough time to reach the marker before landing
+
+                # short delay before checking position
+                await asyncio.sleep(0.5)
+
+                # check if within tolerance
+                async for od in drone.telemetry.position_velocity_ned():
+                    err_n = abs(od.position.north_m - target_north)
+                    err_e = abs(od.position.east_m  - target_east)
+                    break
+
+                # if reached, stop offboard and land
+                if err_n < TOLERANCE and err_e < TOLERANCE:
+                    print("Target reached within tolerance, landing...")
+                    await drone.offboard.stop()
+                    await drone.action.land()
+                    break
+
                 cv2.putText(stab,
-                            f"DeltaN={y_cam:.2f} DeltaE={x_cam:.2f} DeltaD={z_cam:.2f}",
+                            f"dN={y_cam:.2f} dE={x_cam:.2f} dD={z_cam:.2f}",
                             (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
             else:
                 cv2.putText(stab, "No marker", (10, 60),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 2)
 
+            # display & record
             cv2.imshow("Preview", stab)
             out.write(stab)
 
