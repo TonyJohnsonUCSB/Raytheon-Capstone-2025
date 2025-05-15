@@ -44,7 +44,7 @@ time.sleep(2)
 # set up video writer to record preview
 fourcc = cv2.VideoWriter_fourcc(*"XVID")
 out    = cv2.VideoWriter(
-    "/home/rtxcapstone/Desktop/testVideo.avi",
+    "/home/rtxcapstone/Desktop/TonyOGx3.avi",
     fourcc,
     20.0,
     (640, 480)
@@ -62,15 +62,15 @@ async def connect_and_arm():
     await drone.action.arm()
     await drone.action.set_takeoff_altitude(6)
     await drone.action.takeoff()
-    await asyncio.sleep(6)
+    await asyncio.sleep(10)
     return drone
 
 async def offboard_position_loop(drone: System):
     await drone.telemetry.set_rate_position_velocity_ned(10)
     async for odom in drone.telemetry.position_velocity_ned():
-        init_north = odom.position.north_m
-        init_east  = odom.position.east_m
-        init_down  = odom.position.down_m
+        init_north = odom.position.north_m /12
+        init_east  = odom.position.east_m /12
+        init_down  = odom.position.down_m /12
         break
 
     await drone.offboard.set_position_ned(
@@ -86,6 +86,8 @@ async def offboard_position_loop(drone: System):
     prev_gray = None
     try:
         while True:
+            print(odom.position.down_m)
+            
             frame = await asyncio.to_thread(picam2.capture_array)
             gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
