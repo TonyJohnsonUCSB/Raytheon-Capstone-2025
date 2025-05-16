@@ -32,7 +32,7 @@ MARKER_SIZE   = 0.06611  # meters
 TARGET_ID     = 1
 
 # -- Flight & tolerance params --
-ALTITUDE      = 10.0     # meters for takeoff and waypoints
+ALTITUDE      = 5    # meters for takeoff and waypoints
 TOLERANCE     = 0.10     # meters tolerance in N/E before landing
 
 # -- Waypoints & geofence --
@@ -62,7 +62,7 @@ time.sleep(2)
 # -- Video writer to record preview --
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 writer = cv2.VideoWriter(
-    '/home/rtxcapstone/Desktop/testVideo.avi',
+    '/home/rtxcapstone/Desktop/searchAndLandTest2.avi',
     fourcc,
     20.0,
     (640, 480)
@@ -73,17 +73,23 @@ async def connect_and_arm():
     await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
     async for state in drone.core.connection_state():
         if state.is_connected:
+            print("--Connected")
             break
     async for health in drone.telemetry.health():
         if health.is_global_position_ok and health.is_home_position_ok:
+            print("--Healthy")
             break
     # upload geofence
     poly = Polygon(geofence_points, FenceType.INCLUSION)
     gf = GeofenceData(polygons=[poly], circles=[])
     await drone.geofence.upload_geofence(gf)
+    print("--Uploaded geofence")
     await drone.action.arm()
-    await drone.action.set_takeoff_altitude(ALTITUDE)
+    print("--Armed")
+    print("-- Taking off")
+    await drone.action.set_takeoff_altitude(5.0)  # Set altitude to 5 meters
     await drone.action.takeoff()
+
     await asyncio.sleep(10)
     return drone
 

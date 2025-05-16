@@ -30,7 +30,7 @@ parameters.minMarkerPerimeterRate    = 0.03
 
 MARKER_SIZE    = 0.06611  # meters
 DROP_ZONE_ID   = 1        # ArUco ID to track
-TOLERANCE      = 0.10     # meters, 10 cm tolerance for N/E before landing
+TOLERANCE      = 0.01     # meters, 10 cm tolerance for N/E before landing
 
 # -- Camera setup & recording --
 picam2 = Picamera2()
@@ -45,7 +45,7 @@ time.sleep(2)
 # set up video writer to record preview
 fourcc = cv2.VideoWriter_fourcc(*"XVID")
 out    = cv2.VideoWriter(
-    "/home/rtxcapstone/Desktop/TonyOGx3.avi",
+    "/home/rtxcapstone/Desktop/gameTime3.avi",
     fourcc,
     20.0,
     (640, 480)
@@ -135,7 +135,7 @@ async def offboard_position_loop(drone: System):
                 )
 
                 # short delay before checking position
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(5)
 
                 # check if within tolerance
                 async for od in drone.telemetry.position_velocity_ned():
