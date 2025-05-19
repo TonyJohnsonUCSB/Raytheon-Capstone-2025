@@ -30,7 +30,7 @@ parameters.minMarkerPerimeterRate  = 0.03
 
 MARKER_SIZE  = 0.06611  # meters
 DROP_ZONE_ID = 1        # ArUco ID to track
-TOLERANCE    = 0.01     # meters
+TOLERANCE    = 0.1     # meters
 
 # -- Camera setup & recording --
 picam2 = Picamera2()
@@ -128,15 +128,15 @@ async def offboard_position_loop(drone: System):
                     cn, ce, cd = odom.position.north_m, odom.position.east_m, odom.position.down_m
                     break
 
-                tn = cn + y_cam
-                te = ce + x_cam
+                target_north = cn + y_cam
+                target_east = ce + x_cam
 
-                await drone.offboard.set_position_ned(PositionNedYaw(tn, te, cd, 0.0))
+                await drone.offboard.set_position_ned(PositionNedYaw(target_north, target_east, cd, 0.0))
                 await asyncio.sleep(5)
 
                 async for odom in drone.telemetry.position_velocity_ned():
-                    err_n = abs(odom.position.north_m - tn)
-                    err_e = abs(odom.position.east_m  - te)
+                    err_n = abs(odom.position.north_m - target_north)
+                    err_e = abs(odom.position.east_m  - target_east)
                     break
 
                 if err_n < TOLERANCE and err_e < TOLERANCE:
