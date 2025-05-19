@@ -23,14 +23,14 @@ DIST_COEFFS = np.array([
 ], dtype=np.float32)
 
 # -- Params --
-ARUCO_DICT     = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
-parameters     = cv2.aruco.DetectorParameters_create()
-parameters.adaptiveThreshConstant   = 7
-parameters.minMarkerPerimeterRate    = 0.03
+ARUCO_DICT   = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+parameters   = cv2.aruco.DetectorParameters_create()
+parameters.adaptiveThreshConstant = 7
+parameters.minMarkerPerimeterRate  = 0.03
 
-MARKER_SIZE    = 0.06611  # meters
-DROP_ZONE_ID   = 1        # ArUco ID to track
-TOLERANCE      = 0.01     # meters, 10 cm tolerance for N/E before landing
+MARKER_SIZE  = 0.06611  # meters
+DROP_ZONE_ID = 1        # ArUco ID to track
+TOLERANCE    = 0.01     # meters
 
 # -- Camera setup & recording --
 picam2 = Picamera2()
@@ -42,42 +42,50 @@ picam2.configure(config)
 picam2.start()
 time.sleep(2)
 
-# set up video writer to record preview
-fourcc = cv2.VideoWriter_fourcc(*"XVID")
-out    = cv2.VideoWriter(
-    "/home/rtxcapstone/Desktop/gameTime3.avi",
-    fourcc,
-    20.0,
-    (640, 480)
-)
+fourcc    = cv2.VideoWriter_fourcc(*"XVID")
+out       = cv2.VideoWriter("/home/rtxcapstone/Desktop/gameTime_full.avi",
+                            fourcc, 20.0, (640, 480))
+
+_recording = True
+
+async def _record_task():
+    """Continuously grab & write frames until _recording is cleared."""
+    global _recording
+    while _recording:
+        frame = await asyncio.to_thread(picam2.capture_array)
+        out.write(frame)
+        await asyncio.sleep(0.05)
 
 async def connect_and_arm():
     drone = System()
     await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
+
     async for state in drone.core.connection_state():
         if state.is_connected:
             break
+
     async for health in drone.telemetry.health():
         if health.is_global_position_ok and health.is_home_position_ok:
             break
+
     await drone.action.arm()
     await drone.action.set_takeoff_altitude(6)
     await drone.action.takeoff()
+    # give it a few seconds to reach altitude
     await asyncio.sleep(10)
     return drone
 
 async def offboard_position_loop(drone: System):
     await drone.telemetry.set_rate_position_velocity_ned(10)
-    # get initial position in NED frame (scaled)
+
+    # init NED setpoint
     async for odom in drone.telemetry.position_velocity_ned():
-        init_north = odom.position.north_m / 12
-        init_east  = odom.position.east_m / 12
-        init_down  = odom.position.down_m / 12
+        init_n = odom.position.north_m / 12
+        init_e = odom.position.east_m  / 12
+        init_d = odom.position.down_m  / 12
         break
 
-    await drone.offboard.set_position_ned(
-        PositionNedYaw(init_north, init_east, init_down, 0.0)
-    )
+    await drone.offboard.set_position_ned(PositionNedYaw(init_n, init_e, init_d, 0.0))
     try:
         await drone.offboard.start()
     except OffboardError as e:
@@ -92,23 +100,20 @@ async def offboard_position_loop(drone: System):
             gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             # stabilize
+            stab = frame.copy()
             if prev_gray is not None:
-                pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=200,
-                                              qualityLevel=0.01, minDistance=30)
-                M = None
+                pts = cv2.goodFeaturesToTrack(prev_gray, 200, 0.01, 30)
                 if pts is not None:
                     curr_pts, status, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, pts, None)
                     valid = status.reshape(-1) == 1
                     if np.count_nonzero(valid) >= 6:
                         M, _ = cv2.estimateAffinePartial2D(pts[valid], curr_pts[valid])
-                stab = cv2.warpAffine(frame, M, frame.shape[1::-1]) if M is not None else frame.copy()
-            else:
-                stab = frame.copy()
+                        stab = cv2.warpAffine(frame, M, frame.shape[1::-1])
             prev_gray = gray
 
             # detect ArUco
-            gray_stab = cv2.cvtColor(stab, cv2.COLOR_BGR2GRAY)
-            corners, ids, _ = cv2.aruco.detectMarkers(gray_stab, ARUCO_DICT, parameters=parameters)
+            gray_s = cv2.cvtColor(stab, cv2.COLOR_BGR2GRAY)
+            corners, ids, _ = cv2.aruco.detectMarkers(gray_s, ARUCO_DICT, parameters=parameters)
 
             if ids is not None and DROP_ZONE_ID in ids:
                 idx = list(ids.flatten()).index(DROP_ZONE_ID)
@@ -118,55 +123,45 @@ async def offboard_position_loop(drone: System):
                 )
                 x_cam, y_cam, z_cam = tvecs[0][0]
 
-                # get current NED
+                # current NED
                 async for odom in drone.telemetry.position_velocity_ned():
-                    curr_north = odom.position.north_m
-                    curr_east  = odom.position.east_m
-                    curr_down  = odom.position.down_m
+                    cn, ce, cd = odom.position.north_m, odom.position.east_m, odom.position.down_m
                     break
 
-                # compute target N/E, hold altitude
-                target_north = curr_north + y_cam
-                target_east  = curr_east  + x_cam
+                tn = cn + y_cam
+                te = ce + x_cam
 
-                # command offboard with current down
-                await drone.offboard.set_position_ned(
-                    PositionNedYaw(target_north, target_east, curr_down, 0.0)
-                )
-
-                # short delay before checking position
+                await drone.offboard.set_position_ned(PositionNedYaw(tn, te, cd, 0.0))
                 await asyncio.sleep(5)
 
-                # check if within tolerance
-                async for od in drone.telemetry.position_velocity_ned():
-                    err_n = abs(od.position.north_m - target_north)
-                    err_e = abs(od.position.east_m  - target_east)
+                async for odom in drone.telemetry.position_velocity_ned():
+                    err_n = abs(odom.position.north_m - tn)
+                    err_e = abs(odom.position.east_m  - te)
                     break
 
-                # if reached, stop offboard and land
                 if err_n < TOLERANCE and err_e < TOLERANCE:
-                    print("Target reached within tolerance, landing...")
+                    print("Reached drop zone → landing")
                     await drone.offboard.stop()
                     await drone.action.land()
                     break
 
                 cv2.putText(stab,
                             f"dN={y_cam:.2f} dE={x_cam:.2f} dD={z_cam:.2f}",
-                            (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
+                            (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
             else:
-                cv2.putText(stab, "No marker", (10, 60),
+                cv2.putText(stab, "No marker", (10,60),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 2)
 
-            # display & record
             cv2.imshow("Preview", stab)
-            out.write(stab)
-
             if cv2.waitKey(1) & 0xFF == ord("q"):
+                # manual quit → land
+                await drone.offboard.stop()
+                await drone.action.land()
                 break
             await asyncio.sleep(0.1)
 
     finally:
-        out.release()
+        # ensure we land & disarm even on errors
         try:
             await drone.offboard.stop()
         except OffboardError:
@@ -174,11 +169,21 @@ async def offboard_position_loop(drone: System):
         await drone.action.land()
         await asyncio.sleep(5)
         await drone.action.disarm()
-        cv2.destroyAllWindows()
 
 async def main():
+    global _recording
+    # start background record
+    recorder = asyncio.create_task(_record_task())
+
+    # take off & track
     drone = await connect_and_arm()
     await offboard_position_loop(drone)
+
+    # stop & finalize AVI
+    _recording = False
+    await recorder
+    out.release()
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     asyncio.run(main())
