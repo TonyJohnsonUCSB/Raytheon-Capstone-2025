@@ -33,7 +33,7 @@ TARGET_ID     = 1
 
 # -- Flight & tolerance params --
 ALTITUDE      = 5    # meters for takeoff and waypoints
-TOLERANCE     = 0.10     # meters tolerance in N/E before landing
+TOLERANCE     = 0.10  # meters tolerance in N/E before landing
 
 # -- Waypoints & geofence --
 coordinates = [
@@ -46,7 +46,8 @@ geofence_points = [
     Point(34.418606, -119.855929),
     Point(34.418600, -119.855196),
     Point(34.419221, -119.855198),
-    Point(34.419228, -119.855931)
+    Point(34.419228, -119.855931),
+    Point(34.418606, -119.855929)
 ]
 
 # -- Camera setup --
@@ -57,123 +58,187 @@ cam_cfg = picam2.create_preview_configuration(
 )
 picam2.configure(cam_cfg)
 picam2.start()
+print("[DEBUG] Camera started with RGB888 preview at 640x480")
+# allow auto‑exposure to settle
 time.sleep(2)
 
-# -- Video writer to record preview --
+# -- Recording globals --
+writer = None
+record_enabled = False
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
-writer = cv2.VideoWriter(
-    '/home/rtxcapstone/Desktop/searchAndLandTest2.avi',
-    fourcc,
-    20.0,
-    (640, 480)
-)
+output_path = '/home/rtxcapstone/Desktop/searchAndLandTest2.avi'
 
 async def connect_and_arm():
+    print("[DEBUG] Connecting to drone...")
     drone = System()
     await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
     async for state in drone.core.connection_state():
         if state.is_connected:
-            print("--Connected")
+            print("[DEBUG] Drone connected")
             break
     async for health in drone.telemetry.health():
         if health.is_global_position_ok and health.is_home_position_ok:
-            print("--Healthy")
+            print("[DEBUG] Drone healthy: global position and home position OK")
             break
-    # upload geofence
+    print("[DEBUG] Uploading geofence...")
     poly = Polygon(geofence_points, FenceType.INCLUSION)
     gf = GeofenceData(polygons=[poly], circles=[])
     await drone.geofence.upload_geofence(gf)
-    print("--Uploaded geofence")
+    print("[DEBUG] Geofence uploaded")
     await drone.action.arm()
-    print("--Armed")
-    print("-- Taking off")
-    await drone.action.set_takeoff_altitude(5.0)  # Set altitude to 5 meters
-    await drone.action.takeoff()
+    print("[DEBUG] Drone armed")
+    await drone.action.set_takeoff_altitude(ALTITUDE)
+    print(f"[DEBUG] Takeoff altitude set to {ALTITUDE} meters")
 
+    # start recording at takeoff
+    global writer, record_enabled
+    writer = cv2.VideoWriter(output_path, fourcc, 20.0, (640, 480))
+    record_enabled = True
+    print("[DEBUG] Recording started")
+
+    print("[DEBUG] Taking off...")
+    await drone.action.takeoff()
     await asyncio.sleep(10)
+    print("[DEBUG] Takeoff complete, hovering at altitude")
     return drone
 
 async def search_marker(timeout=10.0):
+    print(f"[DEBUG] Starting marker search for up to {timeout} seconds")
     t0 = time.time()
     prev_gray = None
     while time.time() - t0 < timeout:
         frame = await asyncio.to_thread(picam2.capture_array)
-        writer.write(frame)
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        if record_enabled:
+            writer.write(frame)
+            print("[DEBUG] Recorded frame during search")
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
         if prev_gray is not None:
             pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=100,
                                           qualityLevel=0.01, minDistance=20)
             if pts is not None:
                 curr, st, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, pts, None)
                 valid = st.reshape(-1) == 1
+                print(f"[DEBUG] Optical flow valid points: {np.count_nonzero(valid)}")
                 if np.count_nonzero(valid) >= 6:
                     M, _ = cv2.estimateAffinePartial2D(pts[valid], curr[valid])
                     if M is not None:
                         frame = cv2.warpAffine(frame, M, frame.shape[1::-1])
+                        gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+                        print("[DEBUG] Applied stabilization warp to frame")
         prev_gray = gray
 
-        gray2 = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        corners, ids, _ = cv2.aruco.detectMarkers(gray2, ARUCO_DICT, parameters=DETECT_PARAMS)
+        corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT, parameters=DETECT_PARAMS)
         if ids is not None and TARGET_ID in ids:
+            print(f"[DEBUG] Detected target ArUco ID {TARGET_ID}")
             idx = list(ids.flatten()).index(TARGET_ID)
             _, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                 [corners[idx]], MARKER_SIZE, INTRINSIC, DIST_COEFFS
             )
-            return tvecs[0][0]
+            offset = tvecs[0][0]
+            print(f"[DEBUG] Pose estimated, offset = {offset}")
+            return offset
+        else:
+            print("[DEBUG] Target marker not found in this frame")
+    print("[DEBUG] Marker search timed out without detection")
     return None
 
 async def approach_and_land(drone, offset):
-    # Start offboard to move in N/E only, hold altitude
-    await drone.offboard.set_position_ned(PositionNedYaw(0, 0, 0, 0))
-    try:
-        await drone.offboard.start()
-    except OffboardError:
-        return
-    # get current NED
+    print("[DEBUG] Beginning approach and landing sequence")
     async for odom in drone.telemetry.position_velocity_ned():
         north0 = odom.position.north_m
         east0  = odom.position.east_m
         down0  = odom.position.down_m
+        print(f"[DEBUG] Current NED: north={north0}, east={east0}, down={down0}")
         break
+    async for att in drone.telemetry.attitude_euler():
+        yaw = att.yaw_deg
+        print(f"[DEBUG] Current yaw: {yaw} deg")
+        break
+
+    print("[DEBUG] Sending initial offboard hold setpoint")
+    await drone.offboard.set_position_ned(PositionNedYaw(north0, east0, down0, yaw))
+    try:
+        print("[DEBUG] Starting offboard mode")
+        await drone.offboard.start()
+    except OffboardError:
+        print("[ERROR] Offboard start failed, aborting landing approach")
+        return
 
     target_n = north0 + offset[1]
     target_e = east0  + offset[0]
-    # command move to target N/E, keep down0
+    print(f"[DEBUG] Computed target NED: north={target_n}, east={target_e}, down={down0}")
+
+    print("[DEBUG] Sending offboard target setpoint")
     await drone.offboard.set_position_ned(
-        PositionNedYaw(target_n, target_e, down0, 0.0)
+        PositionNedYaw(target_n, target_e, down0, yaw)
     )
 
-    # wait until within tolerance
     while True:
         await asyncio.sleep(0.5)
         async for od in drone.telemetry.position_velocity_ned():
             err_n = abs(od.position.north_m - target_n)
             err_e = abs(od.position.east_m  - target_e)
+            print(f"[DEBUG] Position error: north_err={err_n}, east_err={err_e}")
             break
         if err_n < TOLERANCE and err_e < TOLERANCE:
-            print("Reached within tolerance, landing...")
+            print("[DEBUG] Within tolerance, stopping offboard and landing")
             try:
                 await drone.offboard.stop()
             except OffboardError:
-                pass
+                print("[WARN] Error stopping offboard")
             await drone.action.land()
+            print("[DEBUG] Land command sent")
+
+            # stop recording at landing
+            global writer, record_enabled
+            if record_enabled:
+                writer.release()
+                record_enabled = False
+                print("[DEBUG] Recording stopped")
             return
 
 async def run():
-    drone = await connect_and_arm()
-    for lat, lon in coordinates:
-        await drone.action.goto_location(lat, lon, ALTITUDE, 0.0)
-        await asyncio.sleep(15)
-        print(f"Searching for marker at {lat},{lon}")
-        tvec = await search_marker(10.0)
-        if tvec is not None:
-            print("Marker found, approaching and landing...")
-            await approach_and_land(drone, tvec)
-            return
-    await drone.action.return_to_launch()
-    await asyncio.sleep(15)
-    await drone.action.land()
+    drone = None
+    try:
+        drone = await connect_and_arm()
+        for lat, lon in coordinates:
+            print(f"[DEBUG] Navigating to waypoint ({lat}, {lon}) at {ALTITUDE}m")
+            await drone.action.goto_location(lat, lon, ALTITUDE, 0.0)
+            await asyncio.sleep(15)
+            print(f"[DEBUG] Searching for marker at {lat},{lon}")
+            tvec = await search_marker(10.0)
+            if tvec is not None:
+                print("[DEBUG] Marker found, proceeding to approach_and_land")
+                await approach_and_land(drone, tvec)
+                return
+        print("[DEBUG] No marker found at any waypoint, returning to launch")
+        await drone.action.return_to_launch()
+    except Exception as e:
+        print(f"[ERROR] Encountered exception: {e}")
+    finally:
+        # fallback: stop recording if still active
+        global writer, record_enabled
+        if record_enabled and writer is not None:
+            writer.release()
+            record_enabled = False
+            print("[DEBUG] Recording stopped (fallback)")
+        if drone is not None:
+            try:
+                print("[DEBUG] Cleaning up: stopping offboard mode")
+                await drone.offboard.stop()
+            except:
+                pass
+            try:
+                print("[DEBUG] Cleaning up: sending land command")
+                await drone.action.land()
+            except:
+                pass
+        print("[DEBUG] Run complete or aborted")
 
 if __name__ == "__main__":
-    asyncio.run(run())
-    writer.release()
+    try:
+        print("[DEBUG] Script started")
+        asyncio.run(run())
+    finally:
+        print("[DEBUG] Exiting script")
