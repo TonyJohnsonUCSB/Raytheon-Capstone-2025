@@ -15,7 +15,7 @@ from mavsdk.geofence import Point, Polygon, FenceType, GeofenceData
 picam2 = Picamera2()
 write_width, write_height = 640, 480
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
-output_path = '/home/rtxcapstone/Desktop/searchAndLandTest2.avi'
+output_path = '/home/rtxcapstone/Desktop/520searchandland1.avi'
 writer = None
 record_enabled = False
 
@@ -50,7 +50,7 @@ TARGET_ID = 1
 # Flight Parameters
 # ----------------------------
 ALTITUDE = 5       # takeoff and waypoint altitude in meters
-TOLERANCE = 0.10   # N/E position tolerance for landing in meters
+TOLERANCE = 0.005  # N/E position tolerance for landing in meters
 
 # ----------------------------
 # Waypoints and Geofence
@@ -86,7 +86,9 @@ time.sleep(2)  # allow auto-exposure to stabilize
 def start_recording():
     """Begin video recording."""
     global writer, record_enabled
-    writer = cv2.VideoWriter(output_path, fourcc, 20.0, (write_width, write_height))
+    fourcc    = cv2.VideoWriter_fourcc(*"XVID")
+    writer       = cv2.VideoWriter("/home/rtxcapstone/Desktop/520serachandland.avi",
+                            fourcc, 20.0, (640, 480))
     record_enabled = True
     print(f"[DEBUG] Recording started: {output_path}")
 
@@ -101,38 +103,31 @@ def stop_recording():
 
 
 async def connect_and_arm():
-    """Connect to drone, upload geofence, arm, and take off."""
-    print("[DEBUG] Connecting to drone...")
     drone = System()
-    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
+    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")  # Connect to the drone via serial port
 
+
+    print("Waiting for drone to connect...")
     async for state in drone.core.connection_state():
         if state.is_connected:
-            print("[DEBUG] Drone connected")
+            print(f"-- Connected to drone!")
             break
 
+    print("Waiting for drone to have a global position estimate...")
     async for health in drone.telemetry.health():
         if health.is_global_position_ok and health.is_home_position_ok:
-            print("[DEBUG] Drone healthy: GPS and home OK")
+            print("-- Global position estimate OK")
             break
 
-    print("[DEBUG] Uploading geofence...")
-    poly = Polygon(GEOFENCE_POINTS, FenceType.INCLUSION)
-    gf = GeofenceData(polygons=[poly], circles=[])
-    await drone.geofence.upload_geofence(gf)
-    print("[DEBUG] Geofence uploaded")
-
+    print("-- Arming")
     await drone.action.arm()
-    print("[DEBUG] Drone armed")
 
-    await drone.action.set_takeoff_altitude(ALTITUDE)
-    print(f"[DEBUG] Takeoff altitude set to {ALTITUDE} meters")
 
-    start_recording()
+    print("-- Taking off")
+    await drone.action.set_takeoff_altitude(3.0)  # Set altitude to 5 meters
     await drone.action.takeoff()
-    print("[DEBUG] Taking off...")
+
     await asyncio.sleep(10)
-    print("[DEBUG] Hovering at altitude")
 
     return drone
 
@@ -185,6 +180,7 @@ async def search_marker(timeout=10.0):
 
 async def approach_and_land(drone, offset):
     """Fly to the marker offset in NED frame and land."""
+    
     print("[DEBUG] Starting approach and landing sequence")
 
     async for od in drone.telemetry.position_velocity_ned():
@@ -205,8 +201,8 @@ async def approach_and_land(drone, offset):
         print("[ERROR] Offboard start failed")
         return
 
-    target_n = north0 + offset[1]
-    target_e = east0 + offset[0]
+    target_n = north0 + offset[1] 
+    target_e = east0 + offset[0] 
     print(f"[DEBUG] Commanding move to N: {target_n:.2f}, E: {target_e:.2f}")
 
     await drone.offboard.set_position_ned(
@@ -234,7 +230,7 @@ async def run():
         drone = await connect_and_arm()
         for lat, lon in coordinates:
             print(f"[DEBUG] Heading to waypoint ({lat}, {lon}) at {ALTITUDE} meters")
-            await drone.action.goto_location(lat, lon, ALTITUDE, 0.0)
+            await drone.action.goto_location(lat, lon, 12, 0.0)
             await asyncio.sleep(15)
             print(f"[DEBUG] Attempting marker search at ({lat}, {lon})")
             tvec = await search_marker(10.0)

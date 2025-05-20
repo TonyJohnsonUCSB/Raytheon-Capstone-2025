@@ -43,7 +43,7 @@ picam2.start()
 time.sleep(2)
 
 fourcc    = cv2.VideoWriter_fourcc(*"XVID")
-out       = cv2.VideoWriter("/home/rtxcapstone/Desktop/gameTime_full.avi",
+out       = cv2.VideoWriter("/home/rtxcapstone/Desktop/5_20_3.avi",
                             fourcc, 20.0, (640, 480))
 
 _recording = True
@@ -69,7 +69,7 @@ async def connect_and_arm():
             break
 
     await drone.action.arm()
-    await drone.action.set_takeoff_altitude(6)
+    await drone.action.set_takeoff_altitude(4)
     await drone.action.takeoff()
     # give it a few seconds to reach altitude
     await asyncio.sleep(10)
@@ -79,12 +79,14 @@ async def offboard_position_loop(drone: System):
     await drone.telemetry.set_rate_position_velocity_ned(10)
 
     # init NED setpoint
+    print("INITIALIZE NED SETPOINT")
     async for odom in drone.telemetry.position_velocity_ned():
         init_n = odom.position.north_m / 12
         init_e = odom.position.east_m  / 12
         init_d = odom.position.down_m  / 12
         break
 
+    print("ENTERING OFFBOARD MODE")
     await drone.offboard.set_position_ned(PositionNedYaw(init_n, init_e, init_d, 0.0))
     try:
         await drone.offboard.start()
@@ -96,6 +98,7 @@ async def offboard_position_loop(drone: System):
     prev_gray = None
     try:
         while True:
+            print("CAPTURE FRAME")
             frame = await asyncio.to_thread(picam2.capture_array)
             gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -111,11 +114,13 @@ async def offboard_position_loop(drone: System):
                         stab = cv2.warpAffine(frame, M, frame.shape[1::-1])
             prev_gray = gray
 
+            print("STABILIZE")
             # detect ArUco
             gray_s = cv2.cvtColor(stab, cv2.COLOR_BGR2GRAY)
             corners, ids, _ = cv2.aruco.detectMarkers(gray_s, ARUCO_DICT, parameters=parameters)
 
             if ids is not None and DROP_ZONE_ID in ids:
+                print("FOUND MARKER")
                 idx = list(ids.flatten()).index(DROP_ZONE_ID)
                 cv2.aruco.drawDetectedMarkers(stab, [corners[idx]])
                 _, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
@@ -128,9 +133,12 @@ async def offboard_position_loop(drone: System):
                     cn, ce, cd = odom.position.north_m, odom.position.east_m, odom.position.down_m
                     break
 
+                print("CALCULATING TARGET DISTANCE")
                 target_north = cn + y_cam
                 target_east = ce + x_cam
 
+
+                print("GOING TO MARKER")
                 await drone.offboard.set_position_ned(PositionNedYaw(target_north, target_east, cd, 0.0))
                 await asyncio.sleep(5)
 
@@ -139,6 +147,7 @@ async def offboard_position_loop(drone: System):
                     err_e = abs(odom.position.east_m  - target_east)
                     break
 
+                print("CHECKING TOLERANCE")
                 if err_n < TOLERANCE and err_e < TOLERANCE:
                     print("Reached drop zone → landing")
                     await drone.offboard.stop()

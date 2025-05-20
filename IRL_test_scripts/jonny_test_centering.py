@@ -47,23 +47,31 @@ time.sleep(2)  # Allow time for camera to warm up and stabilize
 # ======== Connect to Drone and Take Off ========
 async def connect_and_arm():
     drone = System()
-    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")  # Connect via serial port
+    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")  # Connect to the drone via serial port
 
-    # Wait until drone is fully connected
+    #status_text_task = asyncio.ensure_future(print_status_text(drone))
+
+    print("Waiting for drone to connect...")
     async for state in drone.core.connection_state():
         if state.is_connected:
+            print(f"-- Connected to drone!")
             break
 
-    # Wait until GPS and home position lock are ready
+    print("Waiting for drone to have a global position estimate...")
     async for health in drone.telemetry.health():
         if health.is_global_position_ok and health.is_home_position_ok:
+            print("-- Global position estimate OK")
             break
 
-    # Set takeoff altitude, arm the drone, and initiate takeoff
-    await drone.action.set_takeoff_altitude(6)  # Target 6 meters above takeoff point
+    print("-- Arming")
     await drone.action.arm()
+
+
+    print("-- Taking off")
+    await drone.action.set_takeoff_altitude(4)  # Set altitude to 5 meters
     await drone.action.takeoff()
-    await asyncio.sleep(10)  # Wait for drone to stabilize at takeoff altitude
+
+    await asyncio.sleep(10)
 
     return drone
 
@@ -165,6 +173,7 @@ async def descend_and_land(drone):
 # ======== Main Entry Point ========
 async def main():
     drone = await connect_and_arm()  # Connect and takeoff
+    await center_over_marker(drone, 4)
     await descend_and_land(drone)    # Begin slow precision descent
 
 if __name__ == "__main__":
