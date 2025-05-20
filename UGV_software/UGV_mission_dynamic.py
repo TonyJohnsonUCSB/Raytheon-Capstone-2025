@@ -275,11 +275,10 @@ async def main():
     current_angle = 45
     forward_velocity = 0
     lateral_velocity = 0
-       
-    print('Closing Truckbed')
-    close_truckbed()
-    time.sleep(5)
-    stop_motor()
+    last_distance = None
+    last_angle_y = None
+    last_angle_x = None
+    cam_height = 0.3 # in m
     
     # Connecting to Rover via USB (adjust port/baud as needed)
     print("Waiting for rover to connect via UART...")
@@ -295,10 +294,10 @@ async def main():
     print("Checking system health...")
     async for health in rover.telemetry.health():
         if health.is_global_position_ok:
-            print("✅ All systems healthy!")
+            print("All systems healthy!")
             break
         else:
-            print("⚠️ Waiting for system to become healthy...")
+            print("Waiting for system to become healthy...")
             await asyncio.sleep(1)
 
     # Waypoint Mission 
@@ -312,20 +311,21 @@ async def main():
     #                                  TARGET_LONGITUDE,
     #                                  TARGET_ALTITUDE,
     #                                  TARGET_YAW)
-    # Send an initial setpoint (all zeros) to satisfy the PX4 requirement
-    # Send an initial setpoint (all zeros) to satisfy the PX4 requirement
-    # 1) Show firmware
+
     print('Entering Computer Vision Loop')
     try:
         # Main computer vision loop
         while True:
-            img = picam2.capture_array() #capture an image
+            # capture an image
+            img = picam2.capture_array() 
 
+            #Process image
             output, distance, angle_y, angle_x = pose_estimation(
                 img, ARUCO_DICT[aruco_type], intrinsic_camera, distortion, drop_zoneID, marker_size
             )
 
-            if distance is not None and loop_marker == 0: #If the Aruco is found activate offboard mode and never enter this loop again
+            # Check if aruco has been found if so store initial values of distance and angles and increment our loop_marker 
+            if distance is not None and loop_marker == 0:
                 print('Marker Detected for the First Time')
                 loop_marker = 1 
                 last_distance = distance
@@ -345,12 +345,16 @@ async def main():
                     return
                 print("Offboard Mode On")
 
-            # Store previous distance
-            # Loop for tracking marker
-            if loop_marker==1: #If ArUco is found
+            # If ArUco was detected for the first time and were in offboard mode enter the precision drop-off part of the mission 
+            if loop_marker==1: 
+                # If we lose markers estimate the angle_x, angle_y, distance given what we know about the systemd
                 if distance is None:
-                    distance = last_distance - forward_velocity*dt
-                    angle
+                    dt = time.time()-t0
+                    d_dot = (np.sqrt(last_d\istance**2-cam_height**2)/last_distance)*forward_velocity
+                    distance = last_distance + d_dot*dt
+                    angle_x = last_angle_x + lateral_velocity*dt 
+                    angle_y = -cam_height*d_dot/(last_distance**2*np.sqrt(1-(cam_height/last_distance)**2)
+                                                 
                 # Update servo angle
                 u = camera_PID.update(angle_y)    # we get u update from controller
                 new_angle = current_angle - u     # update angle 
@@ -397,7 +401,10 @@ async def main():
             # Send velocity commands via offboard command:
                 velocity_command = VelocityBodyYawspeed(forward_velocity, 0, 0.0, lateral_velocity)
                 await rover.offboard.set_velocity_body(velocity_command)
-                print(distance)
+                t0 = time.time()
+                last_distance = distance
+                last_angle_y = angle_y
+                last_angle_x = angle_x
             
             # Delivering Package when vectorial distance from marker to camera is less than 1 m
                 # if distance < desired_distance:
@@ -405,10 +412,6 @@ async def main():
                     # velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0)
                     # await rover.offboard.set_velocity_body(velocity_command)
                     # dump_package()
-
-            else: #If marker is not found stop car
-                initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
-                await rover.offboard.set_velocity_body(initial_velocity)
                 
             print('right before cv2.imshow')
             plt.clf()  # Clear last frame
@@ -419,6 +422,13 @@ async def main():
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
+
+    finally:
+        picam2.stop()
+        picam2.close()
+        cv2.destroyAllWindows()
+        pca.deinit()
+
 
     finally:
         picam2.stop()
