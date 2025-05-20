@@ -262,7 +262,7 @@ async def search_alg(loop_marker, time_detected, time_lost_threshold, t_mission_
             # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
             velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, turn_speed)
             await rover.offboard.set_velocity_body(velocity_command)
-            time.sleep(1)
+            await asyncio.sleep(1)
             velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
             await rover.offboard.set_velocity_body(velocity_command)
 
