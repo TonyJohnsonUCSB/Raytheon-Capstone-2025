@@ -364,6 +364,10 @@ async def main():
     await rover.action.arm()
     print("Rover armed")
 
+    # Do not start mission until coordinates are sent!
+    # While TARGET_LATITUDE is None:
+    #    keep waiting for signal 
+
     # Waypoint Mission 
     # print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
     # await rover.action.goto_location(TARGET_LATITUDE,
