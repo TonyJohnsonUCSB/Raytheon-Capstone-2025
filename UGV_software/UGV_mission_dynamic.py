@@ -328,6 +328,9 @@ async def main():
             if distance is not None and loop_marker == 0: #If the Aruco is found activate offboard mode and never enter this loop again
                 print('Marker Detected for the First Time')
                 loop_marker = 1 
+                last_distance = distance
+                last_angle_y = angle_y
+                last_angle_x = angle_x
                 # Send an initial setpoint (all zeros) to satisfy the PX4 requirement
                 initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
                 print("Sending initial velocity setpoints...")
@@ -340,12 +343,14 @@ async def main():
                 except OffboardError as error:
                     print(f"Failed to send setpoints: {error._result.result}")
                     return
-                # await rover.offboard.set_velocity_body(initial_velocity)    
                 print("Offboard Mode On")
 
-
+            # Store previous distance
             # Loop for tracking marker
-            if distance is not None: #If ArUco is found
+            if loop_marker==1: #If ArUco is found
+                if distance is None:
+                    distance = last_distance - forward_velocity*dt
+                    angle
                 # Update servo angle
                 u = camera_PID.update(angle_y)    # we get u update from controller
                 new_angle = current_angle - u     # update angle 
@@ -427,3 +432,4 @@ if __name__ == '__main__':
     import asyncio
     asyncio.run(main())
     
+
