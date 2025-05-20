@@ -219,7 +219,7 @@ def set_servo_angle(channel, angle):
     duty = int(pulse / 20000 * 65535)
     pca.channels[channel].duty_cycle = duty
 
-def search_alg(loop_marker, time_detected, time_lost_threshold, t_mission_start, time_4_mission, step, current_angle, max_angle_down, default_angle, yaw):
+async def search_alg(loop_marker, time_detected, time_lost_threshold, t_mission_start, time_4_mission, step, current_angle, max_angle_down, default_angle, yaw):
     if (loop_marker == 1 and time.time() - time_detected >= time_lost_threshold) or (loop_marker == 0 and time.time() - t_mission_start >= time_4_mission):
         if step == 1:
             current_angle += 5
@@ -464,7 +464,7 @@ async def main():
             else: # If marker is not found stop car and run search alg, search alg will only run if its conditions are met
                 initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
                 await rover.offboard.set_velocity_body(initial_velocity)
-                search_alg(loop_marker, time_detected, time_lost_threshold, t_mission_start, t_mission_start, step, current_angle, max_angle_down, default_angle, yaw)
+                await search_alg(loop_marker, time_detected, time_lost_threshold, t_mission_start, t_mission_start, step, current_angle, max_angle_down, default_angle, yaw)
             
             plt.clf()  # Clear last frame
             plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
