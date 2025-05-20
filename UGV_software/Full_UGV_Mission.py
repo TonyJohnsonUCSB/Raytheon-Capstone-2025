@@ -361,7 +361,7 @@ async def main():
                 current_angle = new_angle               # Update the current angle
 
                 # Update forward velocity
-                forward_velocity = -1*(- forward_pid.update(distance))
+                forward_velocity = forward_pid.update(distance)
 
                 # Bottleneck forward velocity
                 if forward_velocity > max_speed:
@@ -370,7 +370,7 @@ async def main():
                     forward_velocity = -max_speed
                 
                 # Update Lateral velocity 
-                lateral_velocity = ( lateral_pid.update(np.round(angle_x,0)))
+                lateral_velocity = lateral_pid.update(angle_x)
 
                 # Bottleneck Lateral Velocity
                 if lateral_velocity > max_speed_angle:
@@ -387,14 +387,14 @@ async def main():
                 #print(f"Forward Velocity: {forward_velocity:.2f}, Lateral Velocity: {lateral_velocity:.2f}")
                 cv2.putText(output, f"Distance to Drop-Zone: {distance:.2f} m", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                 cv2.putText(output, f"Y Angle to Drop-Zone: {angle_y:.2f} degrees", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                cv2.putText(output, f"X Angle to Drop-Zone: {np.round(angle_x,0):.2f} degrees", (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                cv2.putText(output, f"X Angle to Drop-Zone: {angle_x:.2f} degrees", (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
             
             # Send velocity commands via offboard command:
                 velocity_command = VelocityBodyYawspeed(forward_velocity, 0, 0.0, lateral_velocity)
                 await rover.offboard.set_velocity_body(velocity_command)
                 print(distance)
             
-            # Delivering Package when vectorial distance from marker to camera is less than 1 m
+            # Delivering Package when the vectorial distance from marker to the camera is less than 1 m
                 # if distance < desired_distance:
                     # print('Package Drop-off Sequence')
                     # velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0)
@@ -404,13 +404,11 @@ async def main():
             else: #If marker is not found stop car
                 initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
                 await rover.offboard.set_velocity_body(initial_velocity)
-                
-            print('right before cv2.imshow')
+            
             plt.clf()  # Clear last frame
             plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
             plt.title("Live Debug")
             plt.pause(0.001)  # Short pause to update plot window
-            print('right after cv2.imshow')
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
