@@ -10,14 +10,10 @@ from mavsdk.offboard import OffboardError, PositionNedYaw
 from mavsdk.geofence import Point, Polygon, FenceType, GeofenceData
 
 # ----------------------------
-# Camera and Recording Globals
+# Camera Globals
 # ----------------------------
 picam2 = Picamera2()
 write_width, write_height = 640, 480
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-output_path = '/home/rtxcapstone/Desktop/520searchandland1.avi'
-writer = None
-record_enabled = False
 
 # ----------------------------
 # Calibration and Distortion
@@ -50,24 +46,48 @@ TARGET_ID = 1
 # Flight Parameters
 # ----------------------------
 ALTITUDE = 5       # takeoff and waypoint altitude in meters
-TOLERANCE = 0.01  # N/E position tolerance for landing in meters
+AMSL_ALTITUDE = ALTITUDE + 9
+TOLERANCE = 0.1  # N/E position tolerance for landing in meters
 
 # ----------------------------
 # Waypoints and Geofence
 # ----------------------------
+# Updated coordinates to plot
+LAT1 = 34.41900
+LAT2 = 34.418925
+LAT3 = 34.41885
+LAT4 = 34.418775
+LON1 = -119.855400
+LON2 = -119.855250
+LON3 = -119.855100
+LON4 = -119.854950
+
 coordinates = [
-    (34.418953, -119.855332),
-    (34.418948, -119.855281),
-    (34.418945, -119.855245),
-    (34.418942, -119.855215)
+    (LAT1, LON1),
+    (LAT1, LON2),
+    (LAT1, LON3),
+    (LAT1, LON4),
+    (LAT2, LON4),
+    (LAT2, LON3),
+    (LAT2, LON2),
+    (LAT2, LON1),
+    (LAT3, LON1),
+    (LAT3, LON2),
+    (LAT3, LON3),
+    (LAT3, LON4),
+    (LAT4, LON4),
+    (LAT4, LON3),
+    (LAT4, LON2),
+    (LAT4, LON1)
 ]
 
+# Geofence shifted 20 m east (pre‑computed)
 GEOFENCE_POINTS = [
-    Point(34.418606, -119.855929),
-    Point(34.418600, -119.855196),
-    Point(34.419221, -119.855198),
-    Point(34.419228, -119.855931),
-    Point(34.418606, -119.855929)
+    (34.4186,  -119.85600),
+    (34.4186,  -119.85475),
+    (34.4192,  -119.85475),
+    (34.4192,  -119.85600),
+    (34.4186,  -119.85600),
 ]
 
 # ----------------------------
@@ -83,29 +103,9 @@ print("[DEBUG] Camera started: RGB888 preview at {}x{}".format(write_width, writ
 time.sleep(2)  # allow auto-exposure to stabilize
 
 
-def start_recording():
-    """Begin video recording."""
-    global writer, record_enabled
-    fourcc    = cv2.VideoWriter_fourcc(*"XVID")
-    writer       = cv2.VideoWriter("/home/rtxcapstone/Desktop/520serachandland.avi",
-                            fourcc, 20.0, (640, 480))
-    record_enabled = True
-    print(f"[DEBUG] Recording started: {output_path}")
-
-
-def stop_recording():
-    """Stop video recording and release resources."""
-    global writer, record_enabled
-    if record_enabled and writer is not None:
-        writer.release()
-        record_enabled = False
-        print("[DEBUG] Recording stopped")
-
-
 async def connect_and_arm():
     drone = System()
-    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")  # Connect to the drone via serial port
-
+    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
 
     print("Waiting for drone to connect...")
     async for state in drone.core.connection_state():
@@ -122,9 +122,8 @@ async def connect_and_arm():
     print("-- Arming")
     await drone.action.arm()
 
-
     print("-- Taking off")
-    await drone.action.set_takeoff_altitude(3.0)  # Set altitude to 5 meters
+    await drone.action.set_takeoff_altitude(5)
     await drone.action.takeoff()
 
     await asyncio.sleep(10)
@@ -133,15 +132,12 @@ async def connect_and_arm():
 
 
 async def search_marker(timeout=10.0):
-    """Capture frames and look for the target ArUco marker."""
     print(f"[DEBUG] Searching for marker (timeout: {timeout} seconds)")
     t0 = time.time()
     prev_gray = None
 
     while (time.time() - t0) < timeout:
         frame = await asyncio.to_thread(picam2.capture_array)
-        if record_enabled:
-            writer.write(frame)
 
         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
         if prev_gray is not None:
@@ -150,14 +146,14 @@ async def search_marker(timeout=10.0):
             if pts is not None:
                 curr, st, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, pts, None)
                 valid_count = np.count_nonzero(st.reshape(-1) == 1)
-                print(f"[DEBUG] Optical flow valid points: {valid_count}")
+                #print(f"[DEBUG] Optical flow valid points: {valid_count}")
                 if valid_count >= 6:
                     M, _ = cv2.estimateAffinePartial2D(pts[st.reshape(-1) == 1],
                                                      curr[st.reshape(-1) == 1])
                     if M is not None:
                         frame = cv2.warpAffine(frame, M, frame.shape[1::-1])
                         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-                        print("[DEBUG] Applied stabilization warp")
+                        #print("[DEBUG] Applied stabilization warp")
         prev_gray = gray
 
         corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT,
@@ -179,8 +175,6 @@ async def search_marker(timeout=10.0):
 
 
 async def approach_and_land(drone, offset):
-    """Fly to the marker offset in NED frame and land."""
-    
     print("[DEBUG] Starting approach and landing sequence")
 
     async for od in drone.telemetry.position_velocity_ned():
@@ -220,7 +214,6 @@ async def approach_and_land(drone, offset):
             print("[DEBUG] Within tolerance, initiating landing")
             await drone.offboard.stop()
             await drone.action.land()
-            stop_recording()
             return
 
 
@@ -230,8 +223,8 @@ async def run():
         drone = await connect_and_arm()
         for lat, lon in coordinates:
             print(f"[DEBUG] Heading to waypoint ({lat}, {lon}) at {ALTITUDE} meters")
-            await drone.action.goto_location(lat, lon, 12, 0.0)
-            await asyncio.sleep(15)
+            await drone.action.goto_location(lat, lon, AMSL_ALTITUDE, 0.0)
+            await asyncio.sleep(7)
             print(f"[DEBUG] Attempting marker search at ({lat}, {lon})")
             tvec = await search_marker(10.0)
             if tvec is not None:
@@ -243,7 +236,6 @@ async def run():
     except Exception as e:
         print(f"[ERROR] Exception: {e}")
     finally:
-        stop_recording()
         if drone:
             try:
                 await drone.offboard.stop()
