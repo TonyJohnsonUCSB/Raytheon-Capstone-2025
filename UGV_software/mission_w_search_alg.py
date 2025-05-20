@@ -219,6 +219,62 @@ def set_servo_angle(channel, angle):
     duty = int(pulse / 20000 * 65535)
     pca.channels[channel].duty_cycle = duty
 
+def search_alg(loop_marker, time_detected, time_lost_threshold, t_mission_start, t_mission_start, step, current_angle, max_angle_down, default_angle, yaw):
+    global loop_marker time_detected time_lost_threshold 
+    if (loop_marker == 1 and time.time() - time_detected >= time_lost_threshold) or (loop_marker == 0 and time.time() - t_mission_start >= t_mission_start):
+        if step == 1:
+            current_angle += 5
+            if current_angle > max_angle_down:
+                set_servo_angle(current_angle)
+            else:
+                step = 2
+                current_angle -= 5
+                
+        if step == 2:
+            current_angle -= 5
+            if current_angle < default_angle:
+                set_servo_angle(current_angle)
+            else: 
+                step = 3 
+                current_angle += 5
+
+         # if we never found the marker (loop_marker == 0) then we must enter offboard mode
+        if step == 3 and loop_marker == 0:
+            # We set loop_marker to 1 because if we detect marker for the first time in search 
+            # alg then it will trigger the beginning of offboard mode again
+            loop_marker = 1
+            initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
+            print("Sending initial velocity setpoints...")
+            try:
+                for _ in range(50):  # Send at 10 Hz for 1 second
+                    await rover.offboard.set_velocity_body(initial_velocity)
+                    await asyncio.sleep(0.05)
+                print("Starting offboard mode...")
+                await rover.offboard.start()
+            except OffboardError as error:
+                print(f"Failed to send setpoints: {error._result.result}")
+                return
+            print("Offboard Mode On")
+
+        if step == 3 and loop_marker == 1:
+            # If we are already in offboard mode
+            turn_speed = 100 # degrees/s
+           
+            # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
+            velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, turn_speed)
+            await rover.offboard.set_velocity_body(velocity_command)
+            time.sleep(1)
+            velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
+            await rover.offboard.set_velocity_body(velocity_command)
+
+            # Store how much we've rotated
+            yaw += 15
+            # After stepping 15 degrees go back to step to sweep servo up and down if nothing is found it wil come back to either step 3
+            step = 1
+            # Search should run a whole circle
+            if yaw >= 360:
+                # Im not sure yet what we should do if we do the full search and nothing is detected
+
 ARUCO_DICT = {
     "DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL,
     "DICT_6X6_250": cv2.aruco.DICT_6X6_250  
@@ -272,14 +328,16 @@ loop_marker = 0
 async def main():
     plt.ion()
     loop_marker = 0
-    current_angle = 45
+    default_angle = 45
+    current_angle = default_angle
+    max_angle_down = 90
     forward_velocity = 0
     lateral_velocity = 0
-       
-    print('Closing Truckbed')
-    close_truckbed()
-    time.sleep(5)
-    stop_motor()
+    time_lost_threshold = 1*60 # 1 min * 60 s/min
+    time_4_mission = 6*60      # 6 min * 60 s/min
+    time_detected = 0
+    step = 1
+    yaw = 0
     
     # Connecting to Rover via USB (adjust port/baud as needed)
     print("Waiting for rover to connect via UART...")
@@ -295,26 +353,27 @@ async def main():
     print("Checking system health...")
     async for health in rover.telemetry.health():
         if health.is_global_position_ok:
-            print("✅ All systems healthy!")
+            print("All systems healthy!")
             break
         else:
-            print("⚠️ Waiting for system to become healthy...")
+            print("Waiting for system to become healthy...")
             await asyncio.sleep(1)
 
-    # Waypoint Mission 
+
     # Arm the vehicle
     print("Arming rover...")
     await rover.action.arm()
     print("Rover armed")
-    
+
+    # Waypoint Mission 
     # print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
     # await rover.action.goto_location(TARGET_LATITUDE,
     #                                  TARGET_LONGITUDE,
     #                                  TARGET_ALTITUDE,
     #                                  TARGET_YAW)
-    # Send an initial setpoint (all zeros) to satisfy the PX4 requirement
-    # Send an initial setpoint (all zeros) to satisfy the PX4 requirement
-    # 1) Show firmware
+
+    t_mission_start = time.time() # Record the time when the waypoint mission started
+
     print('Entering Computer Vision Loop')
     try:
         # Main computer vision loop
@@ -324,7 +383,7 @@ async def main():
             output, distance, angle_y, angle_x = pose_estimation(
                 img, ARUCO_DICT[aruco_type], intrinsic_camera, distortion, drop_zoneID, marker_size
             )
-
+            
             if distance is not None and loop_marker == 0: #If the Aruco is found activate offboard mode and never enter this loop again
                 print('Marker Detected for the First Time')
                 loop_marker = 1 
@@ -343,9 +402,12 @@ async def main():
                 # await rover.offboard.set_velocity_body(initial_velocity)    
                 print("Offboard Mode On")
 
-
             # Loop for tracking marker
             if distance is not None: #If ArUco is found
+                time_detected = time.time() # record the time when an ArUco is found
+                step = 1
+                yaw = 0 
+                
                 # Update servo angle
                 u = camera_PID.update(angle_y)    # we get u update from controller
                 new_angle = current_angle - u     # update angle 
@@ -392,7 +454,6 @@ async def main():
             # Send velocity commands via offboard command:
                 velocity_command = VelocityBodyYawspeed(forward_velocity, 0, 0.0, lateral_velocity)
                 await rover.offboard.set_velocity_body(velocity_command)
-                print(distance)
             
             # Delivering Package when the vectorial distance from marker to the camera is less than 1 m
                 # if distance < desired_distance:
@@ -401,9 +462,10 @@ async def main():
                     # await rover.offboard.set_velocity_body(velocity_command)
                     # dump_package()
 
-            else: #If marker is not found stop car
+            else: # If marker is not found stop car and run search alg, search alg will only run if its conditions are met
                 initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
                 await rover.offboard.set_velocity_body(initial_velocity)
+                search_alg(loop_marker, time_detected, time_lost_threshold, t_mission_start, t_mission_start, step, current_angle, max_angle_down, default_angle, yaw)
             
             plt.clf()  # Clear last frame
             plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
