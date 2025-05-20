@@ -1,0 +1,4070 @@
+eached drop zone → landing
+Traceback (most recent call last):
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/TEST_aruco_offboard_control.py", line 189, in <module>
+    asyncio.run(main())
+  File "/usr/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/TEST_aruco_offboard_control.py", line 180, in main
+    await offboard_position_loop(drone)
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/TEST_aruco_offboard_control.py", line 171, in offboard_position_loop
+    await drone.action.disarm()
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/action.py", line 384, in disarm
+    raise ActionError(result, "disarm()")
+mavsdk.action.ActionError: COMMAND_DENIED: 'Command Denied'; origin: disarm(); params: ()
+^CException ignored in: <module 'threading' from '/usr/lib/python3.11/threading.py'>
+Traceback (most recent call last):
+  File "/usr/lib/python3.11/threading.py", line 1583, in _shutdown
+    lock.acquire()
+KeyboardInterrupt: 
+Exception ignored in: <function System.__del__ at 0x7ffeaf26c5e0>
+Traceback (most recent call last):
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/system.py", line 88, in __del__
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/system.py", line 124, in _stop_mavsdk_server
+ImportError: sys.meta_path is None, Python is likely shutting down
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ 
+
+
+: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+FOUND MARKER
+CALCULATING TARGET DISTANCE
+GOING TO MARKER
+CHECKING TOLERANCE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+FOUND MARKER
+CALCULATING TARGET DISTANCE
+GOING TO MARKER
+CHECKING TOLERANCE
+Reached drop zone → landing
+Traceback (most recent call last):
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/TEST_aruco_offboard_control.py", line 198, in <module>
+    asyncio.run(main())
+  File "/usr/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/TEST_aruco_offboard_control.py", line 189, in main
+    await offboard_position_loop(drone)
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/TEST_aruco_offboard_control.py", line 180, in offboard_position_loop
+    await drone.action.disarm()
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/action.py", line 384, in disarm
+    raise ActionError(result, "disarm()")
+mavsdk.action.ActionError: COMMAND_DENIED: 'Command Denied'; origin: disarm(); params: ()
+^A^A
+
+
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ python TEST_aruco_offboard_control.py 
+[0:29:23.351524534] [38283]  INFO Camera camera_manager.cpp:327 libcamera v0.4.0+53-29156679
+[0:29:23.361775193] [38312]  INFO RPI pisp.cpp:720 libpisp version v1.1.0 e7974a156008 27-01-2025 (21:50:51)
+[0:29:23.378048955] [38312]  INFO RPI pisp.cpp:1179 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/imx708@1a to CFE device /dev/media3 and ISP device /dev/media1 using PiSP variant BCM2712_D0
+[0:29:23.384823097] [38283]  INFO Camera camera.cpp:1202 configuring streams: (0) 640x480-RGB888 (1) 2304x1296-BGGR_PISP_COMP1
+[0:29:23.384997746] [38312]  INFO RPI pisp.cpp:1484 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/imx708@1a - Selected sensor format: 2304x1296-SBGGR10_1X10 - Selected CFE format: 2304x1296-PC1B
+INITIALIZE NED SETPOINT
+ENTERING OFFBOARD MODE
+CAPTURE FRAME
+STABILIZE
+qt.qpa.xcb: QXcbConnection: XCB error: 148 (Unknown), sequence: 192, resource id: 0, major code: 140 (Unknown), minor code: 20
+libpng warning: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+CAPTURE FRAME
+STABILIZE
+FOUND MARKER
+CALCULATING TARGET DISTANCE
+GOING TO MARKER
+CHECKING TOLERANCE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+CAPTURE FRAME
+STABILIZE
+FOUND MARKER
+CALCULATING TARGET DISTANCE
+GOING TO MARKER
+CHECKING TOLERANCE
+Reached drop zone → landing
+Traceback (most recent call last):
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/TEST_aruco_offboard_control.py", line 198, in <module>
+    asyncio.run(main())
+  File "/usr/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/TEST_aruco_offboard_control.py", line 189, in main
+    await offboard_position_loop(drone)
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/TEST_aruco_offboard_control.py", line 180, in offboard_position_loop
+    await drone.action.disarm()
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/action.py", line 384, in disarm
+    raise ActionError(result, "disarm()")
+mavsdk.action.ActionError: COMMAND_DENIED: 'Command Denied'; origin: disarm(); params: ()
+^CException ignored in: <module 'threading' from '/usr/lib/python3.11/threading.py'>
+Traceback (most recent call last):
+  File "/usr/lib/python3.11/threading.py", line 1583, in _shutdown
+    lock.acquire()
+KeyboardInterrupt: 
+Exception ignored in: <function System.__del__ at 0x7fff524e85e0>
+Traceback (most recent call last):
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/system.py", line 88, in __del__
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/system.py", line 124, in _stop_mavsdk_server
+ImportError: sys.meta_path is None, Python is likely shutting down
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ 
+
+
+txcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ python search_and_land_OFFBOARD.py 
+[0:31:25.150779077] [40869]  INFO Camera camera_manager.cpp:327 libcamera v0.4.0+53-29156679
+[0:31:25.158244764] [40898]  INFO RPI pisp.cpp:720 libpisp version v1.1.0 e7974a156008 27-01-2025 (21:50:51)
+[0:31:25.169961065] [40898]  INFO RPI pisp.cpp:1179 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/imx708@1a to CFE device /dev/media3 and ISP device /dev/media1 using PiSP variant BCM2712_D0
+[0:31:25.174728015] [40869]  INFO Camera camera.cpp:1202 configuring streams: (0) 640x480-RGB888 (1) 2304x1296-BGGR_PISP_COMP1
+[0:31:25.174867905] [40898]  INFO RPI pisp.cpp:1484 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/imx708@1a - Selected sensor format: 2304x1296-SBGGR10_1X10 - Selected CFE format: 2304x1296-PC1B
+[DEBUG] Camera started: RGB888 preview at 640x480
+[DEBUG] Script start
+[DEBUG] Connecting to drone...
+[DEBUG] Drone connected
+[DEBUG] Drone healthy: GPS and home OK
+[DEBUG] Uploading geofence...
+[DEBUG] Geofence uploaded
+[DEBUG] Drone armed
+[DEBUG] Takeoff altitude set to 5 meters
+[DEBUG] Recording started: /home/rtxcapstone/Desktop/searchAndLandTest2.avi
+[DEBUG] Taking off...
+[DEBUG] Hovering at altitude
+[DEBUG] Heading to waypoint (34.418953, -119.855332) at 5 meters
+[DEBUG] Attempting marker search at (34.418953, -119.855332)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+^C[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Recording stopped
+Traceback (most recent call last):
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/search_and_land_OFFBOARD.py", line 240, in run
+    tvec = await search_marker(10.0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/search_and_land_OFFBOARD.py", line 147, in search_marker
+    frame = await asyncio.to_thread(picam2.capture_array)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/search_and_land_OFFBOARD.py", line 262, in <module>
+    asyncio.run(run())
+  File "/usr/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/search_and_land_OFFBOARD.py", line 256, in run
+    await drone.action.land()
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/action.py", line 425, in land
+    response = await self._stub.Land(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/grpc/aio/_call.py", line 327, in __await__
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:50051: Failed to connect to remote host: connect: Connection refused (111)"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:50051: Failed to connect to remote host: connect: Connection refused (111)", grpc_status:14, created_time:"2025-05-20T10:21:38.216417214-07:00"}"
+>
+Exception ignored in: <function System.__del__ at 0x7fff7cbf04a0>
+Traceback (most recent call last):
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/system.py", line 88, in __del__
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/system.py", line 124, in _stop_mavsdk_server
+ImportError: sys.meta_path is None, Python is likely shutting down
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $
+
+
+tone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ python search_and_land_OFFBOARD.py 
+[0:33:43.503980254] [43745]  INFO Camera camera_manager.cpp:327 libcamera v0.4.0+53-29156679
+[0:33:43.511434573] [43776]  INFO RPI pisp.cpp:720 libpisp version v1.1.0 e7974a156008 27-01-2025 (21:50:51)
+[0:33:43.522215742] [43776]  INFO RPI pisp.cpp:1179 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/imx708@1a to CFE device /dev/media3 and ISP device /dev/media1 using PiSP variant BCM2712_D0
+[0:33:43.528038922] [43745]  INFO Camera camera.cpp:1202 configuring streams: (0) 640x480-RGB888 (1) 2304x1296-BGGR_PISP_COMP1
+[0:33:43.528162775] [43776]  INFO RPI pisp.cpp:1484 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/imx708@1a - Selected sensor format: 2304x1296-SBGGR10_1X10 - Selected CFE format: 2304x1296-PC1B
+[DEBUG] Camera started: RGB888 preview at 640x480
+[DEBUG] Script start
+[DEBUG] Connecting to drone...
+[DEBUG] Drone connected
+[DEBUG] Drone healthy: GPS and home OK
+[DEBUG] Uploading geofence...
+[DEBUG] Drone armed
+[DEBUG] Takeoff altitude set to 5 meters
+[DEBUG] Recording started: /home/rtxcapstone/Desktop/searchAndLandTest2.avi
+[DEBUG] Taking off...
+[DEBUG] Hovering at altitude
+[DEBUG] Heading to waypoint (34.418953, -119.855332) at 5 meters
+^C[DEBUG] Recording stopped
+Traceback (most recent call last):
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/search_and_land_OFFBOARD.py", line 238, in run
+    await asyncio.sleep(15)
+  File "/usr/lib/python3.11/asyncio/tasks.py", line 639, in sleep
+    return await future
+           ^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/search_and_land_OFFBOARD.py", line 262, in <module>
+    asyncio.run(run())
+  File "/usr/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/search_and_land_OFFBOARD.py", line 256, in run
+    await drone.action.land()
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/action.py", line 425, in land
+    response = await self._stub.Land(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/grpc/aio/_call.py", line 327, in __await__
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNAVAILABLE
+	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:50051: Failed to connect to remote host: connect: Connection refused (111)"
+	debug_error_string = "UNKNOWN:Error received from peer  {created_time:"2025-05-20T10:23:49.265501433-07:00", grpc_status:14, grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:50051: Failed to connect to remote host: connect: Connection refused (111)"}"
+>
+Exception ignored in: <function System.__del__ at 0x7ffec48b0540>
+Traceback (most recent call last):
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/system.py", line 88, in __del__
+  File "/home/rtxcapstone/.local/lib/python3.11/site-packages/mavsdk/system.py", line 124, in _stop_mavsdk_server
+ImportError: sys.meta_path is None, Python is likely shutting down
+
+
+
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 82
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 75
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 28
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 81
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 69
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 84
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 39
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 77
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 95
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 91
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 50
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 35
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 81
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 86
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 32
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 67
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 53
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 88
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 84
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 78
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 91
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 36
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 67
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 92
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 40
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 90
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 77
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 71
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 43
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 76
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 78
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 67
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker search timed out
+[DEBUG] Heading to waypoint (34.418948, -119.855281) at 5 meters
+[DEBUG] Attempting marker search at (34.418948, -119.855281)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 92
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 73
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 85
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 85
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 95
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 94
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 91
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 97
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 73
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 78
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 33
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 29
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 68
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 31
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 36
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 30
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 35
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 22
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 16
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 43
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 38
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 53
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 50
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 43
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 41
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 37
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 35
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 85
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 73
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 81
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 82
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 34
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 83
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 77
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 95
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 94
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 91
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 97
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 42
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 97
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 28
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 38
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 67
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 75
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 32
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 31
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 13
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 28
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 68
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 28
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 35
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 30
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 40
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 38
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 41
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 36
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 50
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 97
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 30
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 53
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 28
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 26
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 32
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 62
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 36
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 41
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 62
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 34
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 21
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 42
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 53
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 21
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 52
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 76
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 69
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 45
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 95
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 88
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 91
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 94
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 75
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 71
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 84
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 75
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 75
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 42
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 81
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 52
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 97
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 76
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 52
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 76
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker search timed out
+[DEBUG] Heading to waypoint (34.418945, -119.855245) at 5 meters
+[DEBUG] Attempting marker search at (34.418945, -119.855245)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker ID 1 detected
+[DEBUG] Pose offset: [ 0.13268664 -0.00693765  0.47825582]
+[DEBUG] Starting approach and landing sequence
+[DEBUG] Current NED -> N: -1.39, E: 8.06, D: -1.04
+[DEBUG] Current yaw: 11.9 deg
+[DEBUG] Enabling offboard mode
+[DEBUG] Commanding move to N: -1.39, E: 8.19
+[DEBUG] Err -> N: 0.02, E: 0.16
+[DEBUG] Err -> N: 0.04, E: 0.14
+[DEBUG] Err -> N: 0.05, E: 0.06
+[DEBUG] Within tolerance, initiating landing
+[DEBUG] Mission complete or aborted
+[DEBUG] Script exit
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ 
+ 
+
+[DEBUG] Optical flow valid points: 83
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 82
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 86
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 62
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 30
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 78
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 78
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 76
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 62
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 67
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 36
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 52
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 91
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 68
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 68
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 78
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 94
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 76
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 84
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 95
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker search timed out
+[DEBUG] Heading to waypoint (34.418942, -119.855215) at 5 meters
+[DEBUG] Attempting marker search at (34.418942, -119.855215)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 88
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 77
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 54
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 77
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 52
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 37
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 24
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 62
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 67
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 38
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 43
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 37
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 35
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 31
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 43
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 73
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 76
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 38
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 69
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 35
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 38
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 7
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 62
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 37
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 52
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 29
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 22
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 39
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 45
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 33
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 23
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 40
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 18
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 38
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 36
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 52
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 81
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 95
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 86
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 88
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 54
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 35
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 43
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 54
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 35
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 23
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 69
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 30
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 23
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 27
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 69
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 26
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 52
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 35
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 34
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 32
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 95
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 43
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 50
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 28
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 16
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 45
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 37
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 42
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 37
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 34
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 43
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 92
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 41
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 95
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 62
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 83
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 83
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 82
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 92
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 76
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 40
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 94
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 77
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 76
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 91
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 75
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 78
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 85
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker search timed out
+[DEBUG] No marker found; returning to launch
+[DEBUG] Mission complete or aborted
+[DEBUG] Script exit
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ 
+
+
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 34
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 39
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 90
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 41
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 43
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 53
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 53
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 78
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 86
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 35
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 94
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 92
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 34
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 59
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker search timed out
+[DEBUG] Heading to waypoint (34.418948, -119.855281) at 5 meters
+[DEBUG] Attempting marker search at (34.418948, -119.855281)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 86
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 71
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 31
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 71
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 53
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 54
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 37
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 52
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 18
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 53
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 45
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 20
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 86
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 76
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 45
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 69
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 86
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 92
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 97
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 84
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 85
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 73
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 38
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 90
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 90
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 86
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 68
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 41
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 45
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 71
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 31
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 68
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 34
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 67
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 19
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 31
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 50
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 37
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 81
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 24
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 41
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 97
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 46
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 30
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 36
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 42
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 25
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 92
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 33
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 33
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 46
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 42
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 83
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 59
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 50
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 95
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 37
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 81
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 29
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 50
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 84
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 92
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 70
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 97
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 54
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 59
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 45
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 29
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 89
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 91
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 50
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 84
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 21
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 38
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 96
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 42
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 83
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 78
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 37
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 68
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 90
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 66
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 91
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 45
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 97
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 52
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 85
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 62
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 99
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 33
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 82
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 59
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 67
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 68
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 94
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 93
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 48
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 84
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 58
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 71
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 79
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 36
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 97
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 51
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 63
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 47
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 57
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 49
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 91
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 64
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 95
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 74
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 78
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 81
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 81
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 87
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 73
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 83
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 86
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 81
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 56
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 43
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 80
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 72
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 65
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 55
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 61
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 75
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 69
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 44
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker search timed out
+[DEBUG] Heading to waypoint (34.418945, -119.855245) at 5 meters
+[DEBUG] Attempting marker search at (34.418945, -119.855245)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker ID 1 detected
+[DEBUG] Pose offset: [0.00796592 0.07535399 0.95702463]
+[DEBUG] Starting approach and landing sequence
+[DEBUG] Current NED -> N: 0.05, E: -2.78, D: -3.85
+[DEBUG] Current yaw: -1.3 deg
+[DEBUG] Enabling offboard mode
+[DEBUG] Commanding move to N: 0.13, E: -2.78
+[DEBUG] Err -> N: 0.09, E: 0.08
+[DEBUG] Within tolerance, initiating landing
+[DEBUG] Mission complete or aborted
+[DEBUG] Script exit
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ 
+
+
+EBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 6
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 98
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker search timed out
+[DEBUG] Heading to waypoint (34.418948, -119.855281) at 5 meters
+[DEBUG] Attempting marker search at (34.418948, -119.855281)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker ID 1 detected
+[DEBUG] Pose offset: [-0.27451824  0.1116409   1.08696819]
+[DEBUG] Starting approach and landing sequence
+[DEBUG] Current NED -> N: 0.29, E: -3.66, D: -4.15
+[DEBUG] Current yaw: 15.8 deg
+[DEBUG] Enabling offboard mode
+[DEBUG] Commanding move to N: 0.41, E: -3.93
+[DEBUG] Err -> N: 0.03, E: 0.22
+[DEBUG] Err -> N: 0.01, E: 0.09
+[DEBUG] Within tolerance, initiating landing
+[DEBUG] Mission complete or aborted
+[DEBUG] Script exit
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ 
+
+ation warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 73
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 60
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker search timed out
+[DEBUG] Heading to waypoint (34.418948, -119.855281) at 5 meters
+[DEBUG] Attempting marker search at (34.418948, -119.855281)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker ID 1 detected
+[DEBUG] Pose offset: [-0.30609102  0.18714506  0.86895758]
+[DEBUG] Starting approach and landing sequence
+[DEBUG] Current NED -> N: 0.18, E: 0.14, D: -3.21
+[DEBUG] Current yaw: 4.4 deg
+[DEBUG] Enabling offboard mode
+[DEBUG] Commanding move to N: 0.37, E: -0.17
+[DEBUG] Err -> N: 0.22, E: 0.27
+[DEBUG] Err -> N: 0.16, E: 0.10
+[DEBUG] Err -> N: 0.08, E: 0.00
+[DEBUG] Err -> N: 0.00, E: 0.01
+[DEBUG] Within tolerance, initiating landing
+[DEBUG] Mission complete or aborted
+[DEBUG] Script exit
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ 
+
+search timed out
+[DEBUG] Heading to waypoint (34.418948, -119.855281) at 5 meters
+[DEBUG] Attempting marker search at (34.418948, -119.855281)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 75
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker ID 1 detected
+[DEBUG] Pose offset: [-0.29105341  0.23028911  1.24993445]
+[DEBUG] Starting approach and landing sequence
+[DEBUG] Current NED -> N: -0.13, E: 0.46, D: -4.01
+[DEBUG] Current yaw: -2.5 deg
+[DEBUG] Enabling offboard mode
+[DEBUG] Commanding move to N: 0.10, E: 0.17
+[DEBUG] Err -> N: 0.22, E: 0.06
+[DEBUG] Err -> N: 0.10, E: 0.17
+[DEBUG] Err -> N: 0.05, E: 0.24
+[DEBUG] Err -> N: 0.07, E: 0.22
+[DEBUG] Err -> N: 0.12, E: 0.20
+[DEBUG] Err -> N: 0.09, E: 0.17
+[DEBUG] Err -> N: 0.03, E: 0.07
+[DEBUG] Err -> N: 0.01, E: 0.03
+[DEBUG] Within tolerance, initiating landing
+[DEBUG] Mission complete or aborted
+[DEBUG] Script exit
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ 
+
+
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 84
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 88
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker ID 1 detected
+[DEBUG] Pose offset: [-0.18141496  0.06536862  1.12694455]
+[DEBUG] Starting approach and landing sequence
+[DEBUG] Current NED -> N: 0.53, E: -4.31, D: -3.56
+[DEBUG] Current yaw: 0.8 deg
+[DEBUG] Enabling offboard mode
+[DEBUG] Commanding move to N: 0.60, E: -4.49
+[DEBUG] Err -> N: 0.05, E: 0.18
+[DEBUG] Err -> N: 0.02, E: 0.11
+[DEBUG] Err -> N: 0.00, E: 0.00
+[DEBUG] Within tolerance, initiating landing
+[DEBUG] Mission complete or aborted
+[DEBUG] Script exit
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/IRL_test_scripts $ python search_and_land_OFFBOARD.py 
+[1:26:27.599009202] [108358]  INFO Camera camera_manager.cpp:327 libcamera v0.4.0+53-29156679
+[1:26:27.606427956] [108387]  INFO RPI pisp.cpp:720 libpisp version v1.1.0 e7974a156008 27-01-2025 (21:50:51)
+[1:26:27.616675278] [108387]  INFO RPI pisp.cpp:1179 Registered camera /base/axi/pcie@1000120000/rp1/i2c@88000/imx708@1a to CFE device /dev/media3 and ISP device /dev/media1 using PiSP variant BCM2712_D0
+[1:26:27.621507410] [108358]  INFO Camera camera.cpp:1202 configuring streams: (0) 640x480-RGB888 (1) 2304x1296-BGGR_PISP_COMP1
+[1:26:27.621643651] [108387]  INFO RPI pisp.cpp:1484 Sensor: /base/axi/pcie@1000120000/rp1/i2c@88000/imx708@1a - Selected sensor format: 2304x1296-SBGGR10_1X10 - Selected CFE format: 2304x1296-PC1B
+[DEBUG] Camera started: RGB888 preview at 640x480
+[DEBUG] Script start
+Waiting for drone to connect...
+-- Connected to drone!
+Waiting for drone to have a global position estimate...
+-- Global position estimate OK
+-- Arming
+-- Taking off
+[DEBUG] Heading to waypoint (34.418953, -119.855332) at 5 meters
+[DEBUG] Attempting marker search at (34.418953, -119.855332)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 83
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 88
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker not found in current frame
+[DEBUG] Optical flow valid points: 100
+[DEBUG] Applied stabilization warp
+[DEBUG] Marker ID 1 detected
+[DEBUG] Pose offset: [0.23120768 0.28222299 1.06080853]
+[DEBUG] Starting approach and landing sequence
+[DEBUG] Current NED -> N: 0.67, E: -4.35, D: -3.53
+[DEBUG] Current yaw: 1.9 deg
+[DEBUG] Enabling offboard mode
+[DEBUG] Commanding move to N: 0.95, E: -4.12
+[DEBUG] Err -> N: 0.29, E: 0.35
+[DEBUG] Err -> N: 0.17, E: 0.36
+[DEBUG] Err -> N: 0.00, E: 0.22
+[DEBUG] Err -> N: 0.06, E: 0.04
+[DEBUG] Err -> N: 0.01, E: 0.06
+[DEBUG] Err -> N: 0.03, E: 0.08
+[DEBUG] Err -> N: 0.03, E: 0.03
+[DEBUG] Err -> N: 0.05, E: 0.06
+[DEBUG] Err -> N: 0.06, E: 0.17
+[DEBUG] Err -> N: 0.06, E: 0.25
+[DEBUG] Err -> N: 0.05, E: 0.19
+[DEBUG] Err -> N: 0.00, E: 0.01
+[DEBUG] Err -> N: 0.04, E: 0.15
+[DEBUG] Err -> N: 0.02, E: 0.13
+[DEBUG] Err -> N: 0.00, E: 0.02
+[DEBUG] Err -> N: 0.03, E: 0.16
+[DEBUG] Err -> N: 0.04, E: 0.16
+[DEBUG] Err -> N: 0.06, E: 0.07
+[DEBUG] Err -> N: 0.10, E: 0.00
+[DEBUG] Err -> N: 0.09, E: 0.06
+[DEBUG] Err -> N: 0.06, E: 0.08
+[DEBUG] Err -> N: 0.03, E: 0.03
+[DEBUG] Err -> N: 0.01, E: 0.02
+[DEBUG] Err -> N: 0.03, E: 0.00
+[DEBUG] Err -> N: 0.02, E: 0.05
+[DEBUG] Err -> N: 0.01, E: 0.03
+[DEBUG] Err -> N: 0.02, E: 0.00
+[DEBUG] Err -> N: 0.03, E: 0.02
+[DEBUG] Err -> N: 0.03, E: 0.02
+[DEBUG] Err -> N: 0.04, E: 0.07
+[DEBUG] Err -> N: 0.05, E: 0.07
+[DEBUG] Err -> N: 0.04, E: 0.09
+[DEBUG] Err -> N: 0.01, E: 0.14
+[DEBUG] Err -> N: 0.04, E: 0.21
+[DEBUG] Err -> N: 0.09, E: 0.16
+[DEBUG] Err -> N: 0.10, E: 0.04
+[DEBUG] Err -> N: 0.07, E: 0.01
+[DEBUG] Err -> N: 0.02, E: 0.01
+[DEBUG] Err -> N: 0.03, E: 0.05
+[DEBUG] Err -> N: 0.04, E: 0.06
+[DEBUG] Err -> N: 0.03, E: 0.03
+[DEBUG] Err -> N: 0.00, E: 0.04
+[DEBUG] Err -> N: 0.03, E: 0.05
+[DEBUG] Err -> N: 0.04, E: 0.03
+[DEBUG] Err -> N: 0.04, E: 0.03
+[DEBUG] Err -> N: 0.04, E: 0.01
+[DEBUG] Err -> N: 0.03, E: 0.03
+[DEBUG] Err -> N: 0.02, E: 0.05
+[DEBUG] Err -> N: 0.05, E: 0.04
+[DEBUG] Err -> N: 0.10, E: 0.05
+[DEBUG] Err -> N: 0.08, E: 0.04
+[DEBUG] Err -> N: 0.01, E: 0.09
+[DEBUG] Err -> N: 0.03, E: 0.11
+[DEBUG] Err -> N: 0.03, E: 0.07
+[DEBUG] Err -> N: 0.03, E: 0.03
+[DEBUG] Err -> N: 0.01, E: 0.01
+[DEBUG] Err -> N: 0.03, E: 0.06
+[DEBUG] Err -> N: 0.08, E: 0.12
+[DEBUG] Err -> N: 0.10, E: 0.13
+[DEBUG] Err -> N: 0.10, E: 0.10
+[DEBUG] Err -> N: 0.11, E: 0.10
+[DEBUG] Err -> N: 0.12, E: 0.11
+[DEBUG] Err -> N: 0.12, E: 0.11
+[DEBUG] Err -> N: 0.09, E: 0.11
+[DEBUG] Err -> N: 0.07, E: 0.07
+[DEBUG] Err -> N: 0.07, E: 0.01
+[DEBUG] Err -> N: 0.08, E: 0.05
+[DEBUG] Err -> N: 0.06, E: 0.05
+[DEBUG] Err -> N: 0.05, E: 0.02
+[DEBUG] Err -> N: 0.04, E: 0.01
+[DEBUG] Err -> N: 0.03, E: 0.05
+[DEBUG] Err -> N: 0.03, E: 0.09
+[DEBUG] Err -> N: 0.02, E: 0.12
+[DEBUG] Err -> N: 0.01, E: 0.09
+[DEBUG] Err -> N: 0.05, E: 0.05
+[DEBUG] Err -> N: 0.11, E: 0.01
+[DEBUG] Err -> N: 0.11, E: 0.00
+[DEBUG] Err -> N: 0.08, E: 0.01
+[DEBUG] Err -> N: 0.07, E: 0.00
+[DEBUG] Err -> N: 0.06, E: 0.01
+[DEBUG] Err -> N: 0.05, E: 0.01
+[DEBUG] Err -> N: 0.08, E: 0.00
+[DEBUG] Err -> N: 0.11, E: 0.05
+[DEBUG] Err -> N: 0.08, E: 0.10
+[DEBUG] Err -> N: 0.03, E: 0.09
+[DEBUG] Err -> N: 0.01, E: 0.06
+[DEBUG] Err -> N: 0.03, E: 0.04
+[DEBUG] Err -> N: 0.06, E: 0.04
+[DEBUG] Err -> N: 0.08, E: 0.03
+[DEBUG] Err -> N: 0.07, E: 0.01
+[DEBUG] Err -> N: 0.02, E: 0.04
+[DEBUG] Err -> N: 0.03, E: 0.11
+[DEBUG] Err -> N: 0.05, E: 0.17
+[DEBUG] Err -> N: 0.05, E: 0.18
+[DEBUG] Err -> N: 0.03, E: 0.11
+[DEBUG] Err -> N: 0.01, E: 0.02
+[DEBUG] Err -> N: 0.01, E: 0.01
+[DEBUG] Err -> N: 0.02, E: 0.03
+[DEBUG] Err -> N: 0.03, E: 0.01
+[DEBUG] Err -> N: 0.04, E: 0.05
+[DEBUG] Err -> N: 0.05, E: 0.10
+[DEBUG] Err -> N: 0.07, E: 0.14
+[DEBUG] Err -> N: 0.10, E: 0.17
+[DEBUG] Err -> N: 0.12, E: 0.15
+[DEBUG] Err -> N: 0.12, E: 0.09
+[DEBUG] Err -> N: 0.13, E: 0.03
+[DEBUG] Err -> N: 0.10, E: 0.01
+[DEBUG] Err -> N: 0.08, E: 0.00
+[DEBUG] Err -> N: 0.05, E: 0.01
+[DEBUG] Err -> N: 0.02, E: 0.00
+[DEBUG] Err -> N: 0.01, E: 0.00
+[DEBUG] Err -> N: 0.01, E: 0.01
+[DEBUG] Err -> N: 0.03, E: 0.06
+[DEBUG] Err -> N: 0.05, E: 0.07
+[DEBUG] Err -> N: 0.06, E: 0.07
+[DEBUG] Err -> N: 0.05, E: 0.06
+[DEBUG] Err -> N: 0.04, E: 0.05
+[DEBUG] Err -> N: 0.04, E: 0.05
+[DEBUG] Err -> N: 0.03, E: 0.03
+[DEBUG] Err -> N: 0.02, E: 0.02
+[DEBUG] Err -> N: 0.03, E: 0.07
+[DEBUG] Err -> N: 0.04, E: 0.09
+[DEBUG] Err -> N: 0.05, E: 0.10
+[DEBUG] Err -> N: 0.04, E: 0.10
+[DEBUG] Err -> N: 0.00, E: 0.09
+[DEBUG] Err -> N: 0.02, E: 0.09
+[DEBUG] Err -> N: 0.01, E: 0.10
+[DEBUG] Err -> N: 0.02, E: 0.11
+[DEBUG] Err -> N: 0.05, E: 0.14
+[DEBUG] Err -> N: 0.07, E: 0.17
+[DEBUG] Err -> N: 0.08, E: 0.17
+[DEBUG] Err -> N: 0.08, E: 0.11
+[DEBUG] Err -> N: 0.11, E: 0.07
+[DEBUG] Err -> N: 0.12, E: 0.15
+[DEBUG] Err -> N: 0.12, E: 0.15
+[DEBUG] Err -> N: 0.13, E: 0.15
+[DEBUG] Err -> N: 0.13, E: 0.16
+[DEBUG] Err -> N: 0.14, E: 0.17
+[DEBUG] Err -> N: 0.15, E: 0.18
+[DEBUG] Err -> N: 0.15, E: 0.18
+[DEBUG] Err -> N: 0.14, E: 0.19
+[DEBUG] Err -> N: 0.14, E: 0.19
+[DEBUG] Err -> N: 0.14, E: 0.20
+[DEBUG] Err -> N: 0.13, E: 0.20
+[DEBUG] Err -> N: 0.13, E: 0.20
+[DEBUG] Err -> N: 0.13, E: 0.21
+[DEBUG] Err -> N: 0.12, E: 0.21
+[DEBUG] Err -> N: 0.12, E: 0.21
+[DEBUG] Err -> N: 0.11, E: 0.22
+[DEBUG] Err -> N: 0.11, E: 0.23
+[DEBUG] Err -> N: 0.10, E: 0.25
+[DEBUG] Err -> N: 0.10, E: 0.26
+[DEBUG] Err -> N: 0.10, E: 0.26
+^CTraceback (most recent call last):
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/search_and_land_OFFBOARD.py", line 238, in run
+    await approach_and_land(drone, tvec)
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/IRL_test_scripts/search_and_land_OFFBOARD.py", line 213, in approach_and_land
+    await asyncio.sleep(0.5)
+  File "/usr/lib/python3.11/asyncio/tasks.py", line 639, in sleep
+    return await future
+           ^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
