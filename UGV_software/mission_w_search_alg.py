@@ -219,8 +219,8 @@ def set_servo_angle(channel, angle):
     duty = int(pulse / 20000 * 65535)
     pca.channels[channel].duty_cycle = duty
 
-def search_alg(loop_marker, time_detected, time_lost_threshold, t_mission_start, t_mission_start, step, current_angle, max_angle_down, default_angle, yaw):
-    if (loop_marker == 1 and time.time() - time_detected >= time_lost_threshold) or (loop_marker == 0 and time.time() - t_mission_start >= t_mission_start):
+def search_alg(loop_marker, time_detected, time_lost_threshold, t_mission_start, time_4_mission, step, current_angle, max_angle_down, default_angle, yaw):
+    if (loop_marker == 1 and time.time() - time_detected >= time_lost_threshold) or (loop_marker == 0 and time.time() - t_mission_start >= time_4_mission):
         if step == 1:
             current_angle += 5
             if current_angle > max_angle_down:
