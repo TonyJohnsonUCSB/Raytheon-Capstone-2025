@@ -1,0 +1,211 @@
+[33mb6bb1719[m[33m ([m[1;36mHEAD -> [m[1;32mUGV_branch[m[33m)[m Work in Progress
+[33mbed98a01[m Work in prgress
+[33me291c6d9[m[33m ([m[1;31morigin/UGV_branch[m[33m, [m[1;32mmain[m[33m)[m trying to fix how it records video
+[33m2e284e98[m moved files into a new folder:
+[33mfaf6d9ef[m renamed and moved some files and created an fps control
+[33m759a1cac[m it was the exposure LOL
+[33mf62bdbce[m no more videos
+[33m813d2dcc[m Added barebones camera script for identifying marker, text overlay with pose estimate, and video recording - Daniella
+[33m1bdcc2da[m Updated trackbed dumping v2
+[33m7beaea9e[m updated dumping trackbed code
+[33mbcac660a[m Added PID
+[33m2bbd063d[m new changes for image stabilization
+[33m4dd4435d[m vibration test in hand
+[33m3b8a34be[m mp4 videos instead
+[33m755cfb38[m videos from the drone
+[33mc5219076[m added geofence
+[33me7127545[m Magical angel helped us with the code and now it should be ready to test
+[33ma47ea36f[m Slight edits to Daniella's code
+[33m15bc0efb[m Put all the logic in its own function (daniella)
+[33ma65d8e1b[m renamed file
+[33m9754ed66[m changed offboard control slgihtly
+[33mc2af6c9d[m Update OffboardDetect+Search.py
+[33m979265f0[m Add files via upload
+[33m415ac025[m new drone offboard mode scripts
+[33maacdb469[m new changes
+[33m21e19323[m working on offboard vision
+[33m94df867b[m Update run_all.py
+[33m27d52824[m Update run_all.py
+[33m261111e6[m Delete UGV_software/run_all_v2
+[33m3f5f4dde[m Update run_all.py
+[33m2319693f[m Update run_all_v2
+[33m8d016eee[m Update run_all_v2
+[33m4aed653e[m Create run_all_v2
+[33m1cb32733[m adding to venv folder.
+[33ma2263ea8[m created virtual env.
+[33me6bbb64e[m need to drive async main() through the event loop explicitly to run run_all script.
+[33mecca05b7[m master script to run full ugv mission with dump bed
+[33ma1c3c10e[m changed to different library and pins
+[33m30834d51[m Update Full_UGV_Mission.py
+[33m182858bd[m Add files via upload
+[33m143beab2[m test from new pi
+[33mf3e47933[m Add testir directory with placeholder
+[33m2ae5c5d7[m Update Pose_Estimation_w_dist_dropoffid_w_Servo.py
+[33m25e8f3c6[m Update gps_square_on_field.py
+[33md5ff83ab[m added geofence:
+[33mc1a13a64[m new gpt plotting
+[33m0a94ee1d[m new file for plotting gps coordinates
+[33mfa2d9ff6[m Test commit from personal laptop
+[33mf16973d3[m fixed servo going feral
+[33ma8005823[m fixed servo on actual pi
+[33m4d025d91[m Update arucoGPS.py
+[33m533984df[m arucoGPS should work idk
+[33m0486ea63[m another file that doesn't use yaw
+[33m8e72e6e3[m created script to measure yaw angle
+[33m919b90c2[m added file that calcs GPS using vision (needs GPS lock)
+[33m54d0e3e4[m Made new vision scripts to get GPS included
+[33m8430315b[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025 merge
+[33m6b656f5f[m renamed folder
+[33mf5b81047[m tweaking landing gear
+[33m4cf91fdb[m Add files via upload
+[33m95f179d0[m Create placeholder.txt
+[33m61689678[m created new test file which should fly in a square on storke field using GPS coordintes
+[33m366a0864[m Modified many scripts in IRL test scritps
+[33maf455844[m GPS coordinates
+[33mf4e31427[m Update Drone Flying Procedure.md
+[33m45f99641[m Add files via upload
+[33mbeeb090d[m Add files via upload
+[33m0f1a9d92[m Calibrated camera and got new distance calc working
+[33m6f183902[m Add files via upload
+[33m85fb67ea[m aurco working lfggg
+[33m48252972[m Add files via upload
+[33mae30eadf[m adding other version of python for testing
+[33m637fdcde[m increased takeoff time to 40 seconds in takeoff and land .py
+[33mba77cff2[m Added three new files: IRL versions of all the sim movement files
+[33m54e7aaed[m Resolved merge conflicts and finalized merge
+[33md3f670c9[m merging camera changes made on pi 2?
+[33m4482dee0[m modified snake pattern
+[33m033ec0ce[m New file to move in a rudimentary snake patter
+[33m7b0d4c1c[m updated the scripts that move in a square and triangle
+[33m120817e2[m Merge branch 'main' of github.com:TonyJohnsonUCSB/Raytheon-Capstone-2025 into main
+[33m917bc022[m move_in_a_square now works in simulation using offboard mode with setting velocity
+[33me1a88af0[m Create SendingGPS.py
+[33me559338e[m updated flight code
+[33ma3fd7365[m updated flight code
+[33ma957e770[m Merge branch 'main' of github.com:TonyJohnsonUCSB/Raytheon-Capstone-2025 into main
+[33md07bd99f[m adding more simulation testing
+[33mff4cbb99[m Add files via upload
+[33m09d267cb[m Delete camera_testing/Pose_Estimation_w_dist_dropoffid.py
+[33mff56a3ba[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025
+[33m7e037161[m Create Pose_Estimation_w_dist_dropoffid.py
+[33m9ea940f1[m Add files via upload
+[33mcd7b1b2a[m trying to get picamtest to work again
+[33me281b884[m trying to get picamtest.py working again
+[33m8abd7f9c[m camreqs.txt.
+[33m951076bd[m new requirements file
+[33m46cd6a71[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025 merge
+[33mc159b5ff[m screenshot
+[33m86fb83be[m screenshot
+[33m53adc341[m another screenshot
+[33mc0215468[m screenshot of receive working
+[33mf31cdd42[m Merge branch 'main' of github.com:TonyJohnsonUCSB/Raytheon-Capstone-2025 merging
+[33m3a156474[m radio distance test
+[33m373f0877[m Add files via upload
+[33mde15f37a[m ugv stuff
+[33m54d6db99[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025
+[33m6ddc1801[m Delete venv directory
+[33m13776c0a[m Telemetry radio is working! - Thomas
+[33m47a2505f[m Telemetry radio is working! - Thomas
+[33m2f30c77d[m test of CSV params
+[33mb034e062[m all params uart now saves CSV file with params
+[33mda27e506[m Reorganized and renamed test script files and folders
+[33m110ef288[m telemetry_UART
+[33m82326512[m Added new file in Mavsdk_testing for UART takeoff
+[33m25d1ecda[m switched mode
+[33mc6f4410d[m Added modes for sim vs real life for telemetry_takeoff_and_land.py
+[33m3881a1c6[m Modifying connection address for UART
+[33m9a318307[m new file called search_alg_test.py to test different search algs
+[33m3c103312[m Adding folder called 'examples/'. This folder contains many example MAVSDK python scripts for use on Drone RPI5 with slight modifications.
+[33m278ede7e[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025
+[33m29d02739[m added switch to enable/disable GUI on picamtest
+[33m2575c945[m UART message update
+[33me8b58c73[m Update search_pseudocode.txt
+[33m4e42e507[m Create search_pseudocode.txt
+[33m654c33f2[m Added MAVSDK test script from their repository that checks the firmware version. Just verifies that the UART connection works and what not
+[33m24ea4e5c[m new UARTmessage.py tests MAVSDK heartbeat
+[33m9951e203[m message file changed
+[33m8d132d86[m modified UARTmessage.py
+[33m24e08627[m new python packages
+[33m45c2d7e2[m updating req
+[33m7b4be369[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025 Merging branches with unknown differences
+[33mde77f954[m installing new packages to venv
+[33mbad2652d[m installing new packages to venv
+[33mfd4763e0[m Added howToSSH.md to demonstrate instructions for SSH'ing into a raspberry pi
+[33m3db5719f[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025 Merging
+[33ma852fe30[m adding an old version of the requirements file. Confused about eli's new addition and why it is lacking a lot of the old packages.
+[33m05795c36[m Added requirements.txt to track dependencies
+[33ma097c78d[m renamed for ease of use
+[33md10984ca[m testing Mavsdk on your computer
+[33md8b7113e[m made new code for just hotspot communication
+[33m0e8d1fca[m added new ArUco dictionary to code
+[33m566873cf[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025 Merging
+[33mb1495afa[m removed the repo within the repo
+[33m66a4e195[m Manual/random enabled
+[33m52f029c9[m Update server_auto.py
+[33mfa0897a1[m Create server_auto.py
+[33m95af580f[m fixed logging error
+[33m58724e42[m added new client file where we have a global variable
+[33mb6ef9b0d[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025 Merging changes made by comms team to main
+[33m3d2256f2[m[33m ([m[1;31morigin/backup-branch[m[33m)[m Got camera feed to appear when running picamtest.py
+[33m380394d6[m Update wifi_toggle
+[33m9ed1e7d4[m Delete toggle_wifi_mode.sh
+[33m6cd19c1d[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025
+[33m6d792257[m still not working
+[33mb8f2b465[m CLIENT: Auto switch wifi + comm
+[33mca0db808[m CLIENT: Auto switch wifi + comm
+[33m7c5fe954[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025 merging brances
+[33mdbff0680[m more changes
+[33me9a9077b[m Update toggle_wifi_mode.sh
+[33m7176ffe8[m Create toggle_wifi_mode.sh
+[33mb8203df2[m Most current ip address for pi4s
+[33m2c462eb2[m Added and removed a new file
+[33m89d7dd23[m ignoring venv from the git add. Make sure to update requirements.txt whenever you add new packages with pip
+[33m202751a7[m added message about updating IPs
+[33me24c271c[m removed test.py
+[33mc9dc6fdf[m reogranized
+[33m1248a21c[m went back to original file in version history
+[33m4571c4a3[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025
+[33m1eb24ea5[m Update server.py
+[33m94933578[m Update Helpful Commands.md
+[33m63547cbe[m Helpful Commands.md
+[33m80e898b4[m Update Helpful Git Commands.md
+[33m90fbd162[m Update client.py
+[33mf8b5c47f[m imported random function for gps coordinates
+[33ma20d0059[m updating code to send random gps coordinates
+[33m83a6c6f4[m update code to only listen to pi_2
+[33m83cc978e[m small update on git helper file
+[33mee590dae[m Yay a helper file
+[33m40909db9[m set up ip address
+[33m03b3d820[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025
+[33m558894b6[m changed name so there is no more space
+[33m85a6f465[m backing up files for new OS installation
+[33m731f9e82[m Merge branch 'main' of github.com:TonyJohnsonUCSB/Raytheon-Capstone-2025 Merging with eli code
+[33me2a099dd[m same as before
+[33m5825613c[m edited out gps module and replaced with example data points
+[33m6654e579[m listens for incoming data, verifies, send acknowledgment, logs data
+[33mbef13791[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025
+[33m9df48d74[m this is started code to set up the client Pi. Still need to connect gps module
+[33mf1d5fc60[m new files testing picam3 and integrating with the aruco detection code
+[33mccb9be6f[m New file for testing pi camera
+[33m6c018c1c[m updated test.py
+[33m99770521[m re-added test.py to the repo for further testing
+[33mb71672d6[m .gitignore updated with venv/
+[33m79ff36d5[m added .gitignore updated with new test2.py
+[33m5d275003[m added .gitignore with test.py included
+[33mce45cb2b[m Changed requirements.txt to a compatible (hopefully) version of numpy: :
+[33m3a96e2b4[m Can I push from raspberry pi?
+[33m7336a98d[m Testing commit from raspberry pi
+[33m3fc2f312[m Added another ip address
+[33m906903b5[m Removed test text
+[33m5edc8e28[m New file with raspberry pi login information
+[33mf94cb747[m Merge branch 'main' of https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025
+[33m2a90b8e1[m test
+[33m34239093[m testtest
+[33m37536d27[m Requiremnents file to install packages
+[33m56431693[m Testing converting the jupyter notebook files to python scripts
+[33mbac24b22[m Another update for test file push
+[33m2f22e277[m This is a test to commit to the repo
+[33m5f099ae1[m Update README.md
+[33mebf5d839[m Update README.md
+[33mef14e000[m Add files via upload
+[33m81c2e200[m Initial commit

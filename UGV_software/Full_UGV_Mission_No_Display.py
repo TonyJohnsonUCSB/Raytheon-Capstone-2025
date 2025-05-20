@@ -17,6 +17,7 @@ import busio
 import lgpio
 import logging
 from mavsdk.param import ParamError
+import maplotlib.pyplot as plt
 # Dump Truck: Open a connection to the GPIO chip 
 h = lgpio.gpiochip_open(0)  # '0' is the default GPIO chip
 
