@@ -7,24 +7,33 @@ import numpy as np
 from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, PositionNedYaw
-from mavsdk.geofence import Point, Polygon, FenceType, GeofenceData
 
 # ----------------------------
-# Camera Globals
+# Camera setup
 # ----------------------------
-picam2 = Picamera2()
-write_width, write_height = 640, 480
+print("[DEBUG] Initializing camera")
+camera = Picamera2()
+image_width, image_height = 640, 480
+camera_configuration = camera.create_preview_configuration(
+    raw={"size": (1640, 1232)},
+    main={"format": "RGB888", "size": (image_width, image_height)}
+)
+camera.configure(camera_configuration)
+camera.start()
+print(f"[DEBUG] Camera started with resolution {image_width}x{image_height}")
+time.sleep(2)  # allow auto-exposure to stabilize
 
 # ----------------------------
-# Calibration and Distortion
+# Calibration parameters
 # ----------------------------
-INTRINSIC = np.array([
-    [653.1070007239106, 0.0, 339.2952147845755],
-    [0.0, 650.7753992788821, 258.1165494889447],
-    [0.0, 0.0, 1.0]
+print("[DEBUG] Loading intrinsic and distortion parameters")
+intrinsic_matrix = np.array([
+    [653.1070007239106, 0.0,               339.2952147845755],
+    [0.0,               650.7753992788821, 258.1165494889447],
+    [0.0,               0.0,               1.0]
 ], dtype=np.float32)
 
-DIST_COEFFS = np.array([
+distortion_coefficients = np.array([
     -0.03887864427953473,
      0.6888798469690414,
      0.00815702400928161,
@@ -33,226 +42,234 @@ DIST_COEFFS = np.array([
 ], dtype=np.float32)
 
 # ----------------------------
-# ArUco Detection Parameters
+# ArUco marker detection
 # ----------------------------
-ARUCO_DICT = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
-DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
-DETECT_PARAMS.adaptiveThreshConstant = 7
-DETECT_PARAMS.minMarkerPerimeterRate = 0.03
-MARKER_SIZE = 0.06611  # meters
-TARGET_ID = 1
+print("[DEBUG] Setting up ArUco detector")
+aruco_dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+marker_detector_parameters = cv2.aruco.DetectorParameters_create()
+marker_detector_parameters.adaptiveThreshConstant = 7
+marker_detector_parameters.minMarkerPerimeterRate = 0.03
+marker_physical_size_m = 0.06611  # meters
+target_marker_id = 1
 
 # ----------------------------
-# Flight Parameters
+# Flight parameters
 # ----------------------------
-ALTITUDE = 5       # takeoff and waypoint altitude in meters
-AMSL_ALTITUDE = ALTITUDE + 9
-TOLERANCE = 0.01  # N/E position tolerance for landing in meters
+print("[DEBUG] Defining flight parameters")
+takeoff_altitude_m = 5
+absolute_altitude_msl = takeoff_altitude_m + 9
+position_tolerance_m = 0.01
 
 # ----------------------------
-# Waypoints and Geofence
+# Number of halving passes before landing
 # ----------------------------
-# Updated coordinates to plot
-coordinates = [
-    (34.4189,  -119.85533),
-    (34.4189,  -119.85530),
-    (34.4189,  -119.85528),
-    (34.4189,  -119.85526),
-    (34.4189,  -119.85524),
-    (34.4189,  -119.85522),
-    (34.4189,  -119.85520),
+number_of_halving_steps = 2  # positive integer
+
+# ----------------------------
+# GPS waypoints
+# ----------------------------
+waypoint_coordinates = [
+    (34.4189, -119.85533),
+    (34.4189, -119.85530),
+    (34.4189, -119.85528),
+    (34.4189, -119.85526),
+    (34.4189, -119.85524),
+    (34.4189, -119.85522),
+    (34.4189, -119.85520),
 ]
 
-# Geofence shifted 20 m east (pre‑computed)
-GEOFENCE_POINTS = [
-    (34.4186,  -119.85600),
-    (34.4186,  -119.85475),
-    (34.4192,  -119.85475),
-    (34.4192,  -119.85600),
-    (34.4186,  -119.85600),
-]
-
-# ----------------------------
-# Initialize Camera
-# ----------------------------
-cam_cfg = picam2.create_preview_configuration(
-    raw={"size": (1640, 1232)},
-    main={"format": "RGB888", "size": (write_width, write_height)}
-)
-picam2.configure(cam_cfg)
-picam2.start()
-print("[DEBUG] Camera started: RGB888 preview at {}x{}".format(write_width, write_height))
-time.sleep(2)  # allow auto-exposure to stabilize
-
-
-async def connect_and_arm():
+async def connect_and_arm_drone():
+    print("[DEBUG] Connecting to drone via serial")
     drone = System()
     await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
 
-    print("Waiting for drone to connect...")
-    async for state in drone.core.connection_state():
-        if state.is_connected:
-            print(f"-- Connected to drone!")
+    print("[DEBUG] Waiting for connection state")
+    async for connection_state in drone.core.connection_state():
+        if connection_state.is_connected:
+            print("[DEBUG] Drone connected")
             break
 
-    print("Waiting for drone to have a global position estimate...")
+    print("[DEBUG] Waiting for GPS fix and home position")
     async for health in drone.telemetry.health():
         if health.is_global_position_ok and health.is_home_position_ok:
-            print("-- Global position estimate OK")
+            print("[DEBUG] Global position and home position OK")
             break
 
-    print("-- Arming")
+    print("[DEBUG] Arming drone")
     await drone.action.arm()
-
-    print("-- Taking off")
-    await drone.action.set_takeoff_altitude(5)
+    print(f"[DEBUG] Setting takeoff altitude to {takeoff_altitude_m} m")
+    await drone.action.set_takeoff_altitude(takeoff_altitude_m)
+    print("[DEBUG] Taking off")
     await drone.action.takeoff()
-
     await asyncio.sleep(10)
-
+    print("[DEBUG] Takeoff complete")
     return drone
 
+async def search_for_marker(timeout_seconds=5.0):
+    print(f"[DEBUG] Starting marker search with timeout {timeout_seconds} s")
+    start_time = time.time()
+    previous_gray = None
 
-async def search_marker(timeout=5.0):
-    print(f"[DEBUG] Searching for marker (timeout: {timeout} seconds)")
-    t0 = time.time()
-    prev_gray = None
-
-    while (time.time() - t0) < timeout:
-        frame = await asyncio.to_thread(picam2.capture_array)
-
+    while time.time() - start_time < timeout_seconds:
+        frame = await asyncio.to_thread(camera.capture_array)
         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-        if prev_gray is not None:
-            pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=100,
-                                          qualityLevel=0.01, minDistance=20)
-            if pts is not None:
-                curr, st, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, pts, None)
-                valid_count = np.count_nonzero(st.reshape(-1) == 1)
-                #print(f"[DEBUG] Optical flow valid points: {valid_count}")
+
+        if previous_gray is not None:
+            corners_to_track = cv2.goodFeaturesToTrack(previous_gray,
+                                                       maxCorners=100,
+                                                       qualityLevel=0.01,
+                                                       minDistance=20)
+            if corners_to_track is not None:
+                current_pts, status, _ = cv2.calcOpticalFlowPyrLK(
+                    previous_gray, gray, corners_to_track, None
+                )
+                valid_count = np.count_nonzero(status)
+                print(f"[DEBUG] Optical flow valid corners: {valid_count}")
                 if valid_count >= 6:
-                    M, _ = cv2.estimateAffinePartial2D(pts[st.reshape(-1) == 1],
-                                                     curr[st.reshape(-1) == 1])
-                    if M is not None:
-                        frame = cv2.warpAffine(frame, M, frame.shape[1::-1])
+                    transformation_matrix, _ = cv2.estimateAffinePartial2D(
+                        corners_to_track[status.flatten() == 1],
+                        current_pts[status.flatten() == 1]
+                    )
+                    if transformation_matrix is not None:
+                        frame = cv2.warpAffine(frame,
+                                               transformation_matrix,
+                                               frame.shape[1::-1])
                         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-                        #print("[DEBUG] Applied stabilization warp")
-        prev_gray = gray
+                        print("[DEBUG] Applied frame stabilization warp")
 
-        corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT,
-                                                 parameters=DETECT_PARAMS)
-        if ids is not None and TARGET_ID in ids.flatten():
-            print(f"[DEBUG] Marker ID {TARGET_ID} detected")
-            idx = list(ids.flatten()).index(TARGET_ID)
+        previous_gray = gray
+        corners, ids, _ = cv2.aruco.detectMarkers(gray,
+                                                  aruco_dictionary,
+                                                  parameters=marker_detector_parameters)
+        if ids is not None and target_marker_id in ids.flatten():
+            print(f"[DEBUG] Detected marker ID {target_marker_id}")
+            index = list(ids.flatten()).index(target_marker_id)
             _, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
-                [corners[idx]], MARKER_SIZE, INTRINSIC, DIST_COEFFS
+                [corners[index]],
+                marker_physical_size_m,
+                intrinsic_matrix,
+                distortion_coefficients
             )
-            offset = tvecs[0][0]
-            print(f"[DEBUG] Pose offset: {offset}")
-            return offset
+            offset_vector = tvecs[0][0]
+            print(f"[DEBUG] Marker pose offset (x, y, z): {offset_vector}")
+            return offset_vector
 
-        print("[DEBUG] Marker not found in current frame")
+        print("[DEBUG] Marker not found in this frame")
 
     print("[DEBUG] Marker search timed out")
     return None
 
-
-async def approach_and_land(drone, offset):
-    print("[DEBUG] Starting approach and landing sequence")
-
-    # 1) grab current NED + yaw
+async def approach_and_land_on_marker(drone, initial_offset):
+    print("[DEBUG] Beginning approach_and_land_on_marker sequence")
     async for od in drone.telemetry.position_velocity_ned():
-        north0, east0, down0 = od.position.north_m, od.position.east_m, od.position.down_m
+        north_initial, east_initial, down_initial = (
+            od.position.north_m,
+            od.position.east_m,
+            od.position.down_m,
+        )
+        break
+    async for attitude in drone.telemetry.attitude_euler():
+        yaw_degrees = attitude.yaw_deg
         break
 
-    async for att in drone.telemetry.attitude_euler():
-        yaw = att.yaw_deg
-        break
-
-    # start offboard at current position
-    await drone.offboard.set_position_ned(PositionNedYaw(north0, east0, down0, yaw))
+    print("[DEBUG] Starting offboard control")
+    await drone.offboard.set_position_ned(
+        PositionNedYaw(north_initial,
+                       east_initial,
+                       down_initial,
+                       yaw_degrees)
+    )
     try:
         await drone.offboard.start()
+        print("[DEBUG] Offboard started")
     except OffboardError:
         print("[ERROR] Offboard start failed")
         return
 
-    # utility to wait until within tol horizontally (N/E) and optionally vertically (D)
-    async def wait_until(target_n, target_e, target_d=None, tol_h=TOLERANCE, tol_v=0.05):
+    async def wait_until_position_reached(target_north, target_east, target_down=None):
         while True:
             await asyncio.sleep(0.2)
             async for od in drone.telemetry.position_velocity_ned():
-                err_n = abs(od.position.north_m - target_n)
-                err_e = abs(od.position.east_m - target_e)
-                if target_d is not None:
-                    err_d = abs(od.position.down_m - target_d)
-                    print(f"[DEBUG] Err -> N:{err_n:.2f}, E:{err_e:.2f}, D:{err_d:.2f}")
-                    if err_n < tol_h and err_e < tol_h and err_d < tol_v:
+                err_n = abs(od.position.north_m - target_north)
+                err_e = abs(od.position.east_m - target_east)
+                if target_down is None:
+                    print(f"[DEBUG] Pos error -> N:{err_n:.3f}, E:{err_e:.3f}")
+                    if err_n < position_tolerance_m and err_e < position_tolerance_m:
+                        print("[DEBUG] Horizontal position tolerance reached")
                         return
                 else:
-                    print(f"[DEBUG] Err -> N:{err_n:.2f}, E:{err_e:.2f}")
-                    if err_n < tol_h and err_e < tol_h:
+                    err_d = abs(od.position.down_m - target_down)
+                    print(f"[DEBUG] Pos error -> N:{err_n:.3f}, E:{err_e:.3f}, D:{err_d:.3f}")
+                    if (err_n < position_tolerance_m and
+                        err_e < position_tolerance_m and
+                        err_d < 0.05):
+                        print("[DEBUG] Full 3D position tolerance reached")
                         return
                 break
 
-    # --- STEP 1: initial horizontal centering ---
-    target_n1 = north0 + offset[1]
-    target_e1 = east0 + offset[0]
-    print(f"[DEBUG] Step 1: centering to N:{target_n1:.2f}, E:{target_e1:.2f}, D:{down0:.2f}")
+    # Step 1: center above marker at current altitude
+    target_north = north_initial + initial_offset[1]
+    target_east  = east_initial  + initial_offset[0]
+    print(f"[DEBUG] Step 1: Centering horizontally to N:{target_north:.3f}, E:{target_east:.3f}")
     await drone.offboard.set_position_ned(
-        PositionNedYaw(target_n1, target_e1, down0, yaw)
+        PositionNedYaw(target_north, target_east, down_initial, yaw_degrees)
     )
-    await wait_until(target_n1, target_e1)
+    await wait_until_position_reached(target_north, target_east)
 
-    # --- STEP 2: drop altitude to half ---
-    target_d2 = 12
-    print(f"[DEBUG] Step 2: descending to D:{target_d2:.2f}")
-    await drone.offboard.set_position_ned(
-        PositionNedYaw(target_n1, target_e1, target_d2, yaw)
-    )
-    await asyncio.sleep(3)
-
-    # --- STEP 3: re-center at lower altitude ---
-    print("[DEBUG] Step 3: re-acquiring marker for final centering")
-    new_offset = await search_marker(timeout=5.0)
-    if new_offset is not None:
-        # get current pos
-        async for od in drone.telemetry.position_velocity_ned():
-            curr_n, curr_e = od.position.north_m, od.position.east_m
-            break
-        target_n3 = curr_n + new_offset[1]
-        target_e3 = curr_e + new_offset[0]
-        print(f"[DEBUG] Step 3: centering to N:{target_n3:.2f}, E:{target_e3:.2f}, D:{target_d2:.2f}")
+    # Halving passes
+    for step_index in range(number_of_halving_steps):
+        target_down = down_initial / (2 ** (step_index + 1))
+        print(f"[DEBUG] Step 2.{step_index+1}: Descend to down={target_down:.3f}")
         await drone.offboard.set_position_ned(
-            PositionNedYaw(target_n3, target_e3, target_d2, yaw)
+            PositionNedYaw(target_north, target_east, target_down, yaw_degrees)
         )
-        await wait_until(target_n3, target_e3, target_d2)
-    else:
-        print("[WARN] Could not re-detect marker; proceeding to land from current position")
+        await wait_until_position_reached(target_north, target_east, target_down)
 
-    # --- STEP 4: land ---
-    print("[DEBUG] Within final tolerance; landing now")
+        print(f"[DEBUG] Searching for marker refinement (pass {step_index+1})")
+        new_offset = await search_for_marker(timeout_seconds=5.0)
+        if new_offset is None:
+            print("[WARN] Marker not found for refinement; proceeding to landing")
+            break
+
+        async for od in drone.telemetry.position_velocity_ned():
+            current_north, current_east = (
+                od.position.north_m,
+                od.position.east_m,
+            )
+            break
+
+        target_north = current_north + new_offset[1]
+        target_east  = current_east  + new_offset[0]
+        print(f"[DEBUG] Refinement {step_index+1}: new center N:{target_north:.3f}, E:{target_east:.3f}")
+        await drone.offboard.set_position_ned(
+            PositionNedYaw(target_north, target_east, target_down, yaw_degrees)
+        )
+        await wait_until_position_reached(target_north, target_east, target_down)
+
+    # Final landing
+    print("[DEBUG] Stopping offboard and landing")
     await drone.offboard.stop()
     await drone.action.land()
+    print("[DEBUG] Land command issued")
 
-
-async def run():
+async def main_mission():
     drone = None
     try:
-        drone = await connect_and_arm()
-        for lat, lon in coordinates:
-            print(f"[DEBUG] Heading to waypoint ({lat}, {lon}) at {ALTITUDE} meters")
-            await drone.action.goto_location(lat, lon, AMSL_ALTITUDE, 0.0)
+        drone = await connect_and_arm_drone()
+        for idx, (latitude, longitude) in enumerate(waypoint_coordinates, start=1):
+            print(f"[DEBUG] Heading to waypoint {idx}: lat={latitude}, lon={longitude}")
+            await drone.action.goto_location(latitude, longitude, absolute_altitude_msl, 0.0)
             await asyncio.sleep(7)
-            print(f"[DEBUG] Attempting marker search at ({lat}, {lon})")
-            tvec = await search_marker(10.0)
-            if tvec is not None:
-                await approach_and_land(drone, tvec)
+            print(f"[DEBUG] Attempting marker search at waypoint {idx}")
+            offset_vector = await search_for_marker(timeout_seconds=10.0)
+            if offset_vector is not None:
+                print(f"[DEBUG] Marker found at waypoint {idx}, commencing landing sequence")
+                await approach_and_land_on_marker(drone, offset_vector)
                 return
-
-        print("[DEBUG] No marker found; returning to launch")
+        print("[DEBUG] Marker not found at any waypoint, returning to launch")
         await drone.action.return_to_launch()
-    except Exception as e:
-        print(f"[ERROR] Exception: {e}")
+    except Exception as exc:
+        print(f"[ERROR] Exception during mission: {exc}")
     finally:
         if drone:
             try:
@@ -262,8 +279,7 @@ async def run():
             await drone.action.land()
         print("[DEBUG] Mission complete or aborted")
 
-
-if __name__ == '__main__':
-    print("[DEBUG] Script start")
-    asyncio.run(run())
-    print("[DEBUG] Script exit")
+if __name__ == "__main__":
+    print("[DEBUG] Mission script start")
+    asyncio.run(main_mission())
+    print("[DEBUG] Mission script exit")
