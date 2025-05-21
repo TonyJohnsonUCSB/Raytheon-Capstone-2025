@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import asyncio
 import time
 import cv2
@@ -85,7 +83,15 @@ picam2.start()
 print("[DEBUG] Camera started: RGB888 preview at {}x{}".format(write_width, write_height))
 time.sleep(2)  # allow auto-exposure to stabilize
 
+# ----------------------------
+# Open LoRa communication
+# ----------------------------
+ser = serial.Serial(port='/dev/ttyUSB0',baudrate=57600)
 
+async def get_gps_coordinates_from_drone(drone):
+    async for pos in drone.telemetry.position():
+        return round(pos.latitude_deg, 6), round(pos.longitude_deg, 6)
+    
 async def connect_and_arm():
     drone = System()
     await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
@@ -113,11 +119,6 @@ async def connect_and_arm():
 
     return drone
 
-ser = serial.Serial(port='/dev/ttyUSB0',baudrate=57600)
-
-async def get_gps_coordinates_from_drone(drone):
-    async for pos in drone.telemetry.position():
-        return round(pos.latitude_deg, 6), round(pos.longitude_deg, 6)
 
 async def search_marker(timeout=5.0):
     print(f"[DEBUG] Searching for marker (timeout: {timeout} seconds)")
@@ -148,8 +149,6 @@ async def search_marker(timeout=5.0):
                                                  parameters=DETECT_PARAMS)
         if ids is not None and TARGET_ID in ids.flatten():
             print(f"[DEBUG] Marker ID {TARGET_ID} detected")
-            print("Sending drone GPS location")
-
             idx = list(ids.flatten()).index(TARGET_ID)
             _, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                 [corners[idx]], MARKER_SIZE, INTRINSIC, DIST_COEFFS
@@ -162,7 +161,6 @@ async def search_marker(timeout=5.0):
 
     print("[DEBUG] Marker search timed out")
     return None
-
 
 async def approach_and_land(drone, offset):
     print("[DEBUG] Starting approach and landing sequence")
@@ -192,52 +190,26 @@ async def approach_and_land(drone, offset):
     await drone.offboard.set_position_ned(
         PositionNedYaw(target_n, target_e, down0, yaw)
     )
+    print("Centered. Gathering GPS location.")
+    latitude, longitude = await get_gps_coordinates_from_drone(drone)
+    coordinates = f"{latitude},{longitude}\n".encode('utf-8')
+    print(f"Sending GPS location: {coordinates.decode().strip()}.")
+    time.sleep(0.2)
+    ser.write(coordinates)
+    print("GPS location sent. Continuing to error calculation and tolerance checks.")
 
     while True:
         await asyncio.sleep(0.5)
         async for od in drone.telemetry.position_velocity_ned():
-            curr_n = od.position.north_m
-            curr_e = od.position.east_m
-            err_n = target_n - curr_n
-            err_e = target_e - curr_e
+            err_n = abs(od.position.north_m - target_n)
+            err_e = abs(od.position.east_m - target_e)
+            print(f"[DEBUG] Err -> N: {err_n:.2f}, E: {err_e:.2f}")
             break
-
-        # Recalculate updated target based on error, if desired
-        await drone.offboard.set_position_ned(
-            PositionNedYaw(curr_n + err_n, curr_e + err_e, down0, yaw)
-        )
-
-        print(f"[DEBUG] Adjusting -> N: {curr_n + err_n:.2f}, E: {curr_e + err_e:.2f}")
-
-        if abs(err_n) < TOLERANCE and abs(err_e) < TOLERANCE:
-            print("[DEBUG] Within tolerance, lowering drone by 1m")
-        # Get current relative altitude above ground (AGL)
-            async for pos in drone.telemetry.position():
-                relative_alt = pos.relative_altitude_m
-                break
-
-            print(f"[DEBUG] Current altitude: {relative_alt:.2f} m")
-
-            if relative_alt <= 2.0 + 9:
-                print("Reached target altitude (≤ 2m)")
-                print("Drone within N and E tolerance. Sending GPS location.")
-                latitude, longitude = await get_gps_coordinates_from_drone(drone)
-                coordinates = f"{latitude},{longitude}\n".encode('utf-8')
-                ser.write(coordinates)
-                print(f"Sent GPS coordinates {coordinates.decode().strip()}. Landing the drone.")
-                time.sleep(0.2)
-                await drone.offboard.stop()
-                await drone.action.land()
-                return
-
-            # Command 1m descent by modifying 'down' in NED
-            down0 += 1.0  # "Down" increases positively
-            print("Lowering drone by 1m")
-            await drone.offboard.set_position_ned(
-                PositionNedYaw(target_n, target_e, down0, yaw)
-            )
-            await asyncio.sleep(0.5)
-            
+        if err_n < TOLERANCE and err_e < TOLERANCE:
+            print("[DEBUG] Within tolerance, initiating landing")
+            await drone.offboard.stop()
+            await drone.action.land()
+            return
 
 
 async def run():

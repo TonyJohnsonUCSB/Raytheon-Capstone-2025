@@ -8,7 +8,6 @@ from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, PositionNedYaw
 from mavsdk.geofence import Point, Polygon, FenceType, GeofenceData
-import serial
 
 # ----------------------------
 # Camera Globals
@@ -113,12 +112,6 @@ async def connect_and_arm():
 
     return drone
 
-ser = serial.Serial(port='/dev/ttyUSB0',baudrate=57600)
-
-async def get_gps_coordinates_from_drone(drone):
-    async for pos in drone.telemetry.position():
-        return round(pos.latitude_deg, 6), round(pos.longitude_deg, 6)
-
 async def search_marker(timeout=5.0):
     print(f"[DEBUG] Searching for marker (timeout: {timeout} seconds)")
     t0 = time.time()
@@ -220,12 +213,7 @@ async def approach_and_land(drone, offset):
 
             if relative_alt <= 2.0 + 9:
                 print("Reached target altitude (≤ 2m)")
-                print("Drone within N and E tolerance. Sending GPS location.")
-                latitude, longitude = await get_gps_coordinates_from_drone(drone)
-                coordinates = f"{latitude},{longitude}\n".encode('utf-8')
-                ser.write(coordinates)
-                print(f"Sent GPS coordinates {coordinates.decode().strip()}. Landing the drone.")
-                time.sleep(0.2)
+                print("Drone within N and E tolerance. Landing.")
                 await drone.offboard.stop()
                 await drone.action.land()
                 return
