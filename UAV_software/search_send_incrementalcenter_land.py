@@ -226,8 +226,7 @@ async def approach_and_land(drone, offset):
                 ser.write(coordinates)
                 print(f"Sent GPS coordinates {coordinates.decode().strip()}. Landing the drone.")
                 time.sleep(0.2)
-                await drone.offboard.stop()
-                await drone.action.land()
+                await drone.action.return_to_launch()
                 return
 
             # Command 1m descent by modifying 'down' in NED

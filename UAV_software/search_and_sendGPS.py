@@ -194,22 +194,11 @@ async def approach_and_land(drone, offset):
     latitude, longitude = await get_gps_coordinates_from_drone(drone)
     coordinates = f"{latitude},{longitude}\n".encode('utf-8')
     print(f"Sending GPS location: {coordinates.decode().strip()}.")
-    time.sleep(0.2)
     ser.write(coordinates)
-    print("GPS location sent. Continuing to error calculation and tolerance checks.")
-
-    while True:
-        await asyncio.sleep(0.5)
-        async for od in drone.telemetry.position_velocity_ned():
-            err_n = abs(od.position.north_m - target_n)
-            err_e = abs(od.position.east_m - target_e)
-            print(f"[DEBUG] Err -> N: {err_n:.2f}, E: {err_e:.2f}")
-            break
-        if err_n < TOLERANCE and err_e < TOLERANCE:
-            print("[DEBUG] Within tolerance, initiating landing")
-            await drone.offboard.stop()
-            await drone.action.land()
-            return
+    await asyncio.sleep(0.2)
+    print("GPS location sent. Returning to launch")
+    await drone.action.return_to_launch()
+    return
 
 
 async def run():
