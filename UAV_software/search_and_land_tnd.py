@@ -159,44 +159,80 @@ async def search_marker(timeout=5.0):
 async def approach_and_land(drone, offset):
     print("[DEBUG] Starting approach and landing sequence")
 
+    # 1) grab current NED + yaw
     async for od in drone.telemetry.position_velocity_ned():
         north0, east0, down0 = od.position.north_m, od.position.east_m, od.position.down_m
-        print(f"[DEBUG] Current NED -> N: {north0:.2f}, E: {east0:.2f}, D: {down0:.2f}")
         break
 
     async for att in drone.telemetry.attitude_euler():
         yaw = att.yaw_deg
-        print(f"[DEBUG] Current yaw: {yaw:.1f} deg")
         break
 
+    # start offboard at current position
     await drone.offboard.set_position_ned(PositionNedYaw(north0, east0, down0, yaw))
     try:
-        print("[DEBUG] Enabling offboard mode")
         await drone.offboard.start()
     except OffboardError:
         print("[ERROR] Offboard start failed")
         return
 
-    target_n = north0 + offset[1] 
-    target_e = east0 + offset[0] 
-    print(f"[DEBUG] Commanding move to N: {target_n:.2f}, E: {target_e:.2f}")
+    # utility to wait until within tol horizontally (N/E) and optionally vertically (D)
+    async def wait_until(target_n, target_e, target_d=None, tol_h=TOLERANCE, tol_v=0.05):
+        while True:
+            await asyncio.sleep(0.2)
+            async for od in drone.telemetry.position_velocity_ned():
+                err_n = abs(od.position.north_m - target_n)
+                err_e = abs(od.position.east_m - target_e)
+                if target_d is not None:
+                    err_d = abs(od.position.down_m - target_d)
+                    print(f"[DEBUG] Err -> N:{err_n:.2f}, E:{err_e:.2f}, D:{err_d:.2f}")
+                    if err_n < tol_h and err_e < tol_h and err_d < tol_v:
+                        return
+                else:
+                    print(f"[DEBUG] Err -> N:{err_n:.2f}, E:{err_e:.2f}")
+                    if err_n < tol_h and err_e < tol_h:
+                        return
+                break
 
+    # --- STEP 1: initial horizontal centering ---
+    target_n1 = north0 + offset[1]
+    target_e1 = east0 + offset[0]
+    print(f"[DEBUG] Step 1: centering to N:{target_n1:.2f}, E:{target_e1:.2f}, D:{down0:.2f}")
     await drone.offboard.set_position_ned(
-        PositionNedYaw(target_n, target_e, down0, yaw)
+        PositionNedYaw(target_n1, target_e1, down0, yaw)
     )
+    await wait_until(target_n1, target_e1)
 
-    while True:
-        await asyncio.sleep(0.5)
+    # --- STEP 2: drop altitude to half ---
+    target_d2 = 12
+    print(f"[DEBUG] Step 2: descending to D:{target_d2:.2f}")
+    await drone.offboard.set_position_ned(
+        PositionNedYaw(target_n1, target_e1, target_d2, yaw)
+    )
+    await asyncio.sleep(3)
+
+    # --- STEP 3: re-center at lower altitude ---
+    print("[DEBUG] Step 3: re-acquiring marker for final centering")
+    new_offset = await search_marker(timeout=5.0)
+    if new_offset is not None:
+        # get current pos
         async for od in drone.telemetry.position_velocity_ned():
-            err_n = abs(od.position.north_m - target_n)
-            err_e = abs(od.position.east_m - target_e)
-            print(f"[DEBUG] Err -> N: {err_n:.2f}, E: {err_e:.2f}")
+            curr_n, curr_e = od.position.north_m, od.position.east_m
             break
-        if err_n < TOLERANCE and err_e < TOLERANCE:
-            print("[DEBUG] Within tolerance, initiating landing")
-            await drone.offboard.stop()
-            await drone.action.land()
-            return
+        target_n3 = curr_n + new_offset[1]
+        target_e3 = curr_e + new_offset[0]
+        print(f"[DEBUG] Step 3: centering to N:{target_n3:.2f}, E:{target_e3:.2f}, D:{target_d2:.2f}")
+        await drone.offboard.set_position_ned(
+            PositionNedYaw(target_n3, target_e3, target_d2, yaw)
+        )
+        await wait_until(target_n3, target_e3, target_d2)
+    else:
+        print("[WARN] Could not re-detect marker; proceeding to land from current position")
+
+    # --- STEP 4: land ---
+    print("[DEBUG] Within final tolerance; landing now")
+    await drone.offboard.stop()
+    await drone.action.land()
 
 
 async def run():
