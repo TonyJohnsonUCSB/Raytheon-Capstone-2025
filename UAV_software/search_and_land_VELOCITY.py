@@ -109,7 +109,7 @@ async def connect_and_arm():
 
     return drone
 
-async def search_marker(timeout=5.0):
+async def search_marker(timeout=3.0):
     print(f'[DEBUG] search_marker: timeout={timeout}s')
     t0 = time.time()
     prev_gray = None
@@ -203,8 +203,8 @@ async def approach_and_land(drone):
             return
 
         # compute velocity toward marker
-        vn = (dx_n / dist) * VELOCITY
-        ve = (dx_e / dist) * VELOCITY
+        vn = - (dx_n / dist) * VELOCITY * 0.5
+        ve = (dx_e / dist) * VELOCITY * 0.5
         print(f'[DEBUG] Commanding velocity N={vn:.2f}m/s, E={ve:.2f}m/s')
         await drone.offboard.set_velocity_ned(VelocityNedYaw(vn, ve, 0.0, yaw))
 

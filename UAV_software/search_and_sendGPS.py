@@ -90,7 +90,7 @@ ser = serial.Serial(port='/dev/ttyUSB0',baudrate=57600)
 
 async def get_gps_coordinates_from_drone(drone):
     async for pos in drone.telemetry.position():
-        return round(pos.latitude_deg, 6), round(pos.longitude_deg, 6)
+        return round(pos.latitude_deg, 10), round(pos.longitude_deg, 10)
     
 async def connect_and_arm():
     drone = System()
@@ -194,8 +194,13 @@ async def approach_and_land(drone, offset):
     latitude, longitude = await get_gps_coordinates_from_drone(drone)
     coordinates = f"{latitude},{longitude}\n".encode('utf-8')
     print(f"Sending GPS location: {coordinates.decode().strip()}.")
-    ser.write(coordinates)
-    await asyncio.sleep(0.2)
+    
+    loop=0
+    while loop<10:
+        ser.write(coordinates)
+        loop += 1
+        await asyncio.sleep(0.2)
+
     print("GPS location sent. Returning to launch")
     await drone.action.return_to_launch()
     return
@@ -210,7 +215,7 @@ async def run():
             await drone.action.goto_location(lat, lon, AMSL_ALTITUDE, 0.0)
             await asyncio.sleep(7)
             print(f"[DEBUG] Attempting marker search at ({lat}, {lon})")
-            tvec = await search_marker(10.0)
+            tvec = await search_marker(5.0)
             if tvec is not None:
                 await approach_and_land(drone, tvec)
                 return
