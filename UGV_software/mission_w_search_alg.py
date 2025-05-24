@@ -296,7 +296,7 @@ drop_zone_found = False
 desired_distance = 1.0 # desired distance from the marker in meters
 desired_lateral = 0.0  # marker centered horizontally
 forward_pid = PIDController(kp=8.0, ki=0., kd=8.0, setpoint=desired_distance)
-lateral_pid = PIDController(kp=8.0, ki=0, kd=2.0, setpoint=desired_lateral)
+lateral_pid = PIDController(kp=5.0, ki=0, kd=0.0, setpoint=desired_lateral)
 max_speed = 2.24 # [m/s]
 max_speed_angle = 100 #[deg/s]
 forward_velocity = 0
@@ -332,7 +332,7 @@ async def main():
     max_angle_down = 90
     forward_velocity = 0
     lateral_velocity = 0
-    time_lost_threshold = 1*60 # 1 min * 60 s/min
+    time_lost_threshold = 0.5*60 # 1 min * 60 s/min
     time_4_mission = 6*60      # 6 min * 60 s/min
     time_detected = 0
     step = 1

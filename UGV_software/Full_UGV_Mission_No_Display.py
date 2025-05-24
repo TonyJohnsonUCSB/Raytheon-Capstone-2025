@@ -17,7 +17,7 @@ import busio
 import lgpio
 import logging
 from mavsdk.param import ParamError
-import maplotlib.pyplot as plt
+
 # Dump Truck: Open a connection to the GPIO chip 
 h = lgpio.gpiochip_open(0)  # '0' is the default GPIO chip
 
@@ -131,7 +131,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
     ##### This Part of the code will be the one we need mostly for Raytheon This will give marker ids ########
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # Processes image to black and white
     aruco_dict = cv2.aruco.getPredefinedDictionary(aruco_dict_type) # Specifies ArUco library were using
-    parameters = cv2.aruco.DetectorParameters_create()
+    parameters = cv2.aruco.DetectorParameters()
 
     corners, ids, rejected_img_points = cv2.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
     
@@ -238,11 +238,11 @@ marker_size = 0.254  # Size of physical marker in meters
 drop_zone_found = False
 
 # PID Setup for car
-desired_distance = 1.0 # desired distance from the marker in meters
+desired_distance = 1.11 # desired distance from the marker in meters
 desired_lateral = 0.0  # marker centered horizontally
-forward_pid = PIDController(kp=8.0, ki=0., kd=8.0, setpoint=desired_distance)
-lateral_pid = PIDController(kp=8.0, ki=0, kd=2.0, setpoint=desired_lateral)
-max_speed = 2.24 # [m/s]
+forward_pid = PIDController(kp=8, ki=0., kd=0.0, setpoint=desired_distance)
+lateral_pid = PIDController(kp=4.5, ki=0, kd=0.0, setpoint=desired_lateral)
+max_speed = 2.24/20 # [m/s]
 max_speed_angle = 100 #[deg/s]
 forward_velocity = 0
 lateral_velocity = 0
@@ -251,7 +251,7 @@ lateral_velocity = 0
 # Servo/Camera setup 
 camera_desired_angle = 0 
 camera_PID = PIDController(kp = 0.75, ki = 0.0, kd = 0.0, setpoint = camera_desired_angle)
-SERVO_CHANNEL = 15# Channel on PCA9685 where the servo is connected
+SERVO_CHANNEL = 0  # Channel on PCA9685 where the servo is connected
 SERVO_MIN = 600    # Minimum pulse length for the servo (adjust as needed)
 SERVO_MAX = 2400    # Maximum pulse length for the servo (adjust as needed)
 i2c = busio.I2C(SCL, SDA)
@@ -275,11 +275,7 @@ async def main():
     current_angle = 45
     forward_velocity = 0
     lateral_velocity = 0
-       
-    print('Closing Truckbed')
-    close_truckbed()
-    time.sleep(5)
-    stop_motor()
+
     
     # Connecting to Rover via USB (adjust port/baud as needed)
     print("Waiting for rover to connect via UART...")
@@ -361,7 +357,7 @@ async def main():
                 current_angle = new_angle               # Update the current angle
 
                 # Update forward velocity
-                forward_velocity = -1*(forward_velocity - forward_pid.update(distance))
+                forward_velocity = forward_pid.update(distance)
 
                 # Bottleneck forward velocity
                 if forward_velocity > max_speed:
@@ -370,7 +366,7 @@ async def main():
                     forward_velocity = -max_speed
                 
                 # Update Lateral velocity 
-                lateral_velocity = (lateral_velocity + lateral_pid.update(angle_x))
+                lateral_velocity = -1* lateral_pid.update(angle_x)
 
                 # Bottleneck Lateral Velocity
                 if lateral_velocity > max_speed_angle:
@@ -387,11 +383,10 @@ async def main():
                 # cv2.putText(output, f"Distance to Drop-Zone: {distance:.2f} m", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                 # cv2.putText(output, f"Y Angle to Drop-Zone: {angle_y:.2f} degrees", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                 # cv2.putText(output, f"X Angle to Drop-Zone: {angle_x:.2f} degrees", (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-            
+                print(f'forward velocity:{forward_velocity:.2f}')
             # Send velocity commands via offboard command:
                 velocity_command = VelocityBodyYawspeed(forward_velocity, 0, 0.0, lateral_velocity)
                 await rover.offboard.set_velocity_body(velocity_command)
-                print(distance)
             
             # Delivering Package when vectorial distance from marker to camera is less than 1 m
                 # if distance < desired_distance:
@@ -400,14 +395,14 @@ async def main():
                     # await rover.offboard.set_velocity_body(velocity_command)
                     # dump_package()
 
-            else: #If marker is not found stop car
-                initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
+            else: #If marker is not found stop ca
+                await rover.action.hold()
+                forward_velocity = 0 
+                lateral_velocity = 0 
+                initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0,0.0)
                 await rover.offboard.set_velocity_body(initial_velocity)
             
             # cv2.imshow('Estimated Pose', img)
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord('q'):
-                break
 
     finally:
         picam2.stop()
@@ -421,3 +416,4 @@ if __name__ == '__main__':
     import asyncio
     asyncio.run(main())
     
+

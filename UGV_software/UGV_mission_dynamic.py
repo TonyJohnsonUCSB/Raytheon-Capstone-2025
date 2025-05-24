@@ -257,7 +257,7 @@ SERVO_MAX = 2400    # Maximum pulse length for the servo (adjust as needed)
 i2c = busio.I2C(SCL, SDA)
 pca = PCA9685(i2c)
 pca.frequency = 50  # Set frequency to 50Hz for servos
-current_angle = 45
+current_angle = 60
 print('Setting Initial Servo Angle')
 set_servo_angle(SERVO_CHANNEL,current_angle) #set servo to an initial angle
 time.sleep(3)
@@ -350,10 +350,10 @@ async def main():
                 # If we lose markers estimate the angle_x, angle_y, distance given what we know about the systemd
                 if distance is None:
                     dt = time.time()-t0
-                    d_dot = (np.sqrt(last_d\istance**2-cam_height**2)/last_distance)*forward_velocity
+                    d_dot = (np.sqrt(last_distance**2-cam_height**2)/last_distance)*forward_velocity
                     distance = last_distance + d_dot*dt
                     angle_x = last_angle_x + lateral_velocity*dt 
-                    angle_y = -cam_height*d_dot/(last_distance**2*np.sqrt(1-(cam_height/last_distance)**2)
+                    angle_y = -cam_height*d_dot/(last_distance**2*np.sqrt(1-(cam_height/last_distance)**2))
                                                  
                 # Update servo angle
                 u = camera_PID.update(angle_y)    # we get u update from controller
@@ -413,22 +413,15 @@ async def main():
                     # await rover.offboard.set_velocity_body(velocity_command)
                     # dump_package()
                 
-            print('right before cv2.imshow')
+            #print('right before cv2.imshow')
             plt.clf()  # Clear last frame
             plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
             plt.title("Live Debug")
             plt.pause(0.001)  # Short pause to update plot window
-            print('right after cv2.imshow')
+            #print('right after cv2.imshow')
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
-
-    finally:
-        picam2.stop()
-        picam2.close()
-        cv2.destroyAllWindows()
-        pca.deinit()
-
 
     finally:
         picam2.stop()

@@ -18,6 +18,10 @@ import lgpio
 import logging
 from mavsdk.param import ParamError
 import matplotlib.pyplot as plt
+import serial 
+import re
+
+#ser = serial.Serial(port='/dev/ttyUSB0',baudrate = 57600, timeout = 1)
 # Dump Truck: Open a connection to the GPIO chip 
 h = lgpio.gpiochip_open(0)  # '0' is the default GPIO chip
 
@@ -39,12 +43,12 @@ lgpio.tx_pwm(h, ENA, freq, duty_cycle)
 speed = 100  # Motor speed in % duty cycle
 
 # Dump Truck: 
-def close_truckbed():
+def open_truckbed():
     lgpio.gpio_write(h, IN1, 1)
     lgpio.gpio_write(h, IN2, 0)
     lgpio.tx_pwm(h, ENA, freq, speed)
     
-def open_truckbed():
+def close_truckbed():
     lgpio.gpio_write(h, IN1, 0)
     lgpio.gpio_write(h, IN2, 1)
     lgpio.tx_pwm(h, ENA, freq, speed)
@@ -145,7 +149,7 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
             rvec, tvec, _ = cv2.aruco.estimatePoseSingleMarkers(corners[marker_index], marker_size, matrix_coefficients, distortion_coefficients)
 
             # Draw the axes for the marker
-            draw_axis(frame, rvec, tvec, matrix_coefficients, distortion_coefficients, marker_size)
+            # draw_axis(frame, rvec, tvec, matrix_coefficients, distortion_coefficients, marker_size)
             
             if marker_id == drop_zoneID:
                 drop_zone_found = True
@@ -157,10 +161,6 @@ def pose_estimation(frame, aruco_dict_type, matrix_coefficients, distortion_coef
                 z = flat_tvec[2]
                 angle_y = np.degrees(np.arctan(y/z)) # important to move camera up and down
                 angle_x =np.degrees(np.arctan(x / z)) #
-                # Display the distance on the frame
-                #cv2.putText(frame, f"Distance to Drop-Zone: {distance:.2f} m", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                #cv2.putText(frame, f"Y Angle to Drop-Zone: {angle_y:.2f} degrees", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                #cv2.putText(frame, f"X Angle to Drop-Zone: {angle_x:.2f} degrees", (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                 
     return frame,distance, angle_y, angle_x
 
@@ -238,11 +238,11 @@ marker_size = 0.254  # Size of physical marker in meters
 drop_zone_found = False
 
 # PID Setup for car
-desired_distance = 1.0 # desired distance from the marker in meters
+desired_distance = 1.11# desired distance from the marker in meters
 desired_lateral = 0.0  # marker centered horizontally
-forward_pid = PIDController(kp=8.0, ki=0., kd=8.0, setpoint=desired_distance)
-lateral_pid = PIDController(kp=8.0, ki=0, kd=2.0, setpoint=desired_lateral)
-max_speed = 2.24 # [m/s]
+forward_pid = PIDController(kp=1.0, ki=0., kd=1.0, setpoint=desired_distance)
+lateral_pid = PIDController(kp= 3.5, ki=0, kd=0, setpoint=desired_lateral)
+max_speed = 2.24/2 # [m/s]
 max_speed_angle = 100 #[deg/s]
 forward_velocity = 0
 lateral_velocity = 0
@@ -251,35 +251,31 @@ lateral_velocity = 0
 # Servo/Camera setup 
 camera_desired_angle = 0 
 camera_PID = PIDController(kp = 0.75, ki = 0.0, kd = 0.0, setpoint = camera_desired_angle)
-SERVO_CHANNEL = 15# Channel on PCA9685 where the servo is connected
+SERVO_CHANNEL = 0# Channel on PCA9685 where the servo is connected
 SERVO_MIN = 600    # Minimum pulse length for the servo (adjust as needed)
 SERVO_MAX = 2400    # Maximum pulse length for the servo (adjust as needed)
 i2c = busio.I2C(SCL, SDA)
 pca = PCA9685(i2c)
 pca.frequency = 50  # Set frequency to 50Hz for servos
-current_angle = 45
+current_angle = 0
 print('Setting Initial Servo Angle')
 set_servo_angle(SERVO_CHANNEL,current_angle) #set servo to an initial angle
 time.sleep(3)
 
 # Mission setup
-TARGET_LATITUDE = 34.414893950 # degrees
-TARGET_LONGITUDE = -119.843535639 # degrees
-TARGET_ALTITUDE = 0                  # for rovers, altitude is usually set to ground level
-TARGET_YAW = 0                       # desired heading in degrees
 loop_marker = 0
 
 async def main():
     plt.ion()
+    coordinates = None
     loop_marker = 0
-    current_angle = 45
+    current_angle = 0
     forward_velocity = 0
     lateral_velocity = 0
-       
-    print('Closing Truckbed')
-    close_truckbed()
-    time.sleep(5)
-    stop_motor()
+    TARGET_LATITUDE= 34.4189
+    TARGET_ALTITUDE = 0
+    TARGET_YAW = 0 
+    TARGET_LONGITUDE = -119.85515                    # desired heading in degrees
     
     # Connecting to Rover via USB (adjust port/baud as needed)
     print("Waiting for rover to connect via UART...")
@@ -307,14 +303,30 @@ async def main():
     await rover.action.arm()
     print("Rover armed")
     
+    
+    
+    # while coordinates is None:
+        # print('waiting for GPS Coordinates')
+        # # Read serial data
+        # b = ser.read(1000).decode(errors='ignore')
+    
+        # # Find latitude and longitude pairs using regex
+        # coordinates = re.findall(r'(-?\d+\.\d+),\s*(-?\d+\.\d+)', b)
+        
+
+        # # Print extracted coordinates
+        # for lat, lon in coordinates:
+            # print(f"GPS coordinates received: {lat}, {lon}")
+            # TARGET_LATITUDE = lat
+            # TARGET_LONGITUDE = lon
+
     # print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
     # await rover.action.goto_location(TARGET_LATITUDE,
-    #                                  TARGET_LONGITUDE,
-    #                                  TARGET_ALTITUDE,
-    #                                  TARGET_YAW)
-    # Send an initial setpoint (all zeros) to satisfy the PX4 requirement
-    # Send an initial setpoint (all zeros) to satisfy the PX4 requirement
-    # 1) Show firmware
+                                      # TARGET_LONGITUDE,
+                                      # TARGET_ALTITUDE,
+                                      # TARGET_YAW)
+    
+
     print('Entering Computer Vision Loop')
     try:
         # Main computer vision loop
@@ -335,6 +347,7 @@ async def main():
                     for _ in range(50):  # Send at 10 Hz for 1 second
                         await rover.offboard.set_velocity_body(initial_velocity)
                         await asyncio.sleep(0.05)
+                    await rover.offboard.set_velocity_body(initial_velocity)
                     print("Starting offboard mode...")
                     await rover.offboard.start()
                 except OffboardError as error:
@@ -359,54 +372,70 @@ async def main():
                 # Set the new servo angle
                 set_servo_angle(SERVO_CHANNEL,new_angle)# Set the servo to updated angle
                 current_angle = new_angle               # Update the current angle
-
-                # Update forward velocity
-                forward_velocity = forward_pid.update(distance)
-
-                # Bottleneck forward velocity
-                if forward_velocity > max_speed:
-                    forward_velocity = max_speed
-                elif forward_velocity < -max_speed:
-                    forward_velocity = -max_speed
                 
-                # Update Lateral velocity 
-                lateral_velocity = lateral_pid.update(angle_x)
+                if angle_x > 2: 
+                    # Update forward velocity
+                    forward_velocity = 0
+                
+                    # Update Lateral velocity 
+                    lateral_velocity = -lateral_pid.update(angle_x)
+                else:
+                    # Update forward velocity
+                    forward_velocity = forward_pid.update(distance)
+
+                    # Bottleneck forward velocity
+                    if forward_velocity > max_speed:
+                        forward_velocity = max_speed
+                    elif forward_velocity < -max_speed:
+                        forward_velocity = -max_speed
+                
+                    # Update Lateral velocity 
+                    lateral_velocity = -lateral_pid.update(angle_x)
+                    
+                    
 
                 # Bottleneck Lateral Velocity
-                if lateral_velocity > max_speed_angle:
-                    lateral_velocity = max_speed_angle
-                elif lateral_velocity < -max_speed_angle:
-                    lateral_velocity = -max_speed_angle
+                # if lateral_velocity > max_speed_angle:
+                    # lateral_velocity = max_speed_angle
+                # elif lateral_velocity < -max_speed_angle:
+                    # lateral_velocity = -max_speed_angle
+                    
                 
                 # Overlay velocities on the output image
                 cv2.putText(output, f"forward velocity: {forward_velocity:.2f} m/s", (10, 140),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
                 cv2.putText(output, f"lateral velocity: {lateral_velocity:.2f} deg/s", (10, 170),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
                 
                 #print(f"Forward Velocity: {forward_velocity:.2f}, Lateral Velocity: {lateral_velocity:.2f}")
-                cv2.putText(output, f"Distance to Drop-Zone: {distance:.2f} m", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                cv2.putText(output, f"Y Angle to Drop-Zone: {angle_y:.2f} degrees", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                cv2.putText(output, f"X Angle to Drop-Zone: {angle_x:.2f} degrees", (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                cv2.putText(output, f"Distance to Drop-Zone: {distance:.2f} m", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.putText(output, f"Y Angle to Drop-Zone: {angle_y:.2f} degrees", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.putText(output, f"X Angle to Drop-Zone: {angle_x:.2f} degrees", (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             
             # Send velocity commands via offboard command:
                 velocity_command = VelocityBodyYawspeed(forward_velocity, 0, 0.0, lateral_velocity)
                 await rover.offboard.set_velocity_body(velocity_command)
-                print(distance)
             
             # Delivering Package when the vectorial distance from marker to the camera is less than 1 m
-                # if distance < desired_distance:
+                # if distance <= desired_distance:
                     # print('Package Drop-off Sequence')
                     # velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0)
                     # await rover.offboard.set_velocity_body(velocity_command)
-                    # dump_package()
+                    # #dump_package()
 
             else: #If marker is not found stop car
+                # Overlay velocities on the output image
+                forward_velocity  = 0 
+                lateral_velocity = 0
+                cv2.putText(output, f"forward velocity: {forward_velocity:.2f} m/s", (10, 140),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.putText(output, f"lateral velocity: {lateral_velocity:.2f} deg/s", (10, 170),
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
                 initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
                 await rover.offboard.set_velocity_body(initial_velocity)
             
             plt.clf()  # Clear last frame
-            plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+            plt.imshow(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
             plt.title("Live Debug")
             plt.pause(0.001)  # Short pause to update plot window
             key = cv2.waitKey(1) & 0xFF
