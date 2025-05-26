@@ -201,7 +201,7 @@ async def approach_and_land(drone, offset):
         )
 
         print(f"[DEBUG] Adjusting -> N: {curr_n + err_n:.2f}, E: {curr_e + err_e:.2f}")
-
+        await asyncio.sleep(2)
         if abs(err_n) < TOLERANCE and abs(err_e) < TOLERANCE:
             print("[DEBUG] Within tolerance, lowering drone by 1m")
         # Get current relative altitude above ground (AGL)
@@ -224,7 +224,7 @@ async def approach_and_land(drone, offset):
             await drone.offboard.set_position_ned(
                 PositionNedYaw(target_n, target_e, down0, yaw)
             )
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(2)
             
 
 
