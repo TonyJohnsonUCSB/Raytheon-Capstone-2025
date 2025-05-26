@@ -214,30 +214,44 @@ async def approach_and_land(drone):
 async def run():
     print('[DEBUG] run() start')
     drone = await connect_and_arm()
+    landed_on_marker = False
+
     try:
         for idx, (lat, lon) in enumerate(coordinates):
             print(f'[DEBUG] Waypoint {idx+1}: goto ({lat}, {lon})')
             await drone.action.goto_location(lat, lon, AMSL_ALTITUDE, 0.0)
             await asyncio.sleep(7)
 
-            print('[DEBUG] Arrived, starting approach')
-            await approach_and_land(drone)
-            print('[DEBUG] approach_and_land complete, exiting')
-            return
+            print(f'[DEBUG] Scanning for marker at waypoint {idx+1}')
+            offset = await search_marker(timeout=3.0)
+            if offset is not None:
+                print('[DEBUG] Marker detected - starting approach')
+                landed_on_marker = await approach_and_land(drone)
+                if landed_on_marker:
+                    print(f'[DEBUG] Landed on marker at waypoint {idx+1}')
+                    break
+                else:
+                    print(f'[DEBUG] Approach timed out at waypoint {idx+1} - moving on')
+            else:
+                print(f'[DEBUG] No marker at waypoint {idx+1} - skipping')
 
-        print('[DEBUG] No marker found, RTL')
-        await drone.action.return_to_launch()
+        if not landed_on_marker:
+            first_lat, first_lon = coordinates[0]
+            print('[DEBUG] No marker found on any waypoint - returning to first and landing')
+            await drone.action.goto_location(first_lat, first_lon, AMSL_ALTITUDE, 0.0)
+            await asyncio.sleep(7)
+            await drone.action.land()
 
     except Exception as e:
-        print(f'[ERROR] Exception: {e}')
+        print(f'[ERROR] Exception in run(): {e}')
+
     finally:
         try:
             await drone.offboard.stop()
             print('[DEBUG] Offboard stopped in cleanup')
         except:
             pass
-        await drone.action.land()
-        print('[DEBUG] Cleanup land command sent')
+        print('[DEBUG] run() complete')
 
 if __name__ == '__main__':
     print('[DEBUG] Script start]')
