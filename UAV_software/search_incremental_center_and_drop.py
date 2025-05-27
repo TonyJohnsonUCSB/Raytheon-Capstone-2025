@@ -8,6 +8,7 @@ from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, PositionNedYaw
 from mavsdk.geofence import Point, Polygon, FenceType, GeofenceData
+from mavsdk.offboard import VelocityNedYaw
 
 # ----------------------------
 # Camera Globals
