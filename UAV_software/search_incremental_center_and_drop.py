@@ -49,6 +49,7 @@ TARGET_ID = 1
 ALTITUDE = 5       # takeoff and waypoint altitude in meters
 AMSL_ALTITUDE = ALTITUDE + 9
 TOLERANCE = 0.01  # N/E position tolerance for landing in meters
+VELOCITY = 0.5
 
 # ----------------------------
 # Waypoints and Geofence
