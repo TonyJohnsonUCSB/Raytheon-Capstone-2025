@@ -196,7 +196,7 @@ async def approach_and_land(drone, offset):
     print(f"Sending GPS location: {coordinates.decode().strip()}.")
     
     loop=0
-    while loop<10:
+    while loop<200:
         ser.write(coordinates)
         loop += 1
         await asyncio.sleep(0.2)

@@ -156,76 +156,61 @@ async def search_marker(timeout=5.0):
     print("[DEBUG] Marker search timed out")
     return None
 
-
-async def approach_and_land(drone, offset):
-    print("[DEBUG] Starting approach and landing sequence")
-
-    async for od in drone.telemetry.position_velocity_ned():
-        north0, east0, down0 = od.position.north_m, od.position.east_m, od.position.down_m
-        print(f"[DEBUG] Current NED -> N: {north0:.2f}, E: {east0:.2f}, D: {down0:.2f}")
-        break
-
+async def approach_and_land(drone):
+    print('[DEBUG] Starting velocity-based continuous approach')
+    # get initial yaw
     async for att in drone.telemetry.attitude_euler():
         yaw = att.yaw_deg
-        print(f"[DEBUG] Current yaw: {yaw:.1f} deg")
+        print(f'[DEBUG] Initial yaw: {yaw:.1f}')
         break
 
-    await drone.offboard.set_position_ned(PositionNedYaw(north0, east0, down0, yaw))
+    # set zero velocity and start offboard
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
     try:
-        print("[DEBUG] Enabling offboard mode")
+        print('[DEBUG] Enabling offboard')
         await drone.offboard.start()
-    except OffboardError:
-        print("[ERROR] Offboard start failed")
+        print('[DEBUG] Offboard started')
+    except OffboardError as e:
+        print(f'[ERROR] Offboard start failed: {e}')
         return
 
-    target_n = north0 + offset[1] 
-    target_e = east0 + offset[0] 
-    print(f"[DEBUG] Commanding move to N: {target_n:.2f}, E: {target_e:.2f}")
-
-    await drone.offboard.set_position_ned(
-        PositionNedYaw(target_n, target_e, down0, yaw)
-    )
-
     while True:
-        await asyncio.sleep(0.5)
+        # get current NED
         async for od in drone.telemetry.position_velocity_ned():
-            curr_n = od.position.north_m
-            curr_e = od.position.east_m
-            err_n = target_n - curr_n
-            err_e = target_e - curr_e
+            north = od.position.north_m
+            east  = od.position.east_m
+            down  = od.position.down_m
+            print(f'[DEBUG] Current NED: N={north:.2f}, E={east:.2f}, D={down:.2f}')
             break
 
-        # Recalculate updated target based on error, if desired
-        await drone.offboard.set_position_ned(
-            PositionNedYaw(curr_n + err_n, curr_e + err_e, down0, yaw)
-        )
+        # search for marker
+        print('[DEBUG] Updating offset via camera')
+        offset = await search_marker(timeout=2.0)
+        if offset is None:
+            print('[DEBUG] No offset, retrying')
+            continue
 
-        print(f"[DEBUG] Adjusting -> N: {curr_n + err_n:.2f}, E: {curr_e + err_e:.2f}")
-        await asyncio.sleep(2)
-        if abs(err_n) < TOLERANCE and abs(err_e) < TOLERANCE:
-            print("[DEBUG] Within tolerance, lowering drone by 1m")
-        # Get current relative altitude above ground (AGL)
-            async for pos in drone.telemetry.position():
-                relative_alt = pos.relative_altitude_m
-                break
+        dx_e = offset[0]
+        dx_n = offset[1]
+        dist = math.hypot(dx_n, dx_e)
+        print(f'[DEBUG] Distance to marker: {dist:.3f}m')
 
-            print(f"[DEBUG] Current altitude: {relative_alt:.2f} m")
+        if dist < TOLERANCE:
+            print('[DEBUG] Within tolerance, landing')
+            await drone.offboard.stop()
+            await drone.action.land()
+            print('[DEBUG] Land command sent')
+            return
 
-            if relative_alt <= 2.0 + 9:
-                print("Reached target altitude (≤ 2m)")
-                print("Drone within N and E tolerance. Landing.")
-                await drone.offboard.stop()
-                await drone.action.land()
-                return
+        # compute velocity toward marker
+        vn = - (dx_n / dist) * VELOCITY * 0.5
+        ve = (dx_e / dist) * VELOCITY * 0.5
+        print(f'[DEBUG] Commanding velocity N={vn:.2f}m/s, E={ve:.2f}m/s')
+        await drone.offboard.set_velocity_ned(VelocityNedYaw(vn, ve, 0.0, yaw))
 
-            # Command 1m descent by modifying 'down' in NED
-            down0 += 1.0  # "Down" increases positively
-            print("Lowering drone by 1m")
-            await drone.offboard.set_position_ned(
-                PositionNedYaw(target_n, target_e, down0, yaw)
-            )
-            await asyncio.sleep(2)
-            
+        # wait before next update
+        await asyncio.sleep(1.0)
+     
 
 
 async def run():
@@ -239,7 +224,7 @@ async def run():
             print(f"[DEBUG] Attempting marker search at ({lat}, {lon})")
             tvec = await search_marker(10.0)
             if tvec is not None:
-                await approach_and_land(drone, tvec)
+                await approach_and_land(drone)
                 return
 
         print("[DEBUG] No marker found; returning to launch")
