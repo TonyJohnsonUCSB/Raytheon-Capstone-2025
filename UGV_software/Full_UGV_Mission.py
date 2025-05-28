@@ -21,12 +21,13 @@ import matplotlib.pyplot as plt
 import serial 
 import re
 
-#ser = serial.Serial(port='/dev/ttyUSB0',baudrate = 57600, timeout = 1)
+
+ser = serial.Serial(port='/dev/ttyUSB0',baudrate = 57600, timeout = 1)
 # Dump Truck: Open a connection to the GPIO chip 
 h = lgpio.gpiochip_open(0)  # '0' is the default GPIO chip
 
 # Dump Truck:  Initialize pins
-ENA = 21   # Physical pin 32 is GPIO12
+ENA = 12   # Physical pin 32 is GPIO12
 IN1 = 16   # Physical pin 36 is GPIO16
 IN2 = 20   # Physical pin 38 is GPIO20
 
@@ -240,8 +241,8 @@ drop_zone_found = False
 # PID Setup for car
 desired_distance = 1.11# desired distance from the marker in meters
 desired_lateral = 0.0  # marker centered horizontally
-forward_pid = PIDController(kp=1.0, ki=0., kd=1.0, setpoint=desired_distance)
-lateral_pid = PIDController(kp= 3.5, ki=0, kd=0, setpoint=desired_lateral)
+forward_pid = PIDController(kp=0.8, ki=0., kd=0, setpoint=desired_distance)
+lateral_pid = PIDController(kp= 4.5, ki=0, kd=0, setpoint=desired_lateral)
 max_speed = 2.24/2 # [m/s]
 max_speed_angle = 100 #[deg/s]
 forward_velocity = 0
@@ -267,15 +268,17 @@ loop_marker = 0
 
 async def main():
     plt.ion()
+    received = False
     coordinates = None
-    loop_marker = 0
+    offboard = False
     current_angle = 0
     forward_velocity = 0
     lateral_velocity = 0
-    TARGET_LATITUDE= 34.4189
+    TARGET_LATITUDE= None
     TARGET_ALTITUDE = 0
     TARGET_YAW = 0 
-    TARGET_LONGITUDE = -119.85515                    # desired heading in degrees
+    TARGET_LONGITUDE = None                  
+    count = 0 
     
     # Connecting to Rover via USB (adjust port/baud as needed)
     print("Waiting for rover to connect via UART...")
@@ -303,28 +306,26 @@ async def main():
     await rover.action.arm()
     print("Rover armed")
     
-    
-    
-    # while coordinates is None:
-        # print('waiting for GPS Coordinates')
-        # # Read serial data
-        # b = ser.read(1000).decode(errors='ignore')
-    
-        # # Find latitude and longitude pairs using regex
-        # coordinates = re.findall(r'(-?\d+\.\d+),\s*(-?\d+\.\d+)', b)
+    while True:
+        print('waiting for GPS Coordinates')
+        # Read serial data
+        line = ser.read(1000).decode(errors='ignore')
+        match = re.search(r'(-?\d+\.\d+),\s*(-?\d+\.\d+)', line)
         
+        if match:
+            TARGET_LATITUDE  = float(match.group(1))
+            TARGET_LONGITUDE = float(match.group(2))
+            print(f"GPS coordinates received: Latitude = {TARGET_LATITUDE}, Longitude = {TARGET_LONGITUDE}")
+            count += 1
+            if count >= 5:
+                break
+        await asyncio.sleep(0.1)
 
-        # # Print extracted coordinates
-        # for lat, lon in coordinates:
-            # print(f"GPS coordinates received: {lat}, {lon}")
-            # TARGET_LATITUDE = lat
-            # TARGET_LONGITUDE = lon
-
-    # print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
-    # await rover.action.goto_location(TARGET_LATITUDE,
-                                      # TARGET_LONGITUDE,
-                                      # TARGET_ALTITUDE,
-                                      # TARGET_YAW)
+    print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
+    await rover.action.goto_location(TARGET_LATITUDE,
+                                      TARGET_LONGITUDE,
+                                      TARGET_ALTITUDE,
+                                      TARGET_YAW)
     
 
     print('Entering Computer Vision Loop')
@@ -337,9 +338,9 @@ async def main():
                 img, ARUCO_DICT[aruco_type], intrinsic_camera, distortion, drop_zoneID, marker_size
             )
 
-            if distance is not None and loop_marker == 0: #If the Aruco is found activate offboard mode and never enter this loop again
+            if distance is not None and not offboard: #If the Aruco is found activate offboard mode and never enter this loop again
                 print('Marker Detected for the First Time')
-                loop_marker = 1 
+                offboard = True
                 # Send an initial setpoint (all zeros) to satisfy the PX4 requirement
                 initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
                 print("Sending initial velocity setpoints...")
@@ -373,12 +374,12 @@ async def main():
                 set_servo_angle(SERVO_CHANNEL,new_angle)# Set the servo to updated angle
                 current_angle = new_angle               # Update the current angle
                 
-                if angle_x > 2: 
+                if angle_x > 10: 
                     # Update forward velocity
                     forward_velocity = 0
                 
                     # Update Lateral velocity 
-                    lateral_velocity = -lateral_pid.update(angle_x)
+                    lateral_velocity = lateral_pid.update(angle_x)
                 else:
                     # Update forward velocity
                     forward_velocity = forward_pid.update(distance)
@@ -391,7 +392,6 @@ async def main():
                 
                     # Update Lateral velocity 
                     lateral_velocity = -lateral_pid.update(angle_x)
-                    
                     
 
                 # Bottleneck Lateral Velocity
@@ -417,14 +417,15 @@ async def main():
                 await rover.offboard.set_velocity_body(velocity_command)
             
             # Delivering Package when the vectorial distance from marker to the camera is less than 1 m
-                # if distance <= desired_distance:
-                    # print('Package Drop-off Sequence')
-                    # velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0)
-                    # await rover.offboard.set_velocity_body(velocity_command)
-                    # #dump_package()
+                if distance <= desired_distance:
+                    print('Package Drop-off Sequence')
+                    velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0)
+                    await rover.offboard.set_velocity_body(velocity_command)
+                    dump_package()
 
-            else: #If marker is not found stop car
+            elif distance is None and offboard: #If marker is not found stop car
                 # Overlay velocities on the output image
+                print('marker is gone')
                 forward_velocity  = 0 
                 lateral_velocity = 0
                 cv2.putText(output, f"forward velocity: {forward_velocity:.2f} m/s", (10, 140),
