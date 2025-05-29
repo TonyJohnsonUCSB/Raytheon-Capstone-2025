@@ -1,0 +1,1838 @@
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker ID 1 detected
+Sending drone GPS location
+[DEBUG] Pose offset: [-0.19291151 -0.23198039  1.12693971]
+[DEBUG] Starting velocity-based continuous approach
+[DEBUG] Initial yaw: 10.2
+[DEBUG] Enabling offboard
+[DEBUG] Offboard started
+[DEBUG] Current NED: N=-39.58, E=-12.63, D=2.74
+[DEBUG] Updating offset via camera
+[DEBUG] Searching for marker (timeout: 2.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker ID 1 detected
+Sending drone GPS location
+[DEBUG] Pose offset: [-0.17226485 -0.23475692  1.02874159]
+[ERROR] Exception: name 'math' is not defined
+[DEBUG] Mission complete or aborted
+[DEBUG] Script exit
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/UAV_software $ 
+
+succsssful land on incremental center and land:
+
+ython search_incremental_center_and_drop.py 
+[0:17:04.792334157] [22869]  INFO Camera camera_manager.cpp:327 libcamera v0.4.0+53-29156679
+[0:17:04.799770788] [22896]  INFO RPI pisp.cpp:720 libpisp version v1.1.0 e7974a156008 27-01-2025 (21:50:51)
+[0:17:04.809932480] [22896]  INFO RPI pisp.cpp:1179 Registered camera /base/axi/pcie@1000120000/rp1/i2c@80000/imx708@1a to CFE device /dev/media3 and ISP device /dev/media0 using PiSP variant BCM2712_D0
+[0:17:04.814614320] [22869]  INFO Camera camera.cpp:1202 configuring streams: (0) 640x480-RGB888 (1) 2304x1296-BGGR_PISP_COMP1
+[0:17:04.814746767] [22896]  INFO RPI pisp.cpp:1484 Sensor: /base/axi/pcie@1000120000/rp1/i2c@80000/imx708@1a - Selected sensor format: 2304x1296-SBGGR10_1X10 - Selected CFE format: 2304x1296-PC1B
+[DEBUG] Camera started: RGB888 preview at 640x480
+[DEBUG] Script start
+Waiting for drone to connect...
+-- Connected to drone!
+Waiting for drone to have a global position estimate...
+-- Global position estimate OK
+-- Arming
+-- Taking off
+[DEBUG] Heading to waypoint (34.4189, -119.85533) at 5 meters
+[DEBUG] Attempting marker search at (34.4189, -119.85533)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker search timed out
+[DEBUG] Heading to waypoint (34.4189, -119.8553) at 5 meters
+[DEBUG] Attempting marker search at (34.4189, -119.8553)
+[DEBUG] Searching for marker (timeout: 10.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker ID 1 detected
+Sending drone GPS location
+[DEBUG] Pose offset: [0.23533021 0.03255507 1.69858844]
+[DEBUG] Starting velocity-based continuous approach
+[DEBUG] Initial yaw: 0.0
+[DEBUG] Enabling offboard
+[DEBUG] Offboard started
+[DEBUG] Current NED: N=-1.61, E=-0.17, D=-6.16
+[DEBUG] Updating offset via camera
+[DEBUG] Searching for marker (timeout: 2.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker search timed out
+[DEBUG] No offset, retrying
+[DEBUG] Current NED: N=-1.64, E=-0.19, D=-6.18
+[DEBUG] Updating offset via camera
+[DEBUG] Searching for marker (timeout: 2.0 seconds)
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker not found in current frame
+[DEBUG] Marker ID 1 detected
+Sending drone GPS location
+[DEBUG] Pose offset: [0.22867607 0.04932305 1.75997016]
+[ERROR] Exception: name 'math' is not defined
+[DEBUG] Mission complete or aborted
+[DEBUG] Script exit
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/UAV_software $ ^C
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/UAV_software $ 
+
+velocity updated:
+[DEBUG] Marker offset: x=0.037, y=0.166, z=1.867
+[DEBUG] Distance to marker: 0.170m
+[DEBUG] Commanding velocity N=-0.24m/s, E=0.05m/s]
+[DEBUG] Current NED: N=-0.40, E=4.17, D=-8.00
+[DEBUG] Updating offset via camera]
+[DEBUG] search_marker: timeout=2.0s
+[DEBUG] Frame 1 captured
+[DEBUG] Marker not found
+[DEBUG] Frame 2 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 3 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 4 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 5 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 6 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker offset: x=0.013, y=0.146, z=1.793
+[DEBUG] Distance to marker: 0.147m
+[DEBUG] Commanding velocity N=-0.25m/s, E=0.02m/s]
+[DEBUG] Current NED: N=-0.68, E=4.34, D=-8.07
+[DEBUG] Updating offset via camera]
+[DEBUG] search_marker: timeout=2.0s
+[DEBUG] Frame 1 captured
+[DEBUG] Marker not found
+[DEBUG] Frame 2 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 3 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 4 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 5 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 6 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 7 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 8 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 9 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 10 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 11 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 12 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 13 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 14 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 15 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 16 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 17 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 18 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 19 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 20 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 21 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 22 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 23 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 24 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 25 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 26 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 27 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 28 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 29 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 30 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 31 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 32 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 33 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 34 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 35 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 36 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 37 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 38 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 39 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 40 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 41 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 42 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 43 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 44 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 45 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 46 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 47 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 48 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 49 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 50 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 51 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 52 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 53 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 54 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 55 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 56 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 57 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 58 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 59 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 60 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 61 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 62 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 63 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 64 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 65 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 66 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 67 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 68 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 69 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 70 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 71 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 72 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 73 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 74 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 75 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 76 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 77 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 78 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 79 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 80 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 81 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 82 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 83 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] search_marker timed out]
+[DEBUG] No offset, retrying]
+[DEBUG] Current NED: N=-1.07, E=4.59, D=-8.23
+[DEBUG] Updating offset via camera]
+[DEBUG] search_marker: timeout=2.0s
+[DEBUG] Frame 1 captured
+[DEBUG] Marker not found
+[DEBUG] Frame 2 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 3 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 4 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 5 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 6 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 7 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 8 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 9 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 10 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 11 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 12 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 13 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 14 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 15 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 16 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 17 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 18 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 19 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 20 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 21 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 22 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 23 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 24 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 25 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 26 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 27 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 28 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 29 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 30 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 31 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 32 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 33 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 34 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 35 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 36 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 37 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 38 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 39 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 40 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 41 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 42 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 43 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 44 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 45 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 46 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 47 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 48 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 49 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 50 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 51 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 52 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 53 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 54 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 55 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 56 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 57 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 58 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 59 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 60 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 61 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 62 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 63 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 64 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 65 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 66 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 67 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 68 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 69 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 70 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 71 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 72 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 73 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 74 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 75 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 76 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 77 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 78 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 79 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 80 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 81 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 82 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] search_marker timed out]
+[DEBUG] No offset, retrying]
+[DEBUG] Current NED: N=-1.59, E=4.76, D=-8.11
+[DEBUG] Updating offset via camera]
+[DEBUG] search_marker: timeout=2.0s
+[DEBUG] Frame 1 captured
+[DEBUG] Marker not found
+[DEBUG] Frame 2 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 3 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 4 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 5 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 6 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 7 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 8 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 9 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 10 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 11 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 12 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 13 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 14 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 15 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 16 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 17 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 18 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 19 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 20 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 21 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 22 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 23 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 24 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 25 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 26 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 27 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 28 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 29 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 30 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 31 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 32 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 33 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 34 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 35 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 36 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 37 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 38 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 39 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 40 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 41 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 42 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 43 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 44 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 45 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 46 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 47 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 48 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 49 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 50 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 51 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 52 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 53 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 54 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 55 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 56 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 57 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 58 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 59 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 60 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 61 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 62 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 63 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 64 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 65 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 66 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 67 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 68 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 69 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 70 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 71 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 72 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 73 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 74 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 75 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 76 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 77 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 78 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 79 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 80 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 81 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 82 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 83 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] search_marker timed out]
+[DEBUG] No offset, retrying]
+[DEBUG] Current NED: N=-2.11, E=4.86, D=-8.21
+[DEBUG] Updating offset via camera]
+[DEBUG] search_marker: timeout=2.0s
+[DEBUG] Frame 1 captured
+[DEBUG] Marker not found
+[DEBUG] Frame 2 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 3 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 4 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 5 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 6 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 7 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 8 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 9 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 10 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 11 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 12 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 13 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 14 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 15 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 16 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 17 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 18 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 19 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 20 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 21 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 22 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 23 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 24 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 25 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 26 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 27 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 28 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 29 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 30 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 31 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 32 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 33 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 34 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 35 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 36 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 37 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 38 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 39 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 40 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 41 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 42 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 43 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 44 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 45 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 46 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 47 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 48 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 49 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 50 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 51 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 52 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 53 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 54 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 55 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 56 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 57 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 58 captured
+[DEBUG] Frame stabilized
+[DEBUG] Marker not found
+[DEBUG] Frame 59 captured
+[DEBUG] Frame stabilized
+^C[DEBUG] Marker not found
+[DEBUG] run() complete]
+Traceback (most recent call last):
+  File "/usr/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/UAV_software/search_and_land_VELOCITY_UPDATED.py", line 228, in run
+    landed_on_marker = await approach_and_land(drone)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/UAV_software/search_and_land_VELOCITY_UPDATED.py", line 184, in approach_and_land
+    offset = await search_marker(timeout=2.0)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/UAV_software/search_and_land_VELOCITY_UPDATED.py", line 119, in search_marker
+    frame = await asyncio.to_thread(picam2.capture_array)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/rtxcapstone/Raytheon-Capstone-2025/UAV_software/search_and_land_VELOCITY_UPDATED.py", line 257, in <module>
+    asyncio.run(run())
+  File "/usr/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.11/asyncio/runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+
+
