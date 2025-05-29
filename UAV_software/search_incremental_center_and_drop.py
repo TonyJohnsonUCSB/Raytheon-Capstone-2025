@@ -4,6 +4,7 @@ import asyncio
 import time
 import cv2
 import numpy as np
+import math
 from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, PositionNedYaw
