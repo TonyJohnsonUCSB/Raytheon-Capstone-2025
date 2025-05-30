@@ -45,7 +45,7 @@ TARGET_ID = 1
 # Flight Parameters
 # ----------------------------
 ALTITUDE = 5       # takeoff and waypoint altitude in meters
-AMSL_ALTITUDE = ALTITUDE + 9
+AMSL_ALTITUDE = ALTITUDE + 5
 TOLERANCE = 0.01  # N/E position tolerance for landing in meters
 
 # ----------------------------
