@@ -47,7 +47,7 @@ TARGET_ID = 1
 # ----------------------------
 ALTITUDE = 5               # takeoff altitude above ground, in meters
 AMSL_ALTITUDE = ALTITUDE + 9
-TOLERANCE = 0.01           # N/E tolerance for landing, in meters
+TOLERANCE = 0.05           # N/E tolerance for landing, in meters
 VELOCITY = 0.5             # approach speed, m/s
 
 if VELOCITY <= 0:

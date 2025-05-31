@@ -45,7 +45,7 @@ TARGET_ID = 1
 # Flight Parameters
 # ----------------------------
 ALTITUDE = 5       # takeoff and waypoint altitude in meters
-AMSL_ALTITUDE = ALTITUDE + 5
+AMSL_ALTITUDE = ALTITUDE + 9
 TOLERANCE = 0.01  # N/E position tolerance for landing in meters
 
 # ----------------------------
@@ -190,6 +190,7 @@ async def approach_and_land(drone, offset):
     await drone.offboard.set_position_ned(
         PositionNedYaw(target_n, target_e, down0, yaw)
     )
+    await asyncio.sleep(5)
     print("Centered. Gathering GPS location.")
     latitude, longitude = await get_gps_coordinates_from_drone(drone)
     coordinates = f"{latitude},{longitude}\n".encode('utf-8')
