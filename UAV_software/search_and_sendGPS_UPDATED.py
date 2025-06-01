@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from picamera2 import Picamera2
 from mavsdk import System
-from mavsdk.offboard import OffboardError, PositionNedYaw
+from mavsdk.offboard import OffboardError, PositionNedYaw, VelocityNedYaw
 import serial
 import math
 
@@ -47,6 +47,8 @@ TARGET_ID = 1
 ALTITUDE = 5       # takeoff and waypoint altitude in meters (AGL)
 AMSL_ALTITUDE = ALTITUDE + 5
 TOLERANCE = 0.10   # 10 cm tolerance diagonally (meters)
+VELOCITY = 0.5             # approach speed, m/s
+
 
 # ----------------------------
 # Waypoints and Geofence
@@ -167,70 +169,72 @@ async def search_marker(timeout=5.0):
     return None
 
 async def center_and_land(drone):
-    # Try centering multiple times until within tolerance
-    max_attempts = 5
-    for attempt in range(max_attempts):
-        print(f"[DEBUG] Centering attempt {attempt+1}/{max_attempts}")
-        offset = await search_marker(5.0)
-        if offset is None:
-            print("[DEBUG] No offset returned; abort centering")
-            return False
+    print('[DEBUG] Starting velocity-based continuous centering')
+    # Get initial yaw
+    async for att in drone.telemetry.attitude_euler():
+        yaw = att.yaw_deg
+        print(f'[DEBUG] Initial yaw: {yaw:.1f}')
+        break
 
-        dx = offset[0]  # East offset (m)
-        dy = offset[1]  # North offset (m)
-        dist = math.hypot(dx, dy)
-        print(f"[DEBUG] Offset distance: {dist:.3f} m")
-
-        if dist <= TOLERANCE:
-            print("[DEBUG] Within tolerance; marker centered")
-            break
-
-        # Get current NED position
-        async for od in drone.telemetry.position_velocity_ned():
-            north0 = od.position.north_m
-            east0 = od.position.east_m
-            down0 = od.position.down_m
-            break
-
-        async for att in drone.telemetry.attitude_euler():
-            yaw = att.yaw_deg
-            break
-
-        # Command movement to reduce offset
-        target_n = north0 + dy
-        target_e = east0 + dx
-        print(f"[DEBUG] Moving to N: {target_n:.2f}, E: {target_e:.2f} to improve centering")
-        await drone.offboard.set_position_ned(
-            PositionNedYaw(target_n, target_e, down0, yaw)
-        )
-        await asyncio.sleep(2)  # give time to move
-
-        if attempt == 0:
-            try:
-                print("[DEBUG] Enabling offboard mode for centering")
-                await drone.offboard.start()
-            except OffboardError:
-                print("[ERROR] Offboard start failed during centering")
-                return False
-
-    else:
-        print("[DEBUG] Failed to center within tolerance after max attempts")
+    # Zero velocity and enable offboard
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
+    try:
+        print('[DEBUG] Enabling offboard')
+        await drone.offboard.start()
+        print('[DEBUG] Offboard started')
+    except OffboardError as e:
+        print(f'[ERROR] Offboard start failed: {e}')
         return False
 
-    # Once centered: send GPS coordinates 200 times with 1 ms delay
+    # Continuous homing loop
+    while True:
+        # Read current NED (not strictly needed for velocity‐based approach but logged)
+        async for od in drone.telemetry.position_velocity_ned():
+            north = od.position.north_m
+            east  = od.position.east_m
+            down  = od.position.down_m
+            print(f'[DEBUG] Current NED: N={north:.2f}, E={east:.2f}, D={down:.2f}')
+            break
+
+        # Search for marker
+        print('[DEBUG] Updating offset via camera')
+        offset = await search_marker(timeout=2.0)
+        if offset is None:
+            print('[DEBUG] No offset, retrying')
+            continue
+
+        dx_e = offset[0]
+        dx_n = offset[1]
+        dist = math.hypot(dx_n, dx_e)
+        print(f'[DEBUG] Distance to marker: {dist:.3f}m')
+
+        if dist <= TOLERANCE:
+            print('[DEBUG] Within tolerance; centered over marker')
+            await drone.offboard.stop()
+            break
+
+        # Compute velocity toward marker
+        vn = - (dx_n / dist) * VELOCITY * 0.5
+        ve =   (dx_e / dist) * VELOCITY * 0.5
+        print(f'[DEBUG] Commanding velocity N={vn:.2f}m/s, E={ve:.2f}m/s')
+        await drone.offboard.set_velocity_ned(VelocityNedYaw(vn, ve, 0.0, yaw))
+
+        await asyncio.sleep(1.0)
+
+    # Once centered: send GPS coordinates 200 times with 1 ms delay
     latitude, longitude = await get_gps_coordinates_from_drone(drone)
     coord_bytes = f"{latitude},{longitude}\n".encode('utf-8')
     print(f"[DEBUG] Centered GPS: {latitude}, {longitude}")
     for i in range(200):
         ser.write(coord_bytes)
-        await asyncio.sleep(0.001)  # 1 ms
+        await asyncio.sleep(0.001)
 
     print("[DEBUG] GPS location sent 200 times")
 
-    # Fly to landing point 5 meters west of first waypoint
+    # Fly to landing point 5 m west of first waypoint and land
     print("[DEBUG] Heading to landing point")
     await drone.action.goto_location(LAND_LAT, LAND_LON, AMSL_ALTITUDE, 0.0)
-    await asyncio.sleep(10)  # allow time to reach
+    await asyncio.sleep(10)
 
     print("[DEBUG] Initiating landing at landing point")
     await drone.action.land()
