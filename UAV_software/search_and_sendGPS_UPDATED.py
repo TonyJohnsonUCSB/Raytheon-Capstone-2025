@@ -47,8 +47,7 @@ TARGET_ID = 1
 ALTITUDE = 5       # takeoff and waypoint altitude in meters (AGL)
 AMSL_ALTITUDE = ALTITUDE + 5
 TOLERANCE = 0.10   # 10 cm tolerance diagonally (meters)
-VELOCITY = 0.5             # approach speed, m/s
-
+VELOCITY = 0.5     # approach speed, m/s
 
 # ----------------------------
 # Waypoints and Geofence
@@ -97,11 +96,11 @@ time.sleep(2)  # allow auto-exposure to stabilize
 # ----------------------------
 ser = serial.Serial(port='/dev/ttyUSB0', baudrate=57600)
 
-async def get_gps_coordinates_from_drone(drone):
+async def fetch_current_gps_coordinates(drone):
     async for pos in drone.telemetry.position():
         return round(pos.latitude_deg, 10), round(pos.longitude_deg, 10)
 
-async def connect_and_arm():
+async def initialize_drone_and_takeoff():
     drone = System()
     await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
 
@@ -127,7 +126,7 @@ async def connect_and_arm():
     await asyncio.sleep(10)
     return drone
 
-async def search_marker(timeout=5.0):
+async def detect_aruco_marker(timeout=5.0):
     print(f"[DEBUG] Searching for marker (timeout: {timeout} seconds)")
     t0 = time.time()
     prev_gray = None
@@ -168,61 +167,67 @@ async def search_marker(timeout=5.0):
     print("[DEBUG] Marker search timed out")
     return None
 
-async def center_and_land(drone):
-    print('[DEBUG] Starting velocity-based continuous centering')
+async def perform_continuous_centering_and_land(drone):
+    # Initial search for marker before enabling offboard
+    print("[DEBUG] Attempting initial marker detection before enabling offboard")
+    initial_offset = await detect_aruco_marker(timeout=5.0)
+    if initial_offset is None:
+        print("[DEBUG] Marker not found at this waypoint")
+        return False
+
+    print("[DEBUG] Marker detected, enabling offboard mode")
     # Get initial yaw
     async for att in drone.telemetry.attitude_euler():
         yaw = att.yaw_deg
-        print(f'[DEBUG] Initial yaw: {yaw:.1f}')
+        print(f"[DEBUG] Initial yaw: {yaw:.1f}")
         break
 
-    # Zero velocity and enable offboard
+    # Start offboard with zero velocity
     await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
     try:
-        print('[DEBUG] Enabling offboard')
         await drone.offboard.start()
-        print('[DEBUG] Offboard started')
+        print("[DEBUG] Offboard started")
     except OffboardError as e:
-        print(f'[ERROR] Offboard start failed: {e}')
+        print(f"[ERROR] Offboard start failed: {e}")
         return False
 
-    # Continuous homing loop
+    # Continuous centering loop
     while True:
-        # Read current NED (not strictly needed for velocity‐based approach but logged)
+        # Read current NED for logging
         async for od in drone.telemetry.position_velocity_ned():
             north = od.position.north_m
             east  = od.position.east_m
             down  = od.position.down_m
-            print(f'[DEBUG] Current NED: N={north:.2f}, E={east:.2f}, D={down:.2f}')
+            print(f"[DEBUG] Current NED: N={north:.2f}, E={east:.2f}, D={down:.2f}")
             break
 
-        # Search for marker
-        print('[DEBUG] Updating offset via camera')
-        offset = await search_marker(timeout=2.0)
+        # Update offset via camera
+        print("[DEBUG] Updating offset via camera")
+        offset = await detect_aruco_marker(timeout=2.0)
         if offset is None:
-            print('[DEBUG] No offset, retrying')
+            print("[DEBUG] No offset, retrying")
             continue
 
         dx_e = offset[0]
         dx_n = offset[1]
         dist = math.hypot(dx_n, dx_e)
-        print(f'[DEBUG] Distance to marker: {dist:.3f}m')
+        print(f"[DEBUG] Distance to marker: {dist:.3f}m")
 
         if dist <= TOLERANCE:
-            print('[DEBUG] Within tolerance; centered over marker')
+            print("[DEBUG] Within tolerance; centered over marker")
             await drone.offboard.stop()
             break
 
         # Compute velocity toward marker
         vn = - (dx_n / dist) * VELOCITY * 0.5
         ve =   (dx_e / dist) * VELOCITY * 0.5
-        print(f'[DEBUG] Commanding velocity N={vn:.2f}m/s, E={ve:.2f}m/s')
+        print(f"[DEBUG] Commanding velocity N={vn:.2f}m/s, E={ve:.2f}m/s")
         await drone.offboard.set_velocity_ned(VelocityNedYaw(vn, ve, 0.0, yaw))
 
         await asyncio.sleep(1.0)
 
-    # Once centered: send GPS coordinates 200 times with 1 ms delay
-    latitude, longitude = await get_gps_coordinates_from_drone(drone)
+    # Once centered: send GPS coordinates 200 times with 1 ms delay
+    latitude, longitude = await fetch_current_gps_coordinates(drone)
     coord_bytes = f"{latitude},{longitude}\n".encode('utf-8')
     print(f"[DEBUG] Centered GPS: {latitude}, {longitude}")
     for i in range(200):
@@ -231,7 +236,7 @@ async def center_and_land(drone):
 
     print("[DEBUG] GPS location sent 200 times")
 
-    # Fly to landing point 5 m west of first waypoint and land
+    # Fly to landing point 5 m west of first waypoint and land
     print("[DEBUG] Heading to landing point")
     await drone.action.goto_location(LAND_LAT, LAND_LON, AMSL_ALTITUDE, 0.0)
     await asyncio.sleep(10)
@@ -240,12 +245,10 @@ async def center_and_land(drone):
     await drone.action.land()
     return True
 
-async def run():
+async def execute_mission():
     drone = None
     try:
-        drone = await connect_and_arm()
-        # Enable offboard before any centering movements
-        await drone.offboard.set_position_ned(PositionNedYaw(0, 0, 0, 0))
+        drone = await initialize_drone_and_takeoff()
 
         for lat, lon in coordinates:
             print(f"[DEBUG] Heading to waypoint ({lat}, {lon}) at {ALTITUDE} m AGL")
@@ -253,7 +256,7 @@ async def run():
             await asyncio.sleep(7)
 
             print(f"[DEBUG] Searching and centering at ({lat}, {lon})")
-            success = await center_and_land(drone)
+            success = await perform_continuous_centering_and_land(drone)
             if success:
                 return
 
@@ -274,5 +277,5 @@ async def run():
 
 if __name__ == '__main__':
     print("[DEBUG] Script start")
-    asyncio.run(run())
+    asyncio.run(execute_mission())
     print("[DEBUG] Script exit")
