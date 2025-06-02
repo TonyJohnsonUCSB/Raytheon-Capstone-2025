@@ -10,9 +10,8 @@ from mavsdk.offboard import OffboardError, VelocityNedYaw
 # Peform task at 20 feet high at a speed of 5 MPH
 
 #-----INSTRUCTIONS-----------#
-# Run the script
-# Film the drone flying north for a couple seconds
-# Flip the land switch to demonstrate safety feature
+# Run the script: Drone flies N @ 2.2 m/s for 10 s
+# Flip the land switch after a couple seconds
 
 # ----------------------------
 # Flight Parameters
@@ -69,3 +68,6 @@ async def run():
     print("-- Landing")
     await drone.action.land()
     return
+
+if __name__ == '__main__':
+    asyncio.run(run())
