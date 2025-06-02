@@ -4,21 +4,20 @@ from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityNedYaw
 
 #-----------TASK-------------#
-# Using an autonomous sequence the UAV should take off, sustain flight (not to exceed 10 mins) 
-# until the kill switch is pressed by an operator. The UAV should preform a controlled landing 
-# within 5yds of the location (x and y axis) it had when the kill switch was pressed. 
-# Peform task at 20 feet high at a speed of 5 MPH
+# Using an autonomous sequence the UAV should take off, 
+# fly 50 yds and perform a controlled landing at designated site
 
 #-----INSTRUCTIONS-----------#
-# Run the script: Drone flies N @ 2.2 m/s for 10 s
-# Flip the land switch after a couple seconds
+# Run the script: Drone flies N @ 1 m/s for 23 s
+# Then drone flies E @ 1 m/s for 23 s for total of 50 yds flown
+# Drone lands autonomously after flying 50 yds
 
 # ----------------------------
 # Flight Parameters
 # ----------------------------
-ALTITUDE = 6       # 6 m (20 ft) (AGL) height
+ALTITUDE = 5       # 6 m (20 ft) (AGL) height
 AMSL_ALTITUDE = ALTITUDE + 5
-VELOCITY = 2.2     # 2.2 m/s (5 mph) speed
+VELOCITY = 1     # 1 m/s speed
 
 async def run():
     drone = System()
@@ -55,9 +54,23 @@ async def run():
         await asyncio.sleep(10)
         await drone.action.disarm()
 
-    print("-- Fly north for 10 seconds")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(VELOCITY, 0.0, 0.0, 0.0))
-    await asyncio.sleep(10)
+    print("-- Flying 25 yds North")
+    for _ in range(23):
+        await drone.offboard.set_velocity_ned(VelocityNedYaw(VELOCITY, 0.0, 0.0, 0.0))
+        await asyncio.sleep(1)
+
+    print("-- Stabilizing")
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, 0.0))
+    await asyncio.sleep(2)
+
+    print("-- Flying 25 yds East")
+    for _ in range(23):
+        await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, VELOCITY, 0.0, 0.0))
+        await asyncio.sleep(1)
+
+    print("-- Stabilizing")
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, 0.0))
+    await asyncio.sleep(2)
 
     print("-- Stopping offboard mode")
     try:
@@ -65,7 +78,7 @@ async def run():
     except OffboardError as error:
         print(f"Stopping offboard mode failed: {error._result.result}")
 
-    print("-- Landing")
+    print("-- Landing drone after 50 yds flight distance covered")
     await drone.action.land()
     return
 
