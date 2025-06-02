@@ -39,7 +39,7 @@ DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
 DETECT_PARAMS.adaptiveThreshConstant = 7
 DETECT_PARAMS.minMarkerPerimeterRate = 0.03
 MARKER_SIZE = 0.06611  # meters
-TARGET_ID = 1
+TARGET_ID = 2
 
 # ----------------------------
 # Flight Parameters
@@ -194,10 +194,10 @@ async def approach_and_land(drone, offset):
     print("Centered. Gathering GPS location.")
     latitude, longitude = await get_gps_coordinates_from_drone(drone)
     coordinates = f"{latitude},{longitude}\n".encode('utf-8')
-    print(f"Sending GPS location: {coordinates.decode().strip()}.")
     
     loop=0
-    while loop<200:
+    while loop<500:
+        print(f"Sending GPS location: {coordinates.decode().strip()}.")
         ser.write(coordinates)
         loop += 1
         await asyncio.sleep(0.2)

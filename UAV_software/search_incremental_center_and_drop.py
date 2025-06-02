@@ -8,6 +8,7 @@ import math
 from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityNedYaw
+import serial
 
 # ----------------------------
 # Camera Globals
@@ -40,7 +41,7 @@ DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
 DETECT_PARAMS.adaptiveThreshConstant    = 7
 DETECT_PARAMS.minMarkerPerimeterRate     = 0.03
 MARKER_SIZE = 0.06611  # meters
-TARGET_ID   = 1
+TARGET_ID   = 2
 
 # ----------------------------
 # Flight Parameters
@@ -77,6 +78,13 @@ picam2.configure(cam_cfg)
 picam2.start()
 print("[DEBUG] Camera started: preview at {}x{}".format(write_width, write_height))
 time.sleep(2)
+
+ser = serial.Serial(port='/dev/ttyUSB0',baudrate=57600)
+
+async def get_gps_coordinates_from_drone(drone):
+    async for pos in drone.telemetry.position():
+        return round(pos.latitude_deg, 6), round(pos.longitude_deg, 6)
+
 
 async def connect_and_arm():
     drone = System()
@@ -172,7 +180,15 @@ async def approach_and_land(drone):
         print(f"[DEBUG] Distance to marker: {dist:.3f}m")
 
         if dist < TOLERANCE:
-            print("[DEBUG] Within tolerance → landing")
+        #print("[DEBUG] Within tolerance → landing")
+            print("Drone within N and E tolerance. Sending GPS location.")
+            latitude, longitude = await get_gps_coordinates_from_drone(drone)
+            coordinates = f"{latitude},{longitude}\n".encode('utf-8')
+            loop=0
+            while loop<500:
+                print(f"Sending GPS location: {coordinates.decode().strip()}.")
+                ser.write(coordinates)
+                loop += 1
             await drone.offboard.stop()
             await drone.action.land()
             return
@@ -189,7 +205,7 @@ async def run():
         drone = await connect_and_arm()
 
         for lat, lon in coordinates:
-            print(f"[DEBUG] → Waypoint ({lat}, {lon}, {AMSL_ALTITUDE)")
+            print(f"[DEBUG] → Waypoint ({lat}, {lon}, {AMSL_ALTITUDE}")
             await drone.action.goto_location(lat, lon, AMSL_ALTITUDE, 0.0)
             await asyncio.sleep(7)
 

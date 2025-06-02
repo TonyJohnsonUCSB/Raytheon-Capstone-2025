@@ -39,7 +39,7 @@ DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
 DETECT_PARAMS.adaptiveThreshConstant = 7
 DETECT_PARAMS.minMarkerPerimeterRate = 0.03
 MARKER_SIZE = 0.06611  # meters
-TARGET_ID = 1
+TARGET_ID = 2
 
 # ----------------------------
 # Flight Parameters
@@ -230,7 +230,7 @@ async def perform_continuous_centering_and_land(drone):
     latitude, longitude = await fetch_current_gps_coordinates(drone)
     coord_bytes = f"{latitude},{longitude}\n".encode('utf-8')
     print(f"[DEBUG] Centered GPS: {latitude}, {longitude}")
-    for i in range(200):
+    for i in range(500):
         ser.write(coord_bytes)
         await asyncio.sleep(0.001)
 

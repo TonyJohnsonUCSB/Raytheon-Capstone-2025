@@ -77,7 +77,7 @@ intrinsic = np.array([[933.15867, 0, 657.59],
                      [0, 933.1586, 400.36993],
                      [0, 0, 1]])
 distortion = np.array([-0.43948, 0.18514, 0, 0])
-drop_zoneID = 1
+drop_zoneID = 2
 marker_size = 0.06611  # meters
 
 # Initialize camera
