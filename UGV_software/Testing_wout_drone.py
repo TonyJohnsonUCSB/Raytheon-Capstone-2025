@@ -22,7 +22,7 @@ import serial
 import re
 
 
-#ser = serial.Serial(port='/dev/ttyUSB0',baudrate = 57600, timeout = 1)
+ser = serial.Serial(port='/dev/ttyUSB0',baudrate = 57600, timeout = 1)
 # Dump Truck: Open a connection to the GPIO chip 
 h = lgpio.gpiochip_open(0)  # '0' is the default GPIO chip
 
@@ -214,13 +214,97 @@ def set_servo_angle(channel, angle):
     :param angle: Desired angle in degrees (-90 to 90).
     """
     # Clamp angle to prevent out-of-range duty values
-    angle = max(-180, min(180, angle))
+    angle = max(-90, min(90, angle))
 
     pulse = int(SERVO_MIN + (angle + 90) * (SERVO_MAX - SERVO_MIN) / 180)
     duty = int(pulse / 20000 * 65535)
     pca.channels[channel].duty_cycle = duty
+async def search_alg(offboard,time_detected, time_lost_threshold, t_mission_start, time_4_mission, step, current_angle, max_angle_down, default_angle, yaw):
+    if (offboard and time.time() - time_detected >= time_lost_threshold) or (not offboard and time.time() - t_mission_start >= time_4_mission):
+        # If we enter the search algorithm after the mission fully completes then we never entered offboard mode, thus enter first
+        if step == 0 and not offboard:
+            # alg then it will trigger the beginning of offboard mode again
+            initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
+            print("Sending initial velocity setpoints...")
+            try:
+                for _ in range(50):  # Send at 10 Hz for 1 second
+                    await rover.offboard.set_velocity_body(initial_velocity)
+                    await asyncio.sleep(0.05)
+                print("Starting offboard mode...")
+                await rover.offboard.start()
+            except OffboardError as error:
+                print(f"Failed to send setpoints: {error._result.result}")
+                return
+            print("Offboard Mode On")
+            offboard = True
+        
+        if step== 0 and offboard:
+            # If we are already in offboard mode
+            reverse_speed = 2.24 # degrees/s
+            # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
+            velocity_command = VelocityBodyYawspeed(reverse_speed, 0, 0.0, 0)
+            await rover.offboard.set_velocity_body(velocity_command)
+            await asyncio.sleep(1)
+            velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
+            await rover.offboard.set_velocity_body(velocity_command)
+            step = 1
+            
+        if step == 1:
+            current_angle += 5
+            if current_angle < max_angle_down:
+                set_servo_angle(current_angle)
+            else:
+                step = 2
+                current_angle -= 5
+                
+        if step == 2:
+            current_angle -= 5
+            if current_angle > default_angle:
+                set_servo_angle(current_angle)
+            else: 
+                current_angle += 5
+                if turning_left:
+                    step = 3
+                else:
+                    step = 4
 
-
+        if step == 3: # In this step we turn left 45 degrees
+            # If we are already in offboard mode
+            turn_speed = 100 # degrees/s
+            turning_left = True
+            # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
+            velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, turn_speed)
+            await rover.offboard.set_velocity_body(velocity_command)
+            await asyncio.sleep(1)
+            velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
+            await rover.offboard.set_velocity_body(velocity_command)
+            # Store how much we've rotated
+            yaw += 15
+            # After stepping 15 degrees go back to step to sweep servo up and down if nothing is found it wil come back to either step 3
+            step = 1
+            # Search should run a whole circle
+            if yaw >= 45:
+                step = 4 # Step 4 cycles back to 45 degrees right
+                turning_left = False 
+                
+        if step == 4: # In this step we turn right 90 degrees from our initial left turn from last step
+            turn_speed = -100 # degrees/s
+            # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
+            velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, turn_speed)
+            await rover.offboard.set_velocity_body(velocity_command)
+            await asyncio.sleep(1)
+            velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
+            await rover.offboard.set_velocity_body(velocity_command)
+            # Store how much we've rotated
+            yaw -= 15
+            # After stepping 15 degrees go back to step to sweep servo up and down if nothing is found it wil come back to either step 3
+            step = 1
+            # Search should run a whole circle
+            if yaw <= -90:
+                velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
+                await rover.offboard.set_velocity_body(velocity_command)
+                # Im not sure yet what we should do if we do the full search and nothing is detected
+      
 
 ARUCO_DICT = {
     "DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL,
@@ -236,7 +320,7 @@ picam2.configure(picam2.create_preview_configuration(raw={"size": (1640, 1232)},
 picam2.start()
 
 # Marker Parameters
-drop_zoneID = 2
+drop_zoneID = 1
 marker_size = 0.254  # Size of physical marker in meters
 drop_zone_found = False
 
@@ -260,9 +344,12 @@ SERVO_MAX = 2400    # Maximum pulse length for the servo (adjust as needed)
 i2c = busio.I2C(SCL, SDA)
 pca = PCA9685(i2c)
 pca.frequency = 50  # Set frequency to 50Hz for servos
+current_angle = 0
+print('Setting Initial Servo Angle')
+set_servo_angle(SERVO_CHANNEL,current_angle) #set servo to an initial angle
+time.sleep(3)
 
-
-# # Mission setup
+# Mission setup
 # loop_marker = 0
 # print('opening truck bed') 
 # open_truckbed()
@@ -278,26 +365,22 @@ async def main():
     received = False
     coordinates = None
     offboard = False
-    current_angle = -20
+    current_angle = 0
     default_angle = 0
     forward_velocity = 0
     lateral_velocity = 0
-    TARGET_LATITUDE= 34.4188985
+    TARGET_LATITUDE= 34.4188996
     TARGET_ALTITUDE = 0
     TARGET_YAW = 0 
-    TARGET_LONGITUDE = -119.8553302            
+    TARGET_LONGITUDE = -119.8553301            
     count = 0 
-    time_lost_threshold = 0.75*60 # 1 min * 60 s/min
-    time_4_mission = 2*60      # 6 min * 60 s/min
+    time_lost_threshold = 0.5*60 # 1 min * 60 s/min
+    time_4_mission = 6*60      # 6 min * 60 s/min
     time_detected = 0
     step = 0
     yaw = 0
-    max_angle_down = 130
-    turning_left = True
+    max_angle_down = -90
 
-    print('Setting Initial Servo Angle')
-    set_servo_angle(SERVO_CHANNEL,current_angle) #set servo to an initial angle
-    time.sleep(1)
     
     # Connecting to Rover via USB (adjust port/baud as needed)
     print("Waiting for rover to connect via UART...")
@@ -335,7 +418,9 @@ async def main():
             # TARGET_LATITUDE  = float(match.group(1))
             # TARGET_LONGITUDE = float(match.group(2))
             # print(f"GPS coordinates received: Latitude = {TARGET_LATITUDE}, Longitude = {TARGET_LONGITUDE}")
-            # break
+            # count += 1
+            # if count >= 3:
+                # break
         # await asyncio.sleep(0.1)
 
     print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
@@ -359,7 +444,6 @@ async def main():
             if distance is not None and not offboard: #If the Aruco is found activate offboard mode and never enter this loop again
                 print('Marker Detected for the First Time')
                 offboard = True
-                time_detected = time.time()
                 # Send an initial setpoint (all zeros) to satisfy the PX4 requirement
                 initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
                 print("Sending initial velocity setpoints...")
@@ -379,7 +463,6 @@ async def main():
 
             # Loop for tracking marker
             if distance is not None and offboard: #If ArUco is found
-                time_detected = time.time()
                 # Update servo angle
                 u = camera_PID.update(angle_y)    # we get u update from controller
                 new_angle = current_angle - u     # update angle 
@@ -413,6 +496,12 @@ async def main():
                     # Update Lateral velocity 
                     lateral_velocity = -1*lateral_pid.update(angle_x)
                     
+
+                # Bottleneck Lateral Velocity
+                # if lateral_velocity > max_speed_angle:
+                    # lateral_velocity = max_speed_angle
+                # elif lateral_velocity < -max_speed_angle:
+                    # lateral_velocity = -max_speed_angle
                     
                 
                 # Overlay velocities on the output image
@@ -450,94 +539,9 @@ async def main():
                 await rover.offboard.set_velocity_body(initial_velocity)
                
             elif distance is None:
-                print(f"timer since mission start: {time.time()-t_mission_start}")
-                print(f"timer since marker detected: {time.time()-time_detected}")
-                if (offboard and time.time() - time_detected >= time_lost_threshold) or (not offboard and time.time() - t_mission_start >= time_4_mission):
-                    print('running search alg')
-                    # If we enter the search algorithm after the mission fully completes then we never entered offboard mode, thus enter first
-                    if step == 0 and not offboard:
-                        # alg then it will trigger the beginning of offboard mode again
-                        initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
-                        print("Sending initial velocity setpoints...")
-                        try:
-                            for _ in range(50):  # Send at 10 Hz for 1 second
-                                await rover.offboard.set_velocity_body(initial_velocity)
-                                await asyncio.sleep(0.05)
-                            print("Starting offboard mode...")
-                            await rover.offboard.start()
-                        except OffboardError as error:
-                            print(f"Failed to send setpoints: {error._result.result}")
-                            return
-                        print("Offboard Mode On")
-                        offboard = True
-                    
-                    if step== 0 and offboard:
-                        # If we are already in offboard mode
-                        reverse_speed = -2.24 # degrees/s
-                        # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
-                        velocity_command = VelocityBodyYawspeed(reverse_speed, 0, 0.0, 0)
-                        await rover.offboard.set_velocity_body(velocity_command)
-                        await asyncio.sleep(1.5)
-                        velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
-                        await rover.offboard.set_velocity_body(velocity_command)
-                        step = 1
-                        
-                    if step == 1:
-                        current_angle += 5
-                        if current_angle < max_angle_down:
-                            set_servo_angle(SERVO_CHANNEL,current_angle)
-                        else:
-                            step = 2
-                            current_angle -= 5
-                            
-                    if step == 2:
-                        current_angle -= 5
-                        if current_angle > default_angle:
-                            set_servo_angle(SERVO_CHANNEL,current_angle)
-                        else: 
-                            current_angle += 5
-                            if turning_left:
-                                step = 3
-                            else:
-                                step = 4
-
-                    if step == 3: # In this step we turn left 45 degrees
-                        # If we are already in offboard mode
-                        turn_speed = 100 # degrees/s
-                        turning_left = True
-                        # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
-                        velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, turn_speed)
-                        await rover.offboard.set_velocity_body(velocity_command)
-                        await asyncio.sleep(1)
-                        velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
-                        await rover.offboard.set_velocity_body(velocity_command)
-                        # Store how much we've rotated
-                        yaw += 15
-                        # After stepping 15 degrees go back to step to sweep servo up and down if nothing is found it wil come back to either step 3
-                        step = 1
-                        # Search should run a whole circle
-                        if yaw >= 45:
-                            step = 4 # Step 4 cycles back to 45 degrees right
-                            turning_left = False 
-                            
-                    if step == 4: # In this step we turn right 90 degrees from our initial left turn from last step
-                        turn_speed = -100 # degrees/s
-                        # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
-                        velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, turn_speed)
-                        await rover.offboard.set_velocity_body(velocity_command)
-                        await asyncio.sleep(1)
-                        velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
-                        await rover.offboard.set_velocity_body(velocity_command)
-                        # Store how much we've rotated
-                        yaw -= 15
-                        # After stepping 15 degrees go back to step to sweep servo up and down if nothing is found it wil come back to either step 3
-                        step = 1
-                        # Search should run a whole circle
-                        if yaw <= -90:
-                            velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
-                            await rover.offboard.set_velocity_body(velocity_command)
-                            # Im not sure yet what we should do if we do the full search and nothing is detected
-                  
+                await search_alg(offboard, time_detected, time_lost_threshold, t_mission_start, t_mission_start, step, current_angle, max_angle_down, default_angle, yaw)
+            
+            
             plt.clf()  # Clear last frame
             plt.imshow(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
             plt.title("Live Debug")
