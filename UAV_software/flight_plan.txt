@@ -7,3 +7,7 @@ number of vertical points needed: 8
 total points: 48
 time needed to scout: 3s
 total time actively looking for marker: ~2.5 mins
+time to takeoff: 30s 
+time to send GPS: 10s
+total drone time: ~3:10 mins
+
