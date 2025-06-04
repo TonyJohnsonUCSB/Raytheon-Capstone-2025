@@ -15,7 +15,7 @@ from mavsdk.offboard import OffboardError, VelocityNedYaw
 # ----------------------------
 picam2 = Picamera2()
 write_width, write_height = 640, 480
-
+photonum = 5
 # ----------------------------
 # Calibration and Distortion
 # ----------------------------
@@ -41,13 +41,13 @@ DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
 DETECT_PARAMS.adaptiveThreshConstant = 7
 DETECT_PARAMS.minMarkerPerimeterRate = 0.03
 MARKER_SIZE = 0.06611  # meters
-TARGET_ID = 1
+TARGET_ID = 2
 
 # ----------------------------
 # Flight Parameters
 # ----------------------------
 ALTITUDE = 5               # takeoff altitude above ground, in meters
-AMSL_ALTITUDE = ALTITUDE + 9
+AMSL_ALTITUDE = ALTITUDE + 10
 TOLERANCE = 0.05           # N/E tolerance for landing, in meters
 VELOCITY = 0.5             # approach speed, m/s
 
@@ -58,22 +58,22 @@ if VELOCITY <= 0:
 # Waypoints
 # ----------------------------
 coordinates = [
-    (34.4188664, -119.8559220),
-    (34.41886,   -119.8559220)
+    (34.4185605, -119.8551324),
+    (34.4185868,   -119.8551324)
 ]
 
 # ----------------------------
 # Init Camera
 # ----------------------------
-cam_cfg = picamera2.create_preview_configuration(
-    raw={'size': (1640, 1232)},
-    main={'format': 'RGB888', 'size': (write_width, write_height)}
+# -- Camera setup & recording --
+config = picam2.create_preview_configuration(
+    raw  = {"size": (1640, 1232)},
+    main = {"format": "RGB888", "size": (640, 480)}
 )
-picam2.configure(cam_cfg)
+picam2.configure(config)
 picam2.start()
-print('[DEBUG] Camera started')
 time.sleep(2)
-print('[DEBUG] Camera exposure stabilized')
+
 
 # Ensure directory exists for saving images
 os.makedirs("test_photos", exist_ok=True)
@@ -107,7 +107,7 @@ async def connect_and_arm():
     print('[DEBUG] Takeoff complete')
 
     frame = await asyncio.to_thread(picam2.capture_array)
-    cv2.imwrite("test_photos/takeoff_complete.jpg", frame)
+    cv2.imwrite(f"test_photos/takeoff_complete{photonum}.jpg", frame)
     print('[DEBUG] Saved test_photos/takeoff_complete.jpg')
 
     return drone
@@ -121,17 +121,17 @@ async def search_marker(timeout=3.0):
     while time.time() - t0 < timeout:
         frame = await asyncio.to_thread(picam2.capture_array)
         frame_cnt += 1
-        print(f'[DEBUG] Frame {frame_cnt} captured')
+        #print(f'[DEBUG] Frame {frame_cnt} captured')
         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
         if prev_gray is not None:
             pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=100,
                                           qualityLevel=0.01, minDistance=20)
-            print(f'[DEBUG] Features to track: {0 if pts is None else len(pts)}')
+            #print(f'[DEBUG] Features to track: {0 if pts is None else len(pts)}')
             if pts is not None:
                 curr, st, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, pts, None)
                 valid = np.count_nonzero(st.reshape(-1) == 1)
-                print(f'[DEBUG] Optical flow valid: {valid}')
+                #print(f'[DEBUG] Optical flow valid: {valid}')
                 if valid >= 6:
                     M, _ = cv2.estimateAffinePartial2D(
                         pts[st.reshape(-1)==1], curr[st.reshape(-1)==1]
@@ -139,7 +139,7 @@ async def search_marker(timeout=3.0):
                     if M is not None:
                         frame = cv2.warpAffine(frame, M, frame.shape[1::-1])
                         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-                        print('[DEBUG] Frame stabilized')
+                        #print('[DEBUG] Frame stabilized')
 
         prev_gray = gray
 
@@ -163,12 +163,12 @@ async def search_marker(timeout=3.0):
                 tvecs[0][0],
                 0.03
             )
-            cv2.imwrite("test_photos/marker_detected.jpg", frame)
+            cv2.imwrite(f"test_photos/marker_detected{photonum}.jpg", frame)
             print('[DEBUG] Saved test_photos/marker_detected.jpg')
 
             return offset
 
-        print('[DEBUG] Marker not found')
+        #print('[DEBUG] Marker not found')
 
     print('[DEBUG] search_marker timed out')
     return None
@@ -216,7 +216,7 @@ async def approach_and_land(drone):
             print('[DEBUG] Within tolerance, preparing to land')
 
             frame_pre_land = await asyncio.to_thread(picam2.capture_array)
-            cv2.imwrite("test_photos/pre_land.jpg", frame_pre_land)
+            cv2.imwrite(f"test_photos/pre_land{photonum}.jpg", frame_pre_land)
             print('[DEBUG] Saved test_photos/pre_land.jpg')
 
             await drone.offboard.stop()

@@ -40,7 +40,7 @@ DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
 DETECT_PARAMS.adaptiveThreshConstant = 7
 DETECT_PARAMS.minMarkerPerimeterRate = 0.03
 MARKER_SIZE = 0.06611  # meters
-TARGET_ID = 1
+TARGET_ID = 2
 
 # ----------------------------
 # Flight Parameters
@@ -66,9 +66,9 @@ if VELOCITY <= 0:
 #    (34.4189, -119.85520),
 #]
 coordinates = [
-    (34.4188664, -119.8559220),
-    (34.41886, -119.8559220)
-]
+    (34.4185605, -119.8551324),
+    (34.4185868,   -119.8551324)
+] # go in and to the right near south end of the field
 
 # ----------------------------
 # Init Camera
@@ -122,17 +122,17 @@ async def search_marker(timeout=3.0):
     while time.time() - t0 < timeout:
         frame = await asyncio.to_thread(picam2.capture_array)
         frame_cnt += 1
-        print(f'[DEBUG] Frame {frame_cnt} captured')
+        #print(f'[DEBUG] Frame {frame_cnt} captured')
         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
         if prev_gray is not None:
             pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=100,
                                           qualityLevel=0.01, minDistance=20)
-            print(f'[DEBUG] Features to track: {0 if pts is None else len(pts)}')
+            #print(f'[DEBUG] Features to track: {0 if pts is None else len(pts)}')
             if pts is not None:
                 curr, st, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, pts, None)
                 valid = np.count_nonzero(st.reshape(-1) == 1)
-                print(f'[DEBUG] Optical flow valid: {valid}')
+                #print(f'[DEBUG] Optical flow valid: {valid}')
                 if valid >= 6:
                     M, _ = cv2.estimateAffinePartial2D(
                         pts[st.reshape(-1)==1], curr[st.reshape(-1)==1]
@@ -140,7 +140,7 @@ async def search_marker(timeout=3.0):
                     if M is not None:
                         frame = cv2.warpAffine(frame, M, frame.shape[1::-1])
                         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-                        print('[DEBUG] Frame stabilized')
+                        #print('[DEBUG] Frame stabilized')
 
         prev_gray = gray
 
