@@ -1,0 +1,9 @@
+max height we recognized at: ~ 15 ft
+horizontal image width at that height: ~ 17 ft
+vertical image width at that height: ~  12.75 ft
+width of field: 90 ft
+number of horizontal points needed: 6
+number of vertical points needed: 8
+total points: 48
+time needed to scout: 3s
+total time actively looking for marker: ~2.5 mins
