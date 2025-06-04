@@ -4,17 +4,11 @@ import asyncio
 import time
 import math
 import os
-import datetime
 import cv2
 import numpy as np
 from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityNedYaw
-
-# ----------------------------
-# Ensure photo directory exists
-# ----------------------------
-os.makedirs("FOVphotos", exist_ok=True)
 
 # ----------------------------
 # Camera Globals
@@ -71,7 +65,7 @@ coordinates = [
 # ----------------------------
 # Init Camera
 # ----------------------------
-cam_cfg = picam2.create_preview_configuration(
+cam_cfg = picamera2.create_preview_configuration(
     raw={'size': (1640, 1232)},
     main={'format': 'RGB888', 'size': (write_width, write_height)}
 )
@@ -80,6 +74,9 @@ picam2.start()
 print('[DEBUG] Camera started')
 time.sleep(2)
 print('[DEBUG] Camera exposure stabilized')
+
+# Ensure directory exists for saving images
+os.makedirs("test_photos", exist_ok=True)
 
 async def connect_and_arm():
     print('[DEBUG] Connecting to drone...')
@@ -109,12 +106,9 @@ async def connect_and_arm():
     await asyncio.sleep(10)
     print('[DEBUG] Takeoff complete')
 
-    # Capture photo after takeoff
     frame = await asyncio.to_thread(picam2.capture_array)
-    filename = datetime.datetime.now().strftime("FOVphotos/post_takeoff_%Y%m%d_%H%M%S.jpg")
-    frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-    cv2.imwrite(filename, frame_bgr)
-    print(f'[DEBUG] Saved post-takeoff image: {filename}')
+    cv2.imwrite("test_photos/takeoff_complete.jpg", frame)
+    print('[DEBUG] Saved test_photos/takeoff_complete.jpg')
 
     return drone
 
@@ -159,25 +153,18 @@ async def search_marker(timeout=3.0):
             offset = tvecs[0][0]
             print(f'[DEBUG] Marker offset: x={offset[0]:.3f}, y={offset[1]:.3f}, z={offset[2]:.3f}')
 
-            # Draw overlay: detected marker and pose axes
-            cv2.aruco.drawDetectedMarkers(frame, corners)
-            rvec, tvec = rvecs[0][0], tvecs[0][0]
-            cv2.aruco.drawAxis(frame, INTRINSIC, DIST_COEFFS, rvec, tvec, MARKER_SIZE * 0.5)
-            cv2.putText(
+            # overlay pose on frame
+            cv2.aruco.drawDetectedMarkers(frame, [corners[idx]])
+            cv2.drawFrameAxes(
                 frame,
-                f"x:{offset[0]:.2f} y:{offset[1]:.2f} z:{offset[2]:.2f}",
-                (10, 30),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.6,
-                (0, 255, 0),
-                2
+                INTRINSIC,
+                DIST_COEFFS,
+                rvecs[0][0],
+                tvecs[0][0],
+                0.03
             )
-
-            # Save marker detection image
-            filename = datetime.datetime.now().strftime("FOVphotos/marker_%Y%m%d_%H%M%S.jpg")
-            frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            cv2.imwrite(filename, frame_bgr)
-            print(f'[DEBUG] Saved marker detection image: {filename}')
+            cv2.imwrite("test_photos/marker_detected.jpg", frame)
+            print('[DEBUG] Saved test_photos/marker_detected.jpg')
 
             return offset
 
@@ -226,14 +213,11 @@ async def approach_and_land(drone):
         print(f'[DEBUG] Distance to marker: {dist:.3f}m')
 
         if dist < TOLERANCE:
-            print('[DEBUG] Within tolerance, landing')
+            print('[DEBUG] Within tolerance, preparing to land')
 
-            # Capture photo right before landing
-            frame = await asyncio.to_thread(picam2.capture_array)
-            filename = datetime.datetime.now().strftime("FOVphotos/pre_landing_%Y%m%d_%H%M%S.jpg")
-            frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            cv2.imwrite(filename, frame_bgr)
-            print(f'[DEBUG] Saved pre-landing image: {filename}')
+            frame_pre_land = await asyncio.to_thread(picam2.capture_array)
+            cv2.imwrite("test_photos/pre_land.jpg", frame_pre_land)
+            print('[DEBUG] Saved test_photos/pre_land.jpg')
 
             await drone.offboard.stop()
             await drone.action.land()
@@ -242,7 +226,7 @@ async def approach_and_land(drone):
 
         # compute velocity toward marker
         vn = - (dx_n / dist) * VELOCITY * 0.5
-        ve =   (dx_e / dist) * VELOCITY * 0.5
+        ve = (dx_e / dist) * VELOCITY * 0.5
         print(f'[DEBUG] Commanding velocity N={vn:.2f}m/s, E={ve:.2f}m/s')
         await drone.offboard.set_velocity_ned(VelocityNedYaw(vn, ve, 0.0, yaw))
 
