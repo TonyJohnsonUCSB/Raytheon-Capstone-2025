@@ -6,6 +6,7 @@ from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, PositionNedYaw, VelocityNedYaw
 import math
+import serial
 
 # ----------------------------
 # Camera Globals
@@ -43,10 +44,11 @@ TARGET_ID = 2
 # ----------------------------
 # Flight Parameters
 # ----------------------------
-ALTITUDE = 5       # takeoff and waypoint altitude (AGL)
+ALTITUDE = 3       # takeoff and waypoint altitude (AGL)
 TOLERANCE = 0.10   # 10 cm centering tolerance when approaching marker (m)
 WAYPOINT_TOL = 0.50  # 50 cm tolerance for reaching each waypoint (m)
 SWEEP_SPEED = 0.5   # m/s horizontal speed during the waypoint sweep
+ser = serial.Serial(port='/dev/ttyUSB0',baudrate=57600)
 
 # ----------------------------
 # Waypoints (GPS) and Reference
@@ -108,11 +110,7 @@ async def initialize_drone_and_takeoff():
     await drone.action.set_takeoff_altitude(ALTITUDE)
     print("[DEBUG] initialize_drone_and_takeoff: taking off")
     await drone.action.takeoff()
-
-    async for position in drone.telemetry.position():
-        if position.relative_altitude_m >= ALTITUDE * 0.95:
-            print(f"[DEBUG] initialize_drone_and_takeoff: reached altitude {position.relative_altitude_m:.2f} m")
-            break
+    await asyncio.sleep(5)
 
     return drone
 
@@ -203,9 +201,11 @@ async def approach_and_land(drone, initial_offset):
     latitude, longitude = await fetch_current_gps_coordinates(drone)
     print(f"[DEBUG] approach_and_land: final GPS above marker = ({latitude}, {longitude})")
     coord_bytes = f"{latitude},{longitude}\n".encode("utf-8")
-    for _ in range(100):
-        # send via serial: ser.write(coord_bytes)
-        pass
+    while loop<500:
+        print(f"Sending GPS location: {coordinates.decode().strip()}.")
+        ser.write(coordinates)
+        loop += 1
+        
 
     print("[DEBUG] approach_and_land: commanding Return to Launch (RTL)")
     await drone.action.return_to_launch()
