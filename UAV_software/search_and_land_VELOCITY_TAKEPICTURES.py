@@ -15,7 +15,7 @@ from mavsdk.offboard import OffboardError, VelocityNedYaw
 # ----------------------------
 picam2 = Picamera2()
 write_width, write_height = 640, 480
-photonum = 5
+photonum = 7
 # ----------------------------
 # Calibration and Distortion
 # ----------------------------
@@ -47,7 +47,7 @@ TARGET_ID = 2
 # Flight Parameters
 # ----------------------------
 ALTITUDE = 5               # takeoff altitude above ground, in meters
-AMSL_ALTITUDE = ALTITUDE + 10
+AMSL_ALTITUDE = ALTITUDE + 8
 TOLERANCE = 0.05           # N/E tolerance for landing, in meters
 VELOCITY = 0.5             # approach speed, m/s
 
@@ -58,8 +58,15 @@ if VELOCITY <= 0:
 # Waypoints
 # ----------------------------
 coordinates = [
-    (34.4185605, -119.8551324),
-    (34.4185868,   -119.8551324)
+    (34.41870255, -119.85509000),
+    (34.41870255, -119.85503363),
+    (34.41870255, -119.85497727),
+    (34.41866683, -119.85497727),
+    (34.41866683, -119.85503363),
+    (34.41866683, -119.85509000),
+    (34.41863115, -119.85509000),
+    (34.41863115, -119.85503363),
+    (34.41863115, -119.85497727)
 ]
 
 # ----------------------------

@@ -49,9 +49,25 @@ ALTITUDE = 5               # takeoff altitude above ground, in meters
 AMSL_ALTITUDE = ALTITUDE + 9
 TOLERANCE = 0.05           # N/E tolerance for landing, in meters
 VELOCITY = 0.5             # approach speed, m/s
-
+photonum = 5
 if VELOCITY <= 0:
     raise ValueError('VELOCITY must be positive and non-zero')
+
+# ----------------------------
+# Init Camera
+# ----------------------------
+# -- Camera setup & recording --
+config = picam2.create_preview_configuration(
+    raw  = {"size": (1640, 1232)},
+    main = {"format": "RGB888", "size": (640, 480)}
+)
+picam2.configure(config)
+picam2.start()
+time.sleep(2)
+
+
+# Ensure directory exists for saving images
+os.makedirs("test_photos", exist_ok=True)
 
 # ----------------------------
 # Waypoints
@@ -117,6 +133,9 @@ async def connect_and_arm():
     await drone.action.takeoff()
     await asyncio.sleep(10)
     print('[DEBUG] Takeoff complete')
+    frame = await asyncio.to_thread(picam2.capture_array)
+    cv2.imwrite(f"test_photos/takeoff_complete{photonum}.jpg", frame)
+    print('[DEBUG] Saved test_photos/takeoff_complete.jpg')
 
     return drone
 
@@ -160,6 +179,9 @@ async def search_marker(timeout=3.0):
             )
             offset = tvecs[0][0]
             print(f'[DEBUG] Marker offset: x={offset[0]:.3f}, y={offset[1]:.3f}, z={offset[2]:.3f}')
+            frame = await asyncio.to_thread(picam2.capture_array)
+            cv2.imwrite(f"test_photos/captured{photonum}.jpg", frame)
+            print('[DEBUG] Saved test_photos/takeoff_complete.jpg')
             return offset
 
         print('[DEBUG] Marker not found')
