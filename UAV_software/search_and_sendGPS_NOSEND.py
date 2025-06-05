@@ -46,7 +46,7 @@ TARGET_ID = 2
 ALTITUDE = 5       # takeoff and waypoint altitude (AGL)
 TOLERANCE = 0.10   # 10 cm centering tolerance when approaching marker (m)
 WAYPOINT_TOL = 0.50  # 50 cm tolerance for reaching each waypoint (m)
-SWEEP_SPEED = 1.0   # m/s horizontal speed during the waypoint sweep
+SWEEP_SPEED = 0.5   # m/s horizontal speed during the waypoint sweep
 
 # ----------------------------
 # Waypoints (GPS) and Reference
