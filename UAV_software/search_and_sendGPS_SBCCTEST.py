@@ -88,7 +88,7 @@ time.sleep(2)  # allow auto-exposure to stabilize
 print("[DEBUG] Camera auto-exposure should be stable now")
 
 # ----------------------------
-# Video Preview Thread
+# Video Preview Thread with Pose Overlay
 # ----------------------------
 video_preview_running = True
 
@@ -96,9 +96,23 @@ def video_preview():
     while video_preview_running:
         frame = picam2.capture_array()
         bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+
+        corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT, parameters=DETECT_PARAMS)
+        if ids is not None:
+            cv2.aruco.drawDetectedMarkers(bgr, corners, ids)
+            # estimatePoseSingleMarkers returns (rvecs, tvecs, _)
+            rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
+                corners, MARKER_SIZE, INTRINSIC, DIST_COEFFS
+            )
+            for rvec, tvec in zip(rvecs, tvecs):
+                # drawAxis uses length in meters; using half the marker size for visibility
+                cv2.aruco.drawAxis(bgr, INTRINSIC, DIST_COEFFS, rvec, tvec, MARKER_SIZE * 0.5)
+
         cv2.imshow("Video Preview", bgr)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
     cv2.destroyAllWindows()
 
 preview_thread = threading.Thread(target=video_preview, daemon=True)
@@ -164,12 +178,14 @@ async def detect_aruco_marker(timeout=2.0):
         corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT, parameters=DETECT_PARAMS)
         if ids is not None and TARGET_ID in ids.flatten():
             idx = list(ids.flatten()).index(TARGET_ID)
-            _, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
+            # retrieve both rvecs and tvecs
+            rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                 [corners[idx]], MARKER_SIZE, INTRINSIC, DIST_COEFFS
             )
             offset = tvecs[0][0]  # [x, y, z] in meters
             print(f"[DEBUG] detect_aruco_marker: marker offset = {offset}")
             return offset
+
         await asyncio.sleep(0.05)
 
     print("[DEBUG] detect_aruco_marker: timeout reached, no marker found")
@@ -308,13 +324,9 @@ async def execute_mission():
 
         # Compute NED coordinates for geofence corners (A, B, C, D)
         print("[DEBUG] execute_mission: computing geofence corners in NED")
-        # A is the origin (0, 0)
         _, _ = north0, east0
-        # B: easternmost
         n_B, e_B = gps_to_ned_meters(FIRST_WP_LAT, FIRST_WP_LON, GEOFENCE[1][0], GEOFENCE[1][1])
-        # C: southernmost
         n_C, e_C = gps_to_ned_meters(FIRST_WP_LAT, FIRST_WP_LON, GEOFENCE[2][0], GEOFENCE[2][1])
-        # D: westernmost
         n_D, e_D = gps_to_ned_meters(FIRST_WP_LAT, FIRST_WP_LON, GEOFENCE[3][0], GEOFENCE[3][1])
 
         # Start offboard in velocity mode
