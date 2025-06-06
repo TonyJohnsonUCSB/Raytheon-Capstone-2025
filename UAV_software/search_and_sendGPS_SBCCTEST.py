@@ -51,7 +51,7 @@ TARGET_ID = 2
 print("[DEBUG] Defining flight parameters")
 ALTITUDE = 4       # takeoff and waypoint altitude (AGL, m)
 TOLERANCE = 0.10   # 10 cm centering tolerance when approaching marker (m)
-VELOCITY_MS = 0.2  # m/s horizontal speed during sweep
+VELOCITY_MS = 0.4  # m/s horizontal speed during sweep
 SERIAL_PORT = '/dev/ttyUSB0'
 BAUDRATE = 57600
 print(f"[DEBUG] Opening serial port {SERIAL_PORT} at baud {BAUDRATE}")
