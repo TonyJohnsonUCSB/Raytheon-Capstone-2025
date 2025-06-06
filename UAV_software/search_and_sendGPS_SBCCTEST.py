@@ -101,12 +101,10 @@ def video_preview():
         corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT, parameters=DETECT_PARAMS)
         if ids is not None:
             cv2.aruco.drawDetectedMarkers(bgr, corners, ids)
-            # estimatePoseSingleMarkers returns (rvecs, tvecs, _)
             rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                 corners, MARKER_SIZE, INTRINSIC, DIST_COEFFS
             )
             for rvec, tvec in zip(rvecs, tvecs):
-                # drawAxis uses length in meters; using half the marker size for visibility
                 cv2.aruco.drawAxis(bgr, INTRINSIC, DIST_COEFFS, rvec, tvec, MARKER_SIZE * 0.5)
 
         cv2.imshow("Video Preview", bgr)
@@ -178,7 +176,6 @@ async def detect_aruco_marker(timeout=2.0):
         corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT, parameters=DETECT_PARAMS)
         if ids is not None and TARGET_ID in ids.flatten():
             idx = list(ids.flatten()).index(TARGET_ID)
-            # retrieve both rvecs and tvecs
             rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                 [corners[idx]], MARKER_SIZE, INTRINSIC, DIST_COEFFS
             )
@@ -193,6 +190,7 @@ async def detect_aruco_marker(timeout=2.0):
 
 async def approach_and_land(drone, initial_offset):
     print("[DEBUG] approach_and_land: initiated")
+    # Fetch initial NED & yaw
     async for od in drone.telemetry.position_velocity_ned():
         north0, east0, down0 = od.position.north_m, od.position.east_m, od.position.down_m
         print(f"[DEBUG] approach_and_land: starting NED = ({north0:.2f}, {east0:.2f}, {down0:.2f})")
@@ -202,6 +200,7 @@ async def approach_and_land(drone, initial_offset):
         print(f"[DEBUG] approach_and_land: starting yaw = {yaw:.2f}°")
         break
 
+    print("[DEBUG] approach_and_land: setting initial offboard velocity to zero")
     await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
     try:
         await drone.offboard.start()
@@ -210,10 +209,12 @@ async def approach_and_land(drone, initial_offset):
         print(f"[ERROR] approach_and_land: Failed to start offboard: {e}")
         return False
 
+    # Compute initial target toward marker
     target_n = north0 + initial_offset[1]
     target_e = east0 + initial_offset[0]
     print(f"[DEBUG] approach_and_land: initial marker-target NED = ({target_n:.2f}, {target_e:.2f}, {down0:.2f})")
 
+    # Approach loop
     while True:
         async for od in drone.telemetry.position_velocity_ned():
             cur_n, cur_e = od.position.north_m, od.position.east_m
@@ -223,7 +224,10 @@ async def approach_and_land(drone, initial_offset):
         dist = math.hypot(dx, dy)
         print(f"[DEBUG] approach_and_land: current NED = ({cur_n:.2f}, {cur_e:.2f}), dx={dx:.3f}, dy={dy:.3f}, dist={dist:.3f}")
         if dist <= TOLERANCE:
-            print(f"[DEBUG] approach_and_land: within tolerance ({dist:.3f} ≤ {TOLERANCE}), breaking to send GPS")
+            print(f"[DEBUG] approach_and_land: within tolerance ({dist:.3f} ≤ {TOLERANCE}), holding position")
+            # Hold position before sending
+            await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
+            await asyncio.sleep(1.0)
             break
 
         vx = (dx / dist) * VELOCITY_MS
@@ -239,6 +243,7 @@ async def approach_and_land(drone, initial_offset):
             print(f"[DEBUG] approach_and_land: new marker-target NED = ({target_n:.2f}, {target_e:.2f})")
         await asyncio.sleep(0.1)
 
+    # Fetch final GPS and send while holding
     print("[DEBUG] approach_and_land: fetching final GPS coordinates")
     latitude, longitude = await fetch_current_gps_coordinates(drone)
     coord_bytes = f"{latitude},{longitude}\n".encode("utf-8")
@@ -249,6 +254,7 @@ async def approach_and_land(drone, initial_offset):
         ser.write(coord_bytes)
         await asyncio.sleep(0.05)
 
+    # Move 5 m south (negative north) after sending
     print("[DEBUG] approach_and_land: preparing to move 5 m south before landing")
     async for od in drone.telemetry.position_velocity_ned():
         cur_n, cur_e, cur_d = od.position.north_m, od.position.east_m, od.position.down_m
@@ -272,6 +278,7 @@ async def approach_and_land(drone, initial_offset):
         await drone.offboard.set_velocity_ned(VelocityNedYaw(vx, vy, 0.0, yaw))
         await asyncio.sleep(0.1)
 
+    # Stop offboard and land
     print("[DEBUG] approach_and_land: stopping offboard and landing")
     try:
         await drone.offboard.stop()
