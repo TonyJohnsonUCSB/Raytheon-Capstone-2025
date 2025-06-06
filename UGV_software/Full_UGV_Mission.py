@@ -375,14 +375,14 @@ async def main():
                 # time.sleep(1)
                 #await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0, 0.0, 0.0, 0.0))  
                 print("Offboard Mode On")
-                time.sleep(1)
+                time.sleep(0.5)
 
 
             # Loop for tracking marker
             if distance is not None and offboard: #If ArUco is found
                 # We need to reset step otherwise if it loses the marker for a frame it will spin
-                if step != 0:
-                    step = 0
+                if step != 1:
+                    step = 1
                     yaw = 0
                     
                 time_detected = time.time()
@@ -440,7 +440,7 @@ async def main():
                     print('Package Drop-off Sequence')
                     await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0, 0.0, 0.0))
                     dump_package()
-                    time.sleep(3)
+                    time.sleep(1)
                     await rover.offboard.set_velocity_body(VelocityBodyYawspeed(2.24,0, 0.0, 0.0))
                     set_servo_angle(SERVO_CHANNEL,default_angle) #set servo to an initial angle
                     time.sleep(1)
@@ -483,8 +483,6 @@ async def main():
                     
                     if step== 0 and offboard:
                         # If we are already in offboard mode
-    
-                        # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
                         await rover.offboard.set_velocity_body(VelocityBodyYawspeed(-2.24, 0, 0.0, 0.0))
                         time.sleep(0.5)
                         await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0, 0.0, 0.0))
@@ -518,7 +516,7 @@ async def main():
                         turning_left = True
                         # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
                         await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0, 0.0, 100))
-                        time.sleep(0.5)
+                        await asyncio.sleep(0.5)
                         await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0, 0.0, 0.0))
                         # Store how much we've rotated
                         yaw += 15
@@ -534,7 +532,7 @@ async def main():
                         #turn_speed = 100 # degrees/s
                         # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
                         await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0,-100))
-                        time.sleep(0.5)
+                        await asyncio.sleep(0.5)
                         await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                         # Store how much we've rotated
                         yaw -= 15
@@ -542,8 +540,7 @@ async def main():
                         step = 1
                         # Search should run a whole circle
                         if yaw <= -90:
-                            velocity_command = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
-                            await rover.offboard.set_velocity_body(velocity_command)
+                            await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                             # Im not sure yet what we should do if we do the full search and nothing is detected
                   
             # plt.clf()  # Clear last frame
