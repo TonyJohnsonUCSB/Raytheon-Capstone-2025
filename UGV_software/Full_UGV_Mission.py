@@ -380,6 +380,11 @@ async def main():
 
             # Loop for tracking marker
             if distance is not None and offboard: #If ArUco is found
+                # We need to reset step otherwise if it loses the marker for a frame it will spin
+                if step != 0:
+                    step = 0
+                    yaw = 0
+                    
                 time_detected = time.time()
                 # Update servo angle
                 u = camera_PID.update(angle_y)    # we get u update from controller
