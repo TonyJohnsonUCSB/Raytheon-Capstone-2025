@@ -7,6 +7,7 @@ from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityNedYaw
 import math
 import serial
+import threading
 
 # ----------------------------
 # Camera Globals
@@ -83,9 +84,26 @@ cam_cfg = picam2.create_preview_configuration(
 picam2.configure(cam_cfg)
 picam2.start()
 print(f"[DEBUG] Camera started: RGB888 preview at {write_width}x{write_height}")
-time.sleep(2)
+time.sleep(2)  # allow auto-exposure to stabilize
 print("[DEBUG] Camera auto-exposure should be stable now")
 
+# ----------------------------
+# Video Preview Thread
+# ----------------------------
+video_preview_running = True
+
+def video_preview():
+    while video_preview_running:
+        frame = picam2.capture_array()
+        bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        cv2.imshow("Video Preview", bgr)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cv2.destroyAllWindows()
+
+preview_thread = threading.Thread(target=video_preview, daemon=True)
+preview_thread.start()
+print("[DEBUG] Video preview thread started")
 
 async def fetch_current_gps_coordinates(drone):
     print("[DEBUG] fetch_current_gps_coordinates: awaiting one GPS fix")
@@ -94,7 +112,6 @@ async def fetch_current_gps_coordinates(drone):
         lon = round(pos.longitude_deg, 10)
         print(f"[DEBUG] fetch_current_gps_coordinates: latitude={lat}, longitude={lon}")
         return lat, lon
-
 
 async def initialize_drone_and_takeoff():
     print("[DEBUG] initialize_drone_and_takeoff: creating System object and connecting")
@@ -122,7 +139,6 @@ async def initialize_drone_and_takeoff():
     print("[DEBUG] initialize_drone_and_takeoff: takeoff complete")
     return drone
 
-
 async def detect_aruco_marker(timeout=2.0):
     print(f"[DEBUG] detect_aruco_marker: start detection with timeout={timeout}s")
     t0 = time.time()
@@ -130,32 +146,24 @@ async def detect_aruco_marker(timeout=2.0):
 
     while (time.time() - t0) < timeout:
         frame = await asyncio.to_thread(picam2.capture_array)
-        print("[DEBUG] detect_aruco_marker: captured frame")
         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-        print("[DEBUG] detect_aruco_marker: converted to grayscale")
 
         if prev_gray is not None:
             pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=100,
                                           qualityLevel=0.01, minDistance=20)
             if pts is not None:
-                print(f"[DEBUG] detect_aruco_marker: found {len(pts)} good features to track")
                 curr, st, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, pts, None)
                 valid = st.reshape(-1) == 1
-                print(f"[DEBUG] detect_aruco_marker: {np.count_nonzero(valid)} valid optical flow points")
                 if np.count_nonzero(valid) >= 6:
                     M, _ = cv2.estimateAffinePartial2D(pts[valid], curr[valid])
                     if M is not None:
-                        print("[DEBUG] detect_aruco_marker: applying affine stabilization")
                         frame = cv2.warpAffine(frame, M, frame.shape[1::-1])
                         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-                        print("[DEBUG] detect_aruco_marker: re-converted stabilized frame to grayscale")
 
         prev_gray = gray
         corners, ids, _ = cv2.aruco.detectMarkers(gray, ARUCO_DICT, parameters=DETECT_PARAMS)
         if ids is not None and TARGET_ID in ids.flatten():
-            print(f"[DEBUG] detect_aruco_marker: detected marker IDs {ids.flatten()}")
             idx = list(ids.flatten()).index(TARGET_ID)
-            print(f"[DEBUG] detect_aruco_marker: target index in IDs = {idx}")
             _, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(
                 [corners[idx]], MARKER_SIZE, INTRINSIC, DIST_COEFFS
             )
@@ -167,10 +175,8 @@ async def detect_aruco_marker(timeout=2.0):
     print("[DEBUG] detect_aruco_marker: timeout reached, no marker found")
     return None
 
-
 async def approach_and_land(drone, initial_offset):
     print("[DEBUG] approach_and_land: initiated")
-    # Fetch initial NED & yaw
     async for od in drone.telemetry.position_velocity_ned():
         north0, east0, down0 = od.position.north_m, od.position.east_m, od.position.down_m
         print(f"[DEBUG] approach_and_land: starting NED = ({north0:.2f}, {east0:.2f}, {down0:.2f})")
@@ -180,7 +186,6 @@ async def approach_and_land(drone, initial_offset):
         print(f"[DEBUG] approach_and_land: starting yaw = {yaw:.2f}°")
         break
 
-    print("[DEBUG] approach_and_land: setting initial offboard velocity to zero")
     await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
     try:
         await drone.offboard.start()
@@ -189,12 +194,10 @@ async def approach_and_land(drone, initial_offset):
         print(f"[ERROR] approach_and_land: Failed to start offboard: {e}")
         return False
 
-    # Compute initial target toward marker
     target_n = north0 + initial_offset[1]
     target_e = east0 + initial_offset[0]
     print(f"[DEBUG] approach_and_land: initial marker-target NED = ({target_n:.2f}, {target_e:.2f}, {down0:.2f})")
 
-    # Approach loop
     while True:
         async for od in drone.telemetry.position_velocity_ned():
             cur_n, cur_e = od.position.north_m, od.position.east_m
@@ -220,19 +223,16 @@ async def approach_and_land(drone, initial_offset):
             print(f"[DEBUG] approach_and_land: new marker-target NED = ({target_n:.2f}, {target_e:.2f})")
         await asyncio.sleep(0.1)
 
-    # Fetch final GPS
     print("[DEBUG] approach_and_land: fetching final GPS coordinates")
     latitude, longitude = await fetch_current_gps_coordinates(drone)
     coord_bytes = f"{latitude},{longitude}\n".encode("utf-8")
     print(f"[DEBUG] approach_and_land: final GPS = ({latitude}, {longitude}), sending over serial")
 
-    # Send GPS over serial 100 times
     for i in range(100):
         print(f"[DEBUG] approach_and_land: serial write {i+1}/100: {coord_bytes.decode().strip()}")
         ser.write(coord_bytes)
         await asyncio.sleep(0.05)
 
-    # Move 5 m south (negative north) before landing
     print("[DEBUG] approach_and_land: preparing to move 5 m south before landing")
     async for od in drone.telemetry.position_velocity_ned():
         cur_n, cur_e, cur_d = od.position.north_m, od.position.east_m, od.position.down_m
@@ -256,7 +256,6 @@ async def approach_and_land(drone, initial_offset):
         await drone.offboard.set_velocity_ned(VelocityNedYaw(vx, vy, 0.0, yaw))
         await asyncio.sleep(0.1)
 
-    # Stop offboard and land
     print("[DEBUG] approach_and_land: stopping offboard and landing")
     try:
         await drone.offboard.stop()
@@ -266,7 +265,6 @@ async def approach_and_land(drone, initial_offset):
     await drone.action.land()
     print("[DEBUG] approach_and_land: landing commanded")
     return True
-
 
 def gps_to_ned_meters(lat_ref, lon_ref, lat, lon):
     print("[DEBUG] gps_to_ned_meters: converting latitude/longitude to NED")
@@ -278,7 +276,6 @@ def gps_to_ned_meters(lat_ref, lon_ref, lat, lon):
     east = dlon * meters_per_deg_lon
     print(f"[DEBUG] gps_to_ned_meters: dlat={dlat:.6f}, dlon={dlon:.6f}, north={north:.2f}, east={east:.2f}")
     return north, east
-
 
 async def execute_mission():
     print("[DEBUG] execute_mission: starting mission sequence")
@@ -333,46 +330,25 @@ async def execute_mission():
 
         # -----------------------------------------------------
         # Build a zigzag path inside the geofence, with 5 back-and-forth traversals
-        # We will alternate between points on edge BC and edge CD.
-        # Edge BC: from B to C
-        # Edge CD: from C to D
-        # Divide each edge into 5 equal segments. Then traverse:
-        #   A → B
-        #   B → (BC @ t = 1/5) → (CD @ t = 1/5)
-        #   → (BC @ t = 2/5) → (CD @ t = 2/5)
-        #   → (BC @ t = 3/5) → (CD @ t = 3/5)
-        #   → (BC @ t = 4/5) → (CD @ t = 4/5)
-        #   → C (BC @ t = 1)
-        # That yields 5 internal zigzag traversals and ends at the southeastern border (C).
         # -----------------------------------------------------
-
-        # Precompute the BC and CD segment endpoints in NED:
         BC_vec_n = n_C - n_B
         BC_vec_e = e_C - e_B
         CD_vec_n = n_D - n_C
         CD_vec_e = e_D - e_C
 
-        # Create the list of waypoint NED coordinates in order:
         zigzag_waypoints = []
-        # 1) Start at A → go to B
         zigzag_waypoints.append((n_B, e_B))
-        # 2) For i = 1..4, go to (BC @ t = i/5), then (CD @ t = i/5)
         for i in range(1, 5):
             t = i / 5.0
-            # Point on BC:
             pt_BC_n = n_B + BC_vec_n * t
             pt_BC_e = e_B + BC_vec_e * t
             zigzag_waypoints.append((pt_BC_n, pt_BC_e))
-            # Point on CD:
             pt_CD_n = n_C + CD_vec_n * t
             pt_CD_e = e_C + CD_vec_e * t
             zigzag_waypoints.append((pt_CD_n, pt_CD_e))
-        # 3) Finally end at C (southeastern border)
         zigzag_waypoints.append((n_C, e_C))
 
-        # -----------------------------------------------------
-        # Now fly sequentially to each waypoint using offboard velocity
-        # -----------------------------------------------------
+        # Fly to each waypoint using offboard velocity
         for idx, (target_n_rel, target_e_rel) in enumerate(zigzag_waypoints, start=1):
             print(f"[DEBUG] execute_mission: Leg {idx} → target relative NED = ({target_n_rel:.2f}, {target_e_rel:.2f})")
             while True:
@@ -400,10 +376,7 @@ async def execute_mission():
                     return
                 await asyncio.sleep(0.1)
 
-        # -----------------------------------------------------
-        # Completed all zigzag legs without detecting the marker
-        # Land at final point (C)
-        # -----------------------------------------------------
+        # Completed all zigzag legs without detecting the marker → land at C
         print("[DEBUG] execute_mission: completed zigzag sweep inside geofence")
         try:
             await drone.offboard.stop()
@@ -433,8 +406,9 @@ async def execute_mission():
             await drone.action.land()
             print("[DEBUG] execute_mission: cleanup complete, drone disarmed/landed if not already")
 
-
 if __name__ == '__main__':
     print("[DEBUG] Running execute_mission via asyncio")
     asyncio.run(execute_mission())
-    print("[DEBUG] Mission script has exited")
+    video_preview_running = False
+    preview_thread.join()
+    print("[DEBUG] Mission script has exited and video preview closed")
