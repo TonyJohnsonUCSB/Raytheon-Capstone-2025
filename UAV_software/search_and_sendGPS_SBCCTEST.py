@@ -21,9 +21,9 @@ write_width, write_height = 640, 480
 # ----------------------------
 print("[DEBUG] Setting up intrinsic and distortion coefficients")
 INTRINSIC = np.array([
-    [653.1070007239106, 0.0, 339.2952147845755],
-    [0.0, 650.7753992788821, 258.1165494889447],
-    [0.0, 0.0, 1.0]
+    [653.1070007239106, 0.0,          339.2952147845755],
+    [0.0,               650.7753992788821, 258.1165494889447],
+    [0.0,               0.0,          1.0]
 ], dtype=np.float32)
 
 DIST_COEFFS = np.array([
@@ -49,29 +49,13 @@ TARGET_ID = 2
 # Flight Parameters
 # ----------------------------
 print("[DEBUG] Defining flight parameters")
-ALTITUDE = 4       # takeoff and waypoint altitude (AGL)
+ALTITUDE = 4       # takeoff and waypoint altitude (AGL, m)
 TOLERANCE = 0.10   # 10 cm centering tolerance when approaching marker (m)
 VELOCITY_MS = 0.2  # m/s horizontal speed during sweep
 SERIAL_PORT = '/dev/ttyUSB0'
 BAUDRATE = 57600
 print(f"[DEBUG] Opening serial port {SERIAL_PORT} at baud {BAUDRATE}")
 ser = serial.Serial(port=SERIAL_PORT, baudrate=BAUDRATE)
-
-# ----------------------------
-# Geofence Coordinates (square, rotated)
-# Order: northernmost (A), easternmost (B), southernmost (C), westernmost (D)
-# ----------------------------
-GEOFENCE = [
-    (34.404455, -119.695592),  # A: northernmost
-    (34.404196, -119.695471),  # B: easternmost
-    (34.404111, -119.695753),  # C: southernmost
-    (34.404367, -119.695870)   # D: westernmost
-]
-
-# ----------------------------
-# Initial GPS Waypoint (set to northernmost of geofence)
-# ----------------------------
-FIRST_WP_LAT, FIRST_WP_LON = GEOFENCE[0]
 
 # ----------------------------
 # Initialize Camera
@@ -117,6 +101,9 @@ preview_thread = threading.Thread(target=video_preview, daemon=True)
 preview_thread.start()
 print("[DEBUG] Video preview thread started")
 
+# ----------------------------
+# Telemetry & Control Helpers
+# ----------------------------
 async def fetch_current_gps_coordinates(drone):
     print("[DEBUG] fetch_current_gps_coordinates: awaiting one GPS fix")
     async for pos in drone.telemetry.position():
@@ -225,7 +212,6 @@ async def approach_and_land(drone, initial_offset):
         print(f"[DEBUG] approach_and_land: current NED = ({cur_n:.2f}, {cur_e:.2f}), dx={dx:.3f}, dy={dy:.3f}, dist={dist:.3f}")
         if dist <= TOLERANCE:
             print(f"[DEBUG] approach_and_land: within tolerance ({dist:.3f} ≤ {TOLERANCE}), holding position")
-            # Hold position before sending
             await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
             await asyncio.sleep(1.0)
             break
@@ -300,26 +286,30 @@ def gps_to_ned_meters(lat_ref, lon_ref, lat, lon):
     print(f"[DEBUG] gps_to_ned_meters: dlat={dlat:.6f}, dlon={dlon:.6f}, north={north:.2f}, east={east:.2f}")
     return north, east
 
+# ----------------------------
+# Main Mission Logic with Snake‐Pattern Sweep
+# ----------------------------
 async def execute_mission():
     print("[DEBUG] execute_mission: starting mission sequence")
     drone = None
     try:
+        # --- initialize and take off ---
         drone = await initialize_drone_and_takeoff()
 
-        # Fly to northernmost geofence point (A)
-        print(f"[DEBUG] execute_mission: commanding goto_location to geofence start point ({FIRST_WP_LAT}, {FIRST_WP_LON})")
+        # --- STEP 1: fly to the specified start point ---
+        lat_start = 34.4044250
+        lon_start = -119.6956030
         async for hp in drone.telemetry.home():
             home_abs = hp.absolute_altitude_m
             print(f"[DEBUG] execute_mission: home AMSL altitude = {home_abs:.2f} m")
             break
         target_amsl = home_abs + ALTITUDE
-        print(f"[DEBUG] execute_mission: goto_location(lat={FIRST_WP_LAT}, lon={FIRST_WP_LON}, alt={target_amsl:.2f}, yaw=0)")
-        await drone.action.goto_location(FIRST_WP_LAT, FIRST_WP_LON, target_amsl, 0.0)
-        await asyncio.sleep(7)
-        print("[DEBUG] execute_mission: arrived at northernmost geofence point (A)")
 
-        # Fetch NED origin & yaw at start
-        print("[DEBUG] execute_mission: fetching NED origin & yaw at start")
+        print(f"[DEBUG] execute_mission: goto_location → ({lat_start}, {lon_start}, {target_amsl:.2f})")
+        await drone.action.goto_location(lat_start, lon_start, target_amsl, 0.0)
+        await asyncio.sleep(7)  # allow enough time to reach
+
+        # --- STEP 2: fetch NED origin & yaw at start point ---
         async for od in drone.telemetry.position_velocity_ned():
             north0, east0, down0 = od.position.north_m, od.position.east_m, od.position.down_m
             print(f"[DEBUG] execute_mission: NED origin = ({north0:.2f}, {east0:.2f}, {down0:.2f})")
@@ -329,14 +319,7 @@ async def execute_mission():
             print(f"[DEBUG] execute_mission: yaw at start = {yaw:.2f}°")
             break
 
-        # Compute NED coordinates for geofence corners (A, B, C, D)
-        print("[DEBUG] execute_mission: computing geofence corners in NED")
-        _, _ = north0, east0
-        n_B, e_B = gps_to_ned_meters(FIRST_WP_LAT, FIRST_WP_LON, GEOFENCE[1][0], GEOFENCE[1][1])
-        n_C, e_C = gps_to_ned_meters(FIRST_WP_LAT, FIRST_WP_LON, GEOFENCE[2][0], GEOFENCE[2][1])
-        n_D, e_D = gps_to_ned_meters(FIRST_WP_LAT, FIRST_WP_LON, GEOFENCE[3][0], GEOFENCE[3][1])
-
-        # Start offboard in velocity mode
+        # --- STEP 3: start offboard in velocity mode ---
         print("[DEBUG] execute_mission: setting initial offboard velocity to zero")
         await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
         try:
@@ -347,62 +330,146 @@ async def execute_mission():
             await drone.action.return_to_launch()
             return
 
-        # -----------------------------------------------------
-        # Build a zigzag path inside the geofence, with 5 back-and-forth traversals
-        # -----------------------------------------------------
-        BC_vec_n = n_C - n_B
-        BC_vec_e = e_C - e_B
-        CD_vec_n = n_D - n_C
-        CD_vec_e = e_D - e_C
+        # ----------------------------
+        # Snake‐Pattern Parameters
+        # ----------------------------
+        yard_to_m = 0.9144
+        dist1 = 27 * yard_to_m      # ≈24.69 m long leg
+        dist2 = 3  * yard_to_m      # ≈ 2.74 m lateral shift
 
-        zigzag_waypoints = []
-        zigzag_waypoints.append((n_B, e_B))
-        for i in range(1, 5):
-            t = i / 5.0
-            pt_BC_n = n_B + BC_vec_n * t
-            pt_BC_e = e_B + BC_vec_e * t
-            zigzag_waypoints.append((pt_BC_n, pt_BC_e))
-            pt_CD_n = n_C + CD_vec_n * t
-            pt_CD_e = e_C + CD_vec_e * t
-            zigzag_waypoints.append((pt_CD_n, pt_CD_e))
-        zigzag_waypoints.append((n_C, e_C))
+        # Bearing 150° → angle1 = 30° (for cos/sin)
+        angle1_rad = math.radians(30)
+        north_offset_long = -dist1 * math.cos(angle1_rad)
+        east_offset_long  =  dist1 * math.sin(angle1_rad)
 
-        # Fly to each waypoint using offboard velocity
-        for idx, (target_n_rel, target_e_rel) in enumerate(zigzag_waypoints, start=1):
-            print(f"[DEBUG] execute_mission: Leg {idx} → target relative NED = ({target_n_rel:.2f}, {target_e_rel:.2f})")
+        # Opposite of long leg (bearing 330°)
+        north_offset_long_rev = -north_offset_long
+        east_offset_long_rev  = -east_offset_long
+
+        # Lateral shift: bearing 120°
+        angle2_rad = math.radians(120)
+        north_offset_lat = dist2 * math.cos(angle2_rad)
+        east_offset_lat  = dist2 * math.sin(angle2_rad)
+
+        # Velocity components for each bearing
+        vx_long_out = -VELOCITY_MS * math.cos(angle1_rad)
+        vy_long_out =  VELOCITY_MS * math.sin(angle1_rad)
+
+        vx_long_back =  VELOCITY_MS * math.cos(angle1_rad)
+        vy_long_back = -VELOCITY_MS * math.sin(angle1_rad)
+
+        vx_lat = VELOCITY_MS * math.cos(angle2_rad)
+        vy_lat = VELOCITY_MS * math.sin(angle2_rad)
+
+        # Current position in NED (relative to start origin)
+        current_n = north0
+        current_e = east0
+
+        # ----------------------------
+        # Execute 10 long legs with shifts in between
+        # ----------------------------
+        num_lengths = 10
+        for leg_idx in range(num_lengths):
+            # Determine which long‐leg direction to use
+            if leg_idx % 2 == 0:
+                # “Out” leg: bearing 150°
+                target_n = current_n + north_offset_long
+                target_e = current_e + east_offset_long
+                vx_target = vx_long_out
+                vy_target = vy_long_out
+                print(f"[DEBUG] execute_mission: Leg {leg_idx+1} (out) target NED = ({target_n:.2f}, {target_e:.2f})")
+            else:
+                # “Back” leg: bearing 330°
+                target_n = current_n + north_offset_long_rev
+                target_e = current_e + east_offset_long_rev
+                vx_target = vx_long_back
+                vy_target = vy_long_back
+                print(f"[DEBUG] execute_mission: Leg {leg_idx+1} (back) target NED = ({target_n:.2f}, {target_e:.2f})")
+
+            # Drive along this long leg
             while True:
                 async for od in drone.telemetry.position_velocity_ned():
                     cur_n, cur_e = od.position.north_m, od.position.east_m
                     break
-                dx = target_n_rel - cur_n
-                dy = target_e_rel - cur_e
+                dx = target_n - cur_n
+                dy = target_e - cur_e
                 dist = math.hypot(dx, dy)
-                print(f"[DEBUG] execute_mission: Leg {idx} loop: current NED=({cur_n:.2f}, {cur_e:.2f}), dx={dx:.3f}, dy={dy:.3f}, dist={dist:.3f}")
+                print(f"[DEBUG] Leg {leg_idx+1} loop: current NED=({cur_n:.2f}, {cur_e:.2f}), dx={dx:.3f}, dy={dy:.3f}, dist={dist:.3f}")
                 if dist <= TOLERANCE:
-                    print(f"[DEBUG] execute_mission: Leg {idx} reached (dist={dist:.2f} m)")
+                    print(f"[DEBUG] Leg {leg_idx+1}: reached within tolerance ({dist:.3f} ≤ {TOLERANCE})")
+                    await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
+                    await asyncio.sleep(1.0)
                     break
-                vx = (dx / dist) * VELOCITY_MS
-                vy = (dy / dist) * VELOCITY_MS
-                print(f"[DEBUG] execute_mission: Leg {idx} commanding velocity vx={vx:.3f}, vy={vy:.3f}")
-                await drone.offboard.set_velocity_ned(VelocityNedYaw(vx, vy, 0.0, yaw))
 
+                print(f"[DEBUG] Leg {leg_idx+1}: commanding velocity vx={vx_target:.3f}, vy={vy_target:.3f}")
+                await drone.offboard.set_velocity_ned(VelocityNedYaw(vx_target, vy_target, 0.0, yaw))
+
+                # Marker detection during sweep
                 offset = await detect_aruco_marker(timeout=0.05)
                 if offset is not None:
-                    print(f"[DEBUG] execute_mission: Marker found on Leg {idx}, offset={offset}")
-                    await drone.offboard.stop()
-                    print("[DEBUG] execute_mission: stopped offboard to switch to approach_and_land")
+                    print(f"[DEBUG] execute_mission: Marker found on Leg {leg_idx+1}, offset={offset}")
+                    try:
+                        await drone.offboard.stop()
+                        print("[DEBUG] execute_mission: stopped offboard to switch to approach_and_land")
+                    except OffboardError as e:
+                        print(f"[ERROR] execute_mission: failed to stop offboard: {e}")
                     await approach_and_land(drone, offset)
                     return
+
                 await asyncio.sleep(0.1)
 
-        # Completed all zigzag legs without detecting the marker → land at C
-        print("[DEBUG] execute_mission: completed zigzag sweep inside geofence")
+            # Update current position
+            current_n, current_e = target_n, target_e
+
+            # If not the last leg, perform lateral shift
+            if leg_idx < num_lengths - 1:
+                shift_target_n = current_n + north_offset_lat
+                shift_target_e = current_e + east_offset_lat
+                print(f"[DEBUG] execute_mission: Leg {leg_idx+1} lateral shift target NED = ({shift_target_n:.2f}, {shift_target_e:.2f})")
+
+                while True:
+                    async for od in drone.telemetry.position_velocity_ned():
+                        cur_n, cur_e = od.position.north_m, od.position.east_m
+                        break
+                    dx = shift_target_n - cur_n
+                    dy = shift_target_e - cur_e
+                    dist = math.hypot(dx, dy)
+                    print(f"[DEBUG] Leg {leg_idx+1} shift loop: current NED=({cur_n:.2f}, {cur_e:.2f}), dx={dx:.3f}, dy={dy:.3f}, dist={dist:.3f}")
+                    if dist <= TOLERANCE:
+                        print(f"[DEBUG] Leg {leg_idx+1} shift: reached within tolerance ({dist:.3f} ≤ {TOLERANCE})")
+                        await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
+                        await asyncio.sleep(1.0)
+                        break
+
+                    print(f"[DEBUG] Leg {leg_idx+1} shift: commanding velocity vx={vx_lat:.3f}, vy={vy_lat:.3f}")
+                    await drone.offboard.set_velocity_ned(VelocityNedYaw(vx_lat, vy_lat, 0.0, yaw))
+
+                    # Marker detection during shift
+                    offset = await detect_aruco_marker(timeout=0.05)
+                    if offset is not None:
+                        print(f"[DEBUG] execute_mission: Marker found during lateral shift on Leg {leg_idx+1}, offset={offset}")
+                        try:
+                            await drone.offboard.stop()
+                            print("[DEBUG] execute_mission: stopped offboard to switch to approach_and_land")
+                        except OffboardError as e:
+                            print(f"[ERROR] execute_mission: failed to stop offboard during shift: {e}")
+                        await approach_and_land(drone, offset)
+                        return
+
+                    await asyncio.sleep(0.1)
+
+                current_n, current_e = shift_target_n, shift_target_e
+
+        # ----------------------------
+        # Completed all 10 lengths without detecting marker → land
+        # ----------------------------
+        print("[DEBUG] execute_mission: completed snake sweep (10 lengths)")
         try:
             await drone.offboard.stop()
-            print("[DEBUG] execute_mission: offboard stopped after zigzag sweep")
+            print("[DEBUG] execute_mission: offboard stopped after sweep")
         except OffboardError as e:
             print(f"[ERROR] execute_mission: offboard stop failed: {e}")
-        print("[DEBUG] execute_mission: commanding landing at final point (C)")
+        print("[DEBUG] execute_mission: commanding landing")
         await drone.action.land()
 
     except Exception as e:
@@ -411,8 +478,8 @@ async def execute_mission():
             try:
                 await drone.offboard.stop()
                 print("[DEBUG] execute_mission: offboard stopped in exception handler")
-            except Exception as stop_err:
-                print(f"[ERROR] execute_mission: exception stopping offboard: {stop_err}")
+            except Exception:
+                pass
             await drone.action.land()
             print("[DEBUG] execute_mission: landing in exception handler")
     finally:
