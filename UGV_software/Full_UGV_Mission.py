@@ -61,7 +61,7 @@ def stop_motor():
 
 def dump_package():
     open_truckbed()
-    time.sleep(1)
+    time.sleep(3)
     stop_motor()
     time.sleep(1)
     close_truckbed()
@@ -214,7 +214,7 @@ def set_servo_angle(channel, angle):
     :param angle: Desired angle in degrees (-90 to 90).
     """
     # Clamp angle to prevent out-of-range duty values
-    angle = max(-180, min(180, angle))
+    angle = max(-90, min(90, angle))
 
     pulse = int(SERVO_MIN + (angle + 90) * (SERVO_MAX - SERVO_MIN) / 180)
     duty = int(pulse / 20000 * 65535)
@@ -272,12 +272,10 @@ pca.frequency = 50
 # stop_motor()
 
 async def main():
-    plt.ion()
-    received = False
-    coordinates = None
+    #plt.ion()
     offboard = False
-    current_angle = -20
-    default_angle = -20
+    current_angle = -25
+    default_angle = -25
     forward_velocity = 0
     lateral_velocity = 0
     TARGET_LATITUDE= 34.4189262
@@ -285,7 +283,7 @@ async def main():
     TARGET_YAW = 0 
     TARGET_LONGITUDE = -119.8549742          
     count = 0 
-    time_lost_threshold = 1*60 # 1 min * 60 s/min
+    time_lost_threshold = 0.5*60 # 1 min * 60 s/min
     time_4_mission = 1*60      # 6 min * 60 s/min
     time_detected = 0
     step = 0
@@ -323,21 +321,21 @@ async def main():
     await rover.action.arm()
     print("Rover armed")
     
-    # while True:
-        # print('waiting for GPS Coordinates')
-        # # Read serial data
-        # line = ser.read(1000).decode(errors='ignore')
-        # match = re.search(r'(-?\d+\.\d+),\s*(-?\d+\.\d+)', line)
+    while True:
+        print('waiting for GPS Coordinates')
+        # Read serial data
+        line = ser.read(1000).decode(errors='ignore')
+        match = re.search(r'(-?\d+\.\d+),\s*(-?\d+\.\d+)', line)
         
-        # if match:
-            # TARGET_LATITUDE  = float(match.group(1))
-            # TARGET_LONGITUDE = float(match.group(2))
-            # if TARGET_LATITUDE>50:
-                # return
-            # else:
-                # print(f"GPS coordinates received: Latitude = {TARGET_LATITUDE}, Longitude = {TARGET_LONGITUDE}")
-                # break
-        # await asyncio.sleep(0.1)
+        if match:
+            TARGET_LATITUDE  = float(match.group(1))
+            TARGET_LONGITUDE = float(match.group(2))
+            if TARGET_LATITUDE>50:
+                return
+            else:
+                print(f"GPS coordinates received: Latitude = {TARGET_LATITUDE}, Longitude = {TARGET_LONGITUDE}")
+                break
+        await asyncio.sleep(0.1)
 
     print(f"-- Driving rover to waypoint: lat={TARGET_LATITUDE}, lon={TARGET_LONGITUDE}")
     await rover.action.goto_location(TARGET_LATITUDE,
@@ -364,7 +362,7 @@ async def main():
                 time_detected = time.time()
                 print("Sending initial velocity setpoints...")
                 try:
-                    for _ in range(50):  # Send at 10 Hz for 1 second
+                    for _ in range(20):  # Send at 10 Hz for 1 second
                         await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                         await asyncio.sleep(0.05)
                     await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
@@ -419,19 +417,18 @@ async def main():
                     
                 
                 # Overlay velocities on the output image
-                cv2.putText(output, f"forward velocity: {forward_velocity:.2f} m/s", (10, 140),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-                cv2.putText(output, f"lateral velocity: {lateral_velocity:.2f} deg/s", (10, 170),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                # cv2.putText(output, f"forward velocity: {forward_velocity:.2f} m/s", (10, 140),
+                            # cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                # cv2.putText(output, f"lateral velocity: {lateral_velocity:.2f} deg/s", (10, 170),
+                            # cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
                 
-                #print(f"Forward Velocity: {forward_velocity:.2f}, Lateral Velocity: {lateral_velocity:.2f}")
-                cv2.putText(output, f"Distance to Drop-Zone: {distance:.2f} m", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-                cv2.putText(output, f"Y Angle to Drop-Zone: {angle_y:.2f} degrees", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-                cv2.putText(output, f"X Angle to Drop-Zone: {angle_x:.2f} degrees", (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                # #print(f"Forward Velocity: {forward_velocity:.2f}, Lateral Velocity: {lateral_velocity:.2f}")
+                # cv2.putText(output, f"Distance to Drop-Zone: {distance:.2f} m", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                # cv2.putText(output, f"Y Angle to Drop-Zone: {angle_y:.2f} degrees", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                # cv2.putText(output, f"X Angle to Drop-Zone: {angle_x:.2f} degrees", (10, 110), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             
             # Send velocity commands via offboard command:
-                velocity_command = VelocityBodyYawspeed(forward_velocity, 0, 0.0, lateral_velocity)
-                await rover.offboard.set_velocity_body(velocity_command)
+                await rover.offboard.set_velocity_body(VelocityBodyYawspeed(forward_velocity, 0, 0.0, lateral_velocity))
             
             # Delivering Package when the vectorial distance from marker to the camera is less than 1 m
                 if distance <= desired_distance:
@@ -439,12 +436,13 @@ async def main():
                     await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0, 0.0, 0.0))
                     dump_package()
                     time.sleep(3)
+                    await rover.offboard.set_velocity_body(VelocityBodyYawspeed(2.24,0, 0.0, 0.0))
                     set_servo_angle(SERVO_CHANNEL,default_angle) #set servo to an initial angle
-                    time.sleep(3)
+                    time.sleep(1)
+                    await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0,0.0, 0.0, 0.0))
                     break
                     # forward_speed = 2.24
                     # back_speed = -2.24
-                    # await rover.offboard.set_velocity_body(VelocityBodyYawspeed(forward_speed,0, 0.0, 0))
                     # asyncio.sleep(1)
                     # await rover.offboard.set_velocity_body(VelocityBodyYawspeed(back_speed, 0, 0.0, 0))
                     # asyncio.sleep(1)
@@ -455,14 +453,7 @@ async def main():
             if distance is None and offboard: #If marker is not found stop car
                 # Overlay velocities on the output image
                 print('marker is gone')
-                forward_velocity  = 0 
-                lateral_velocity = 0
-                cv2.putText(output, f"forward velocity: {forward_velocity:.2f} m/s", (10, 140),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-                cv2.putText(output, f"lateral velocity: {lateral_velocity:.2f} deg/s", (10, 170),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-                initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
-                await rover.offboard.set_velocity_body(initial_velocity)
+                await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                
             if distance is None:
                 print(f"timer since mission start: {time.time()-t_mission_start}")
@@ -472,11 +463,10 @@ async def main():
                     # If we enter the search algorithm after the mission fully completes then we never entered offboard mode, thus enter first
                     if step == 0 and not offboard:
                         # alg then it will trigger the beginning of offboard mode again
-                        initial_velocity = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
                         print("Sending initial velocity setpoints...")
                         try:
-                            for _ in range(50):  # Send at 10 Hz for 1 second
-                                await rover.offboard.set_velocity_body(initial_velocity)
+                            for _ in range(20):  # Send at 10 Hz for 1 second
+                                await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                                 await asyncio.sleep(0.05)
                             print("Starting offboard mode...")
                             await rover.offboard.start()
@@ -488,10 +478,10 @@ async def main():
                     
                     if step== 0 and offboard:
                         # If we are already in offboard mode
-                        reverse_speed = -2.24 # degrees/s
+    
                         # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
-                        await rover.offboard.set_velocity_body(VelocityBodyYawspeed(reverse_speed, 0, 0.0, 0))
-                        await asyncio.sleep(1.3)
+                        await rover.offboard.set_velocity_body(VelocityBodyYawspeed(-2.24, 0, 0.0, 0.0))
+                        time.sleep(0.5)
                         await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0, 0.0, 0.0))
                         step = 1
                                                                 
@@ -500,7 +490,6 @@ async def main():
                         current_angle += 5
                         if current_angle < max_angle_down:
                             set_servo_angle(SERVO_CHANNEL,current_angle)
-                            time.sleep(0.75)
                         else:
                             step = 2
                             current_angle -= 5
@@ -510,7 +499,6 @@ async def main():
                         current_angle -= 5
                         if current_angle > default_angle:
                             set_servo_angle(SERVO_CHANNEL,current_angle)
-                            time.sleep(0.5)
                         else: 
                             current_angle += 5
                             if turning_left:
@@ -521,14 +509,12 @@ async def main():
                     if step == 3: # In this step we turn left 45 degrees
                         # If we are already in offboard mode
                         print('step 3: spinning left')
-                        turn_speed = 100 # degrees/s
+                        #turn_speed = -100 # degrees/s
                         turning_left = True
                         # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
-                        velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, turn_speed)
-                        await rover.offboard.set_velocity_body(velocity_command)
-                        await asyncio.sleep(0.5)
-                        velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
-                        await rover.offboard.set_velocity_body(velocity_command)
+                        await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0, 0.0, 100))
+                        time.sleep(0.5)
+                        await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0, 0.0, 0.0))
                         # Store how much we've rotated
                         yaw += 15
                         # After stepping 15 degrees go back to step to sweep servo up and down if nothing is found it wil come back to either step 3
@@ -540,27 +526,25 @@ async def main():
                             
                     if step == 4: # In this step we turn right 90 degrees from our initial left turn from last step
                         print('step 4: spinning right')
-                        turn_speed = -100 # degrees/s
+                        #turn_speed = 100 # degrees/s
                         # Spin at 100 degrees/s for 1s and then stop (speed is not really 100 degrees/s)
-                        velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, turn_speed)
-                        await rover.offboard.set_velocity_body(velocity_command)
-                        await asyncio.sleep(0.5)
-                        velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
-                        await rover.offboard.set_velocity_body(velocity_command)
+                        await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0,-100))
+                        time.sleep(0.5)
+                        await rover.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
                         # Store how much we've rotated
                         yaw -= 15
                         # After stepping 15 degrees go back to step to sweep servo up and down if nothing is found it wil come back to either step 3
                         step = 1
                         # Search should run a whole circle
                         if yaw <= -90:
-                            velocity_command = VelocityBodyYawspeed(0.0, 0, 0.0, 0.0)
+                            velocity_command = VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0)
                             await rover.offboard.set_velocity_body(velocity_command)
                             # Im not sure yet what we should do if we do the full search and nothing is detected
                   
-            plt.clf()  # Clear last frame
-            plt.imshow(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
-            plt.title("Live Debug")
-            plt.pause(0.001)  # Short pause to update plot window
+            # plt.clf()  # Clear last frame
+            # plt.imshow(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
+            # plt.title("Live Debug")
+            # plt.pause(0.001)  # Short pause to update plot window
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
