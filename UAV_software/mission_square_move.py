@@ -5,10 +5,10 @@ from mavsdk.geofence import Point, Polygon, FenceType, GeofenceData
 
 # List of (latitude, longitude) coordinates to form a square path
 coordinates = [
-    (34.4189167, -119.8553056),
-    (34.4189722, -119.8553056),
-    (34.4189722, -119.8551667),
-    (34.4189167, -119.8551667)
+    (34.4189167, -119.8553056),  # bottom-left (unchanged)
+    (34.4189722, -119.8553056),  # bottom-right (unchanged)
+    (34.4193000, -119.8551667),  # top-right moved north (beyond geofence)
+    (34.4193000, -119.8553056)   # top-left moved north
 ]
 # Geofence polygon
 geofence_points = [
