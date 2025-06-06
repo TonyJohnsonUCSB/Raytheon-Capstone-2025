@@ -48,7 +48,7 @@ TARGET_ID = 2
 # Flight Parameters
 # ----------------------------
 print("[DEBUG] Defining flight parameters")
-ALTITUDE = 3       # takeoff and waypoint altitude (AGL)
+ALTITUDE = 4       # takeoff and waypoint altitude (AGL)
 TOLERANCE = 0.10   # 10 cm centering tolerance when approaching marker (m)
 VELOCITY_MS = 0.2  # m/s horizontal speed during sweep
 SERIAL_PORT = '/dev/ttyUSB0'
@@ -242,7 +242,7 @@ async def approach_and_land(drone, initial_offset):
             print(f"[DEBUG] approach_and_land: reached 5 m south target (dist={dist:.3f}), breaking")
             break
         vy = 0.0
-        vx = (dx / dist) * VELOCITY_MS
+        vx = (dx / dist) * VELOCITY_MS * 5
         print(f"[DEBUG] approach_and_land: commanding final south velocity vx={vx:.3f}, vy={vy:.3f}, vz=0.0, yaw={yaw:.2f}")
         await drone.offboard.set_velocity_ned(VelocityNedYaw(vx, vy, 0.0, yaw))
         await asyncio.sleep(0.1)
