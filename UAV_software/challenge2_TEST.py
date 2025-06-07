@@ -1,5 +1,3 @@
-Here’s the full mission script, with the execute_mission() refactored to fly each leg by time at fixed velocity instead of distance-checking loops. All debug prints remain intact.
-
 import asyncio
 import time
 import cv2
@@ -51,7 +49,7 @@ TARGET_ID = 1
 # Flight Parameters
 # ----------------------------
 print("[DEBUG] Defining flight parameters")
-ALTITUDE = 4       # takeoff and waypoint altitude (AGL, m)
+ALTITUDE = 1.5       # takeoff and waypoint altitude (AGL, m)
 TOLERANCE = 0.10   # 10 cm centering tolerance when approaching marker (m)
 VELOCITY_MS = 0.6  # m/s horizontal speed during sweep
 SERIAL_PORT = '/dev/ttyUSB0'
@@ -319,7 +317,7 @@ async def execute_mission():
         vx_back =  VELOCITY_MS * math.cos(angle1)
         vy_back = -VELOCITY_MS * math.sin(angle1)
         vx_lat  =  VELOCITY_MS * math.cos(angle2)
-        vy_lat  =  VELOCITY_MS * math.sin(angle2)
+        vy_lat  =  -VELOCITY_MS * math.sin(angle2)
 
         num_lengths = 10
         for i in range(num_lengths):
