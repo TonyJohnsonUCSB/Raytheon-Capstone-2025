@@ -49,7 +49,7 @@ TARGET_ID = 1
 # Flight Parameters
 # ----------------------------
 print("[DEBUG] Defining flight parameters")
-ALTITUDE = 4       # takeoff and waypoint altitude (AGL, m)
+ALTITUDE = 3       # takeoff and waypoint altitude (AGL, m)
 TOLERANCE = 0.10   # 10 cm centering tolerance when approaching marker (m)
 VELOCITY_MS = 0.6  # m/s horizontal speed during sweep
 SERIAL_PORT = '/dev/ttyUSB0'
@@ -341,7 +341,7 @@ async def execute_mission():
         vx_long_back =  VELOCITY_MS * math.cos(angle1_rad)
         vy_long_back = -VELOCITY_MS * math.sin(angle1_rad)
 
-        vx_lat = VELOCITY_MS * math.cos(angle2_rad)
+        vx_lat = -VELOCITY_MS * math.cos(angle2_rad)
         vy_lat = VELOCITY_MS * math.sin(angle2_rad)
 
         # Current position in NED (relative to start origin)
