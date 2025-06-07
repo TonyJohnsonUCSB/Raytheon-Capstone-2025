@@ -5,6 +5,7 @@ import numpy as np
 from picamera2 import Picamera2
 from mavsdk import System
 from mavsdk.offboard import OffboardError, VelocityNedYaw
+from mavsdk.geofence import Point, Polygon, FenceType, GeofenceData
 import math
 import serial
 import threading
@@ -34,6 +35,14 @@ DIST_COEFFS = np.array([
     -1.713270699000528
 ], dtype=np.float32)
 
+# Geofence polygon
+geofence_points = [
+    Point(34.4044560, -119.6955893),
+    Point(34.4042018, -119.6954699),
+    Point(34.4043747, -119.6958679),
+    Point(34.4041124, -119.6957519)
+]
+
 # ----------------------------
 # ArUco Detection Parameters
 # ----------------------------
@@ -43,15 +52,15 @@ DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
 DETECT_PARAMS.adaptiveThreshConstant = 7
 DETECT_PARAMS.minMarkerPerimeterRate = 0.03
 MARKER_SIZE = 0.06611  # meters
-TARGET_ID = 1
+TARGET_ID = 2
 
 # ----------------------------
 # Flight Parameters
 # ----------------------------
 print("[DEBUG] Defining flight parameters")
-ALTITUDE = 1.5       # takeoff and waypoint altitude (AGL, m)
+ALTITUDE = 2       # takeoff and waypoint altitude (AGL, m)
 TOLERANCE = 0.10   # 10 cm centering tolerance when approaching marker (m)
-VELOCITY_MS = 0.6  # m/s horizontal speed during sweep
+VELOCITY_MS = 0.4  # m/s horizontal speed during sweep
 SERIAL_PORT = '/dev/ttyUSB0'
 BAUDRATE = 57600
 print(f"[DEBUG] Opening serial port {SERIAL_PORT} at baud {BAUDRATE}")
@@ -127,6 +136,11 @@ async def initialize_drone_and_takeoff():
         if health.is_global_position_ok and health.is_home_position_ok:
             print("[DEBUG] initialize_drone_and_takeoff: GPS and home position OK")
             break
+
+    print("-- Uploading geofence")
+    polygon = Polygon(geofence_points, FenceType.INCLUSION)
+    geofence_data = GeofenceData(polygons=[polygon], circles=[]) 
+    await drone.geofence.upload_geofence(geofence_data)
 
     print("[DEBUG] initialize_drone_and_takeoff: commanding arm")
     await drone.action.arm()
@@ -271,7 +285,19 @@ async def execute_mission():
         drone = await initialize_drone_and_takeoff()
 
         # --- fly to start point ---
-        lat_start, lon_start = 34.4192290, -119.8549169
+        # storke field
+        #lat_start, lon_start = 34.4192290, -119.8549169
+        
+        
+        
+        # --------------------------- START FIELD COORDINATES ----------
+        # East Field
+        lat_start, lon_start = 34.4043866, -119.6955729
+        # West Field
+        # lat_start, lon_start = 34.4042154, -119.6962494
+        # --------------------------- START FIELD COORDINATES ----------
+        
+        
         async for hp in drone.telemetry.home():
             home_abs = hp.absolute_altitude_m
             print(f"[DEBUG] execute_mission: home AMSL altitude = {home_abs:.2f} m")
@@ -304,8 +330,8 @@ async def execute_mission():
 
         # --- snake-pattern timing parameters ---
         yard_to_m = 0.9144
-        dist1 = 5        # long leg in meters
-        dist2 = 0.5      # shift in meters
+        dist1 = 23 * yard_to_m        # long leg in meters
+        dist2 = 5 * yard_to_m     # shift in meters
         time_long = dist1 / VELOCITY_MS
         time_shift = dist2 / VELOCITY_MS
 
