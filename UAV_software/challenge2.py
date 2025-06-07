@@ -43,7 +43,7 @@ DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
 DETECT_PARAMS.adaptiveThreshConstant = 7
 DETECT_PARAMS.minMarkerPerimeterRate = 0.03
 MARKER_SIZE = 0.06611  # meters
-TARGET_ID = 1
+TARGET_ID = 2
 
 # ----------------------------
 # Flight Parameters
@@ -51,7 +51,7 @@ TARGET_ID = 1
 print("[DEBUG] Defining flight parameters")
 ALTITUDE = 3       # takeoff and waypoint altitude (AGL, m)
 TOLERANCE = 0.10   # 10 cm centering tolerance when approaching marker (m)
-VELOCITY_MS = 0.6  # m/s horizontal speed during sweep
+VELOCITY_MS = 1  # m/s horizontal speed during sweep
 SERIAL_PORT = '/dev/ttyUSB0'
 BAUDRATE = 57600
 print(f"[DEBUG] Opening serial port {SERIAL_PORT} at baud {BAUDRATE}")
@@ -279,8 +279,8 @@ async def execute_mission():
         # --- STEP 1: fly to the specified start point ---
         #lat_start = 34.4044250
         #lon_start = -119.6956030
-        lat_start = 34.4192290
-        lon_start = -119.8549169
+        lat_start = 34.4043866
+        lon_start = -119.6955729
         async for hp in drone.telemetry.home():
             home_abs = hp.absolute_altitude_m
             print(f"[DEBUG] execute_mission: home AMSL altitude = {home_abs:.2f} m")
@@ -316,12 +316,12 @@ async def execute_mission():
         # Snake‐Pattern Parameters
         # ----------------------------
         yard_to_m = 0.9144
-        #dist1 = 27 * yard_to_m      # ≈24.69 m long leg
-        #dist2 = 3  * yard_to_m      # ≈ 2.74 m lateral shift
-        dist1 = 5
-        dist2 = .5
+        dist1 = 23 * yard_to_m      # ≈24.69 m long leg
+        dist2 = 3  * yard_to_m      # ≈ 2.74 m lateral shift
+        #dist1 = 5
+        #dist2 = .5
         # Bearing 150° → angle1 = 30° (for cos/sin)
-        angle1_rad = math.radians(30)
+        angle1_rad = math.radians(25)
         north_offset_long = -dist1 * math.cos(angle1_rad)
         east_offset_long  =  dist1 * math.sin(angle1_rad)
 
@@ -330,7 +330,7 @@ async def execute_mission():
         east_offset_long_rev  = -east_offset_long
 
         # Lateral shift: bearing 120°
-        angle2_rad = math.radians(120)
+        angle2_rad = math.radians(125)
         north_offset_lat = dist2 * math.cos(angle2_rad)
         east_offset_lat  = dist2 * math.sin(angle2_rad)
 
