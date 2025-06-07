@@ -1,5 +1,3 @@
-Here’s the complete script with the three fixes applied (renamed detector call, VELOCITY_MS instead of VELOCITY, and fetching/packing GPS before serial send):
-
 import asyncio
 import time
 import cv2

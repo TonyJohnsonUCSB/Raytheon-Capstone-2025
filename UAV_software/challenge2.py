@@ -43,7 +43,7 @@ DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
 DETECT_PARAMS.adaptiveThreshConstant = 7
 DETECT_PARAMS.minMarkerPerimeterRate = 0.03
 MARKER_SIZE = 0.06611  # meters
-TARGET_ID = 2
+TARGET_ID = 1
 
 # ----------------------------
 # Flight Parameters
