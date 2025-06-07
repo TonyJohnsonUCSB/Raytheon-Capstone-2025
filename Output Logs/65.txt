@@ -1,0 +1,130 @@
+search and send GPS NO SEND: Success but it lands
+
+pi:~/Raytheon-Capstone-2025/UAV_software $ python search_and_sendGPS_NOSEND.py 
+[0:21:44.116791111] [28458]  INFO Camera camera_manager.cpp:327 libcamera v0.4.0+53-29156679
+[0:21:44.124095696] [28485]  INFO RPI pisp.cpp:720 libpisp version v1.1.0 e7974a156008 27-01-2025 (21:50:51)
+[0:21:44.134078982] [28485]  INFO RPI pisp.cpp:1179 Registered camera /base/axi/pcie@1000120000/rp1/i2c@80000/imx708@1a to CFE device /dev/media2 and ISP device /dev/media0 using PiSP variant BCM2712_D0
+[DEBUG] Configuring camera...
+[0:21:44.145647858] [28458]  INFO Camera camera.cpp:1202 configuring streams: (0) 640x480-RGB888 (1) 2304x1296-BGGR_PISP_COMP1
+[0:21:44.145760840] [28485]  INFO RPI pisp.cpp:1484 Sensor: /base/axi/pcie@1000120000/rp1/i2c@80000/imx708@1a - Selected sensor format: 2304x1296-SBGGR10_1X10 - Selected CFE format: 2304x1296-PC1B
+[DEBUG] Camera started: RGB888 preview at 640x480
+[DEBUG] Camera auto-exposure should be stable now
+[DEBUG] execute_mission: starting
+[DEBUG] initialize_drone_and_takeoff: connecting to drone over serial
+[DEBUG] initialize_drone_and_takeoff: drone connected
+[DEBUG] initialize_drone_and_takeoff: GPS and home position OK
+[DEBUG] initialize_drone_and_takeoff: arming
+[DEBUG] initialize_drone_and_takeoff: setting takeoff altitude to 3 m
+[DEBUG] initialize_drone_and_takeoff: taking off
+[DEBUG] initialize_drone_and_takeoff: reached altitude 2.86 m
+[DEBUG] execute_mission: flying to first GPS waypoint
+[DEBUG] execute_mission: home AMSL altitude = 9.06 m
+[DEBUG] execute_mission: goto_location(lat=34.41870255, lon=-119.85509, alt=12.06)
+[DEBUG] execute_mission: fetching NED origin & yaw at first waypoint
+[DEBUG] execute_mission: NED origin = (6.29, 3.82, 4.00)
+[DEBUG] execute_mission: yaw at first waypoint = 0.74°
+[DEBUG] execute_mission: setting initial offboard to hold position
+[DEBUG] execute_mission: offboard started
+[DEBUG] execute_mission: computing NED targets for all waypoints
+  [DEBUG] waypoint (lat=34.41870255, lon=-119.85509) → NED target = (6.29, 3.82, 4.00)
+  [DEBUG] waypoint (lat=34.41870255, lon=-119.85503363) → NED target = (6.29, 8.98, 4.00)
+  [DEBUG] waypoint (lat=34.41870255, lon=-119.85497727) → NED target = (6.29, 14.15, 4.00)
+  [DEBUG] waypoint (lat=34.41866683, lon=-119.85497727) → NED target = (2.32, 14.15, 4.00)
+  [DEBUG] waypoint (lat=34.41866683, lon=-119.85503363) → NED target = (2.32, 8.98, 4.00)
+  [DEBUG] waypoint (lat=34.41866683, lon=-119.85509) → NED target = (2.32, 3.82, 4.00)
+  [DEBUG] waypoint (lat=34.41863115, lon=-119.85509) → NED target = (-1.64, 3.82, 4.00)
+  [DEBUG] waypoint (lat=34.41863115, lon=-119.85503363) → NED target = (-1.64, 8.98, 4.00)
+  [DEBUG] waypoint (lat=34.41863115, lon=-119.85497727) → NED target = (-1.64, 14.15, 4.00)
+[DEBUG] execute_mission: beginning waypoint sweep with velocity control
+[DEBUG] execute_mission: heading to waypoint #1 at NED (6.29, 8.98, 4.00)
+[DEBUG] execute_mission: current NED = (6.32, 3.82); dist to waypoint = 5.17 m
+[DEBUG] execute_mission: commanding velocity vx=-0.00, vy=0.50, vz=0.00, yaw=0.74
+[DEBUG] detect_aruco_marker: starting detection with timeout=0.05s
+[DEBUG] detect_aruco_marker: timeout reached, no marker found
+[DEBUG] execute_mission: current NED = (6.34, 3.83); dist to waypoint = 5.15 m
+[DEBUG] execute_mission: commanding velocity vx=-0.00, vy=0.50, vz=0.00, yaw=0.74
+[DEBUG] detect_aruco_marker: starting detection with timeout=0.05s
+[DEBUG] detect_aruco_marker: timeout reached, no marker found
+[DEBUG] execute_mission: current NED = (6.34, 3.88); dist to waypoint = 5.11 m
+[DEBUG] execute_mission: commanding velocity vx=-0.01, vy=0.50, vz=0.00, yaw=0.74
+[DEBUG] detect_aruco_marker: starting detection with timeout=0.05s
+[DEBUG] detect_aruco_marker: timeout reached, no marker found
+[DEBUG] execute_mission: current NED = (6.34, 3.98); dist to waypoint = 5.00 m
+[DEBUG] execute_mission: commanding velocity vx=-0.00, vy=0.50, vz=0.00, yaw=0.74
+[DEBUG] detect_aruco_marker: starting detection with timeout=0.05s
+[DEBUG] detect_aruco_marker: timeout reached, no marker found
+[DEBUG] execute_mission: current NED = (6.33, 4.12); dist to waypoint = 4.87 m
+[DEBUG] execute_mission: commanding velocity vx=-0.00, vy=0.50, vz=0.00, yaw=0.74
+[DEBUG] detect_aruco_marker: starting detection with timeout=0.05s
+[DEBUG] detect_aruco_marker: found target ID 2 in frame
+[DEBUG] detect_aruco_marker: estimated offset = [0.36754369 0.05935368 1.05333156]
+[DEBUG] execute_mission: marker detected during sweep, switching to approach_and_land
+[DEBUG] approach_and_land: starting with initial_offset = [0.36754369 0.05935368 1.05333156]
+[DEBUG] approach_and_land: current NED = (6.31, 4.26, 4.00)
+[DEBUG] approach_and_land: current yaw = -0.74°
+[DEBUG] approach_and_land: setting initial offboard position hold
+[DEBUG] approach_and_land: offboard started
+[DEBUG] approach_and_land: initial NED target = (6.37, 4.62, 4.00)
+[DEBUG] approach_and_land: commanding position (6.37, 4.62, 4.00)
+[DEBUG] detect_aruco_marker: starting detection with timeout=2.0s
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: found target ID 2 in frame
+[DEBUG] detect_aruco_marker: estimated offset = [0.28921079 0.01384795 1.07026   ]
+[DEBUG] approach_and_land: detected offset = (dx=0.289, dy=0.014), dist = 0.290 m
+[DEBUG] approach_and_land: updating target to (6.38, 4.91)
+[DEBUG] approach_and_land: commanding position (6.38, 4.91, 4.00)
+[DEBUG] detect_aruco_marker: starting detection with timeout=2.0s
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: applied frame stabilization
+[DEBUG] detect_aruco_marker: found target ID 2 in frame
+[DEBUG] detect_aruco_marker: estimated offset = [0.13252838 0.051268   1.02578388]
+[DEBUG] approach_and_land: detected offset = (dx=0.133, dy=0.051), dist = 0.142 m
+[DEBUG] approach_and_land: updating target to (6.43, 5.04)
+[DEBUG] approach_and_land: commanding position (6.43, 5.04, 4.00)
+[DEBUG] detect_aruco_marker: starting detection with timeout=2.0s
+[DEBUG] detect_aruco_marker: found target ID 2 in frame
+[DEBUG] detect_aruco_marker: estimated offset = [0.13160426 0.06935713 1.01839061]
+[DEBUG] approach_and_land: detected offset = (dx=0.132, dy=0.069), dist = 0.149 m
+[DEBUG] approach_and_land: updating target to (6.50, 5.18)
+[DEBUG] approach_and_land: commanding position (6.50, 5.18, 4.00)
+[DEBUG] detect_aruco_marker: starting detection with timeout=2.0s
+[DEBUG] detect_aruco_marker: found target ID 2 in frame
+[DEBUG] detect_aruco_marker: estimated offset = [0.09653208 0.07852962 1.07389059]
+[DEBUG] approach_and_land: detected offset = (dx=0.097, dy=0.079), dist = 0.124 m
+[DEBUG] approach_and_land: updating target to (6.58, 5.27)
+[DEBUG] approach_and_land: commanding position (6.58, 5.27, 4.00)
+[DEBUG] detect_aruco_marker: starting detection with timeout=2.0s
+[DEBUG] detect_aruco_marker: found target ID 2 in frame
+[DEBUG] detect_aruco_marker: estimated offset = [0.07451763 0.02439722 1.0268582 ]
+[DEBUG] approach_and_land: detected offset = (dx=0.075, dy=0.024), dist = 0.078 m
+[DEBUG] approach_and_land: within tolerance (0.078 ≤ 0.1), landing
+[DEBUG] fetch_current_gps_coordinates: waiting for one GPS fix
+[DEBUG] fetch_current_gps_coordinates: got lat=34.4187026, lon=-119.8550748
+[DEBUG] approach_and_land: final GPS above marker = (34.4187026, -119.8550748)
+[ERROR] execute_mission: exception occurred: cannot access local variable 'loop' where it is not associated with a value
+[DEBUG] execute_mission: offboard stopped in exception handler
+[DEBUG] execute_mission: landing in exception handler
+[DEBUG] execute_mission: cleanup complete, drone disarmed/landed (if necessary)
+rtxcapstone@raspberrypi:~/Raytheon-Capstone-2025/UAV_software $ 
+
+
