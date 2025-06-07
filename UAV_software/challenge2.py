@@ -175,86 +175,74 @@ async def detect_aruco_marker(timeout=2.0):
     print("[DEBUG] detect_aruco_marker: timeout reached, no marker found")
     return None
 
-async def approach_and_land(drone, initial_offset):
-    print("[DEBUG] approach_and_land: initiated")
-    # Fetch initial NED & yaw
-    async for od in drone.telemetry.position_velocity_ned():
-        north0, east0, down0 = od.position.north_m, od.position.east_m, od.position.down_m
-        print(f"[DEBUG] approach_and_land: starting NED = ({north0:.2f}, {east0:.2f}, {down0:.2f})")
-        break
+async def approach_and_land(drone):
+    print('[DEBUG] Starting velocity-based continuous approach')
+    # get initial yaw
     async for att in drone.telemetry.attitude_euler():
         yaw = att.yaw_deg
-        print(f"[DEBUG] approach_and_land: starting yaw = {yaw:.2f}°")
+        print(f'[DEBUG] Initial yaw: {yaw:.1f}')
         break
 
-    print("[DEBUG] approach_and_land: setting initial offboard velocity to zero")
+    # set zero velocity and start offboard
     await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
     try:
+        print('[DEBUG] Enabling offboard')
         await drone.offboard.start()
-        print("[DEBUG] approach_and_land: offboard started")
+        print('[DEBUG] Offboard started')
     except OffboardError as e:
-        print(f"[ERROR] approach_and_land: Failed to start offboard: {e}")
-        return False
+        print(f'[ERROR] Offboard start failed: {e}')
+        return
 
-    # Compute initial target toward marker
-    target_n = north0 + initial_offset[1]
-    target_e = east0 + initial_offset[0]
-    print(f"[DEBUG] approach_and_land: initial marker-target NED = ({target_n:.2f}, {target_e:.2f}, {down0:.2f})")
-
-    # Approach loop
     while True:
+        # get current NED
         async for od in drone.telemetry.position_velocity_ned():
-            cur_n, cur_e = od.position.north_m, od.position.east_m
-            break
-        dx = target_n - cur_n
-        dy = target_e - cur_e
-        dist = math.hypot(dx, dy)
-        print(f"[DEBUG] approach_and_land: current NED = ({cur_n:.2f}, {cur_e:.2f}), dx={dx:.3f}, dy={dy:.3f}, dist={dist:.3f}")
-        if dist <= TOLERANCE:
-            print(f"[DEBUG] approach_and_land: within tolerance ({dist:.3f} ≤ {TOLERANCE}), holding position")
-            await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
-            await asyncio.sleep(1.0)
+            north = od.position.north_m
+            east  = od.position.east_m
+            down  = od.position.down_m
+            print(f'[DEBUG] Current NED: N={north:.2f}, E={east:.2f}, D={down:.2f}')
             break
 
-        vx = (dx / dist) * VELOCITY_MS
-        vy = (dy / dist) * VELOCITY_MS
-        print(f"[DEBUG] approach_and_land: commanding velocity vx={vx:.3f}, vy={vy:.3f}, vz=0.0, yaw={yaw:.2f}")
-        await drone.offboard.set_velocity_ned(VelocityNedYaw(vx, vy, 0.0, yaw))
+        # search for marker
+        print('[DEBUG] Updating offset via camera')
+        offset = await detect_aruco_marker(timeout=2.0)
+        if offset is None:
+            print('[DEBUG] No offset, retrying')
+            continue
 
-        new_offset = await detect_aruco_marker(timeout=0.05)
-        if new_offset is not None:
-            print(f"[DEBUG] approach_and_land: refining offset, new_offset={new_offset}")
-            target_n = cur_n + new_offset[1]
-            target_e = cur_e + new_offset[0]
-            print(f"[DEBUG] approach_and_land: new marker-target NED = ({target_n:.2f}, {target_e:.2f})")
-        await asyncio.sleep(0.1)
+        dx_e = offset[0]
+        dx_n = offset[1]
+        dist = math.hypot(dx_n, dx_e)
+        print(f'[DEBUG] Distance to marker: {dist:.3f}m')
 
-    # Fetch final GPS and send while holding
-    print("[DEBUG] approach_and_land: fetching final GPS coordinates")
-    latitude, longitude = await fetch_current_gps_coordinates(drone)
-    coord_bytes = f"{latitude},{longitude}\n".encode("utf-8")
-    print(f"[DEBUG] approach_and_land: final GPS = ({latitude}, {longitude}), sending over serial")
+        if dist < TOLERANCE:
+            lat, lon = await fetch_current_gps_coordinates(drone)
+            coord_bytes = f"{lat},{lon}\n".encode("utf-8")
+            print(f"[DEBUG] approach_and_land: sending final GPS {lat},{lon} over serial")
+            for i in range(100):
+                ser.write(coord_bytes)
+                await asyncio.sleep(0.05)
+            print("[DEBUG] approach_and_land: backing off")
+            await drone.offboard.set_velocity_ned(VelocityNedYaw(-1,0,0,0))
+            await asyncio.sleep(10)
+            try:
+                print("[DEBUG] approach_and_land: stopping offboard")
+                await drone.offboard.stop()
+            except OffboardError as e:
+                print(f"[ERROR] approach_and_land: stop offboard failed: {e}")
+            print("[DEBUG] approach_and_land: landing")
+            await drone.action.land()
+            return
 
-    for i in range(100):
-        print(f"[DEBUG] approach_and_land: serial write {i+1}/100: {coord_bytes.decode().strip()}")
-        ser.write(coord_bytes)
-        await asyncio.sleep(0.05)
+        # compute velocity toward marker
+        vn = - (dx_n / dist) * VELOCITY * 0.5
+        ve = (dx_e / dist) * VELOCITY * 0.5
+        print(f'[DEBUG] Commanding velocity N={vn:.2f}m/s, E={ve:.2f}m/s')
+        await drone.offboard.set_velocity_ned(VelocityNedYaw(vn, ve, 0.0, yaw))
+
+        # wait before next update
+        await asyncio.sleep(1.0)
 
     
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(-1,0,0,0))
-    await asyncio.sleep(10)
-
-    # Stop offboard and land
-    print("[DEBUG] approach_and_land: stopping offboard and landing")
-    try:
-        await drone.offboard.stop()
-        print("[DEBUG] approach_and_land: offboard stopped successfully")
-    except OffboardError as e:
-        print(f"[ERROR] approach_and_land: offboard stop failed: {e}")
-    await drone.action.land()
-    print("[DEBUG] approach_and_land: landing commanded")
-    return True
-
 def gps_to_ned_meters(lat_ref, lon_ref, lat, lon):
     print("[DEBUG] gps_to_ned_meters: converting latitude/longitude to NED")
     dlat = lat - lat_ref

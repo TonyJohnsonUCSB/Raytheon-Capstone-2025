@@ -42,13 +42,13 @@ DETECT_PARAMS = cv2.aruco.DetectorParameters_create()
 DETECT_PARAMS.adaptiveThreshConstant = 7
 DETECT_PARAMS.minMarkerPerimeterRate = 0.03
 MARKER_SIZE = 0.06611  # meters
-TARGET_ID = 1
+TARGET_ID = 2
 
 # ----------------------------
 # Flight Parameters
 # ----------------------------
 print("[DEBUG] Setting flight parameters")
-ALTITUDE = 1.5
+ALTITUDE = 3
 TOLERANCE = 0.10
 VELOCITY_MS = 0.6
 SERIAL_PORT = '/dev/ttyUSB0'
@@ -153,65 +153,132 @@ async def move_and_detect(drone, vx, vy, duration, yaw):
     print("[DEBUG] move_and_detect: move complete, no marker found")
     return None
 
-async def approach_and_land(drone, initial_offset):
-    print("[DEBUG] approach_and_land: starting approach")
-    async for od in drone.telemetry.position_velocity_ned():
-        north0, east0, down0 = od.position.north_m, od.position.east_m, od.position.down_m
-        print(f"[DEBUG] approach_and_land: start NED=({north0:.2f},{east0:.2f},{down0:.2f})")
-        break
+async def approach_and_land(drone):
+    print('[DEBUG] Starting velocity-based continuous approach')
+    # get initial yaw
     async for att in drone.telemetry.attitude_euler():
         yaw = att.yaw_deg
-        print(f"[DEBUG] approach_and_land: start yaw={yaw:.2f}°")
+        print(f'[DEBUG] Initial yaw: {yaw:.1f}')
         break
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(0,0,0,yaw))
+
+    # set zero velocity and start offboard
+    await drone.offboard.set_velocity_ned(VelocityNedYaw(0.0, 0.0, 0.0, yaw))
     try:
-        print("[DEBUG] approach_and_land: starting offboard")
+        print('[DEBUG] Enabling offboard')
         await drone.offboard.start()
+        print('[DEBUG] Offboard started')
     except OffboardError as e:
-        print(f"[ERROR] approach_and_land: offboard start failed: {e}")
-        return False
-    target_n = north0 + initial_offset[1]
-    target_e = east0 + initial_offset[0]
-    print(f"[DEBUG] approach_and_land: target NED=({target_n:.2f},{target_e:.2f})")
+        print(f'[ERROR] Offboard start failed: {e}')
+        return
+
     while True:
+        # get current NED
         async for od in drone.telemetry.position_velocity_ned():
-            cur_n, cur_e = od.position.north_m, od.position.east_m
+            north = od.position.north_m
+            east  = od.position.east_m
+            down  = od.position.down_m
+            print(f'[DEBUG] Current NED: N={north:.2f}, E={east:.2f}, D={down:.2f}')
             break
-        dx, dy = target_n - cur_n, target_e - cur_e
-        dist = math.hypot(dx, dy)
-        print(f"[DEBUG] approach_and_land: cur NED=({cur_n:.2f},{cur_e:.2f}), dist={dist:.3f}")
-        if dist <= TOLERANCE:
-            print("[DEBUG] approach_and_land: within tolerance, hovering")
-            await drone.offboard.set_velocity_ned(VelocityNedYaw(0,0,0,yaw))
-            await asyncio.sleep(1.0)
-            break
-        vx = (dx / dist) * VELOCITY_MS
-        vy = (dy / dist) * VELOCITY_MS
-        print(f"[DEBUG] approach_and_land: commanding vx={vx:.3f}, vy={vy:.3f}")
-        await drone.offboard.set_velocity_ned(VelocityNedYaw(vx, vy, 0.0, yaw))
-        new_offset = await detect_aruco_marker()
-        if new_offset is not None:
-            print(f"[DEBUG] approach_and_land: refine offset={new_offset}")
-            target_n = cur_n + new_offset[1]
-            target_e = cur_e + new_offset[0]
-        await asyncio.sleep(0.1)
-    lat, lon = await fetch_current_gps_coordinates(drone)
-    coord_bytes = f"{lat},{lon}\n".encode("utf-8")
-    print(f"[DEBUG] approach_and_land: sending final GPS {lat},{lon} over serial")
-    for i in range(100):
-        ser.write(coord_bytes)
-        await asyncio.sleep(0.05)
-    print("[DEBUG] approach_and_land: backing off")
-    await drone.offboard.set_velocity_ned(VelocityNedYaw(-1,0,0,0))
-    await asyncio.sleep(10)
-    try:
-        print("[DEBUG] approach_and_land: stopping offboard")
-        await drone.offboard.stop()
-    except OffboardError as e:
-        print(f"[ERROR] approach_and_land: stop offboard failed: {e}")
-    print("[DEBUG] approach_and_land: landing")
-    await drone.action.land()
-    return True
+
+        # search for marker
+        print('[DEBUG] Updating offset via camera')
+        offset = await detect_aruco_marker(timeout=2.0)
+        if offset is None:
+            print('[DEBUG] No offset, retrying')
+            continue
+
+        dx_e = offset[0]
+        dx_n = offset[1]
+        dist = math.hypot(dx_n, dx_e)
+        print(f'[DEBUG] Distance to marker: {dist:.3f}m')
+
+        if dist < TOLERANCE:
+            lat, lon = await fetch_current_gps_coordinates(drone)
+            coord_bytes = f"{lat},{lon}\n".encode("utf-8")
+            print(f"[DEBUG] approach_and_land: sending final GPS {lat},{lon} over serial")
+            for i in range(100):
+                ser.write(coord_bytes)
+                await asyncio.sleep(0.05)
+            print("[DEBUG] approach_and_land: backing off")
+            await drone.offboard.set_velocity_ned(VelocityNedYaw(-1,0,0,0))
+            await asyncio.sleep(10)
+            try:
+                print("[DEBUG] approach_and_land: stopping offboard")
+                await drone.offboard.stop()
+            except OffboardError as e:
+                print(f"[ERROR] approach_and_land: stop offboard failed: {e}")
+            print("[DEBUG] approach_and_land: landing")
+            await drone.action.land()
+            return
+
+        # compute velocity toward marker
+        vn = - (dx_n / dist) * VELOCITY_MS * 0.5
+        ve = (dx_e / dist) * VELOCITY_MS * 0.5
+        print(f'[DEBUG] Commanding velocity N={vn:.2f}m/s, E={ve:.2f}m/s')
+        await drone.offboard.set_velocity_ned(VelocityNedYaw(vn, ve, 0.0, yaw))
+
+        # wait before next update
+        await asyncio.sleep(1.0)
+
+# ~ async def approach_and_land(drone, initial_offset):
+    # ~ print("[DEBUG] approach_and_land: starting approach")
+    # ~ async for od in drone.telemetry.position_velocity_ned():
+        # ~ north0, east0, down0 = od.position.north_m, od.position.east_m, od.position.down_m
+        # ~ print(f"[DEBUG] approach_and_land: start NED=({north0:.2f},{east0:.2f},{down0:.2f})")
+        # ~ break
+    # ~ async for att in drone.telemetry.attitude_euler():
+        # ~ yaw = att.yaw_deg
+        # ~ print(f"[DEBUG] approach_and_land: start yaw={yaw:.2f}°")
+        # ~ break
+    # ~ await drone.offboard.set_velocity_ned(VelocityNedYaw(0,0,0,yaw))
+    # ~ try:
+        # ~ print("[DEBUG] approach_and_land: starting offboard")
+        # ~ await drone.offboard.start()
+    # ~ except OffboardError as e:
+        # ~ print(f"[ERROR] approach_and_land: offboard start failed: {e}")
+        # ~ return False
+    # ~ target_n = north0 + initial_offset[1]
+    # ~ target_e = east0 + initial_offset[0]
+    # ~ print(f"[DEBUG] approach_and_land: target NED=({target_n:.2f},{target_e:.2f})")
+    # ~ while True:
+        # ~ async for od in drone.telemetry.position_velocity_ned():
+            # ~ cur_n, cur_e = od.position.north_m, od.position.east_m
+            # ~ break
+        # ~ dx, dy = target_n - cur_n, target_e - cur_e
+        # ~ dist = math.hypot(dx, dy)
+        # ~ print(f"[DEBUG] approach_and_land: cur NED=({cur_n:.2f},{cur_e:.2f}), dist={dist:.3f}")
+        # ~ if dist <= TOLERANCE:
+            # ~ print("[DEBUG] approach_and_land: within tolerance, hovering")
+            # ~ await drone.offboard.set_velocity_ned(VelocityNedYaw(0,0,0,yaw))
+            # ~ await asyncio.sleep(1.0)
+            # ~ break
+        # ~ vx = (dx / dist) * VELOCITY_MS
+        # ~ vy = (dy / dist) * VELOCITY_MS
+        # ~ print(f"[DEBUG] approach_and_land: commanding vx={vx:.3f}, vy={vy:.3f}")
+        # ~ await drone.offboard.set_velocity_ned(VelocityNedYaw(vx, vy, 0.0, yaw))
+        # ~ new_offset = await detect_aruco_marker()
+        # ~ if new_offset is not None:
+            # ~ print(f"[DEBUG] approach_and_land: refine offset={new_offset}")
+            # ~ target_n = cur_n + new_offset[1]
+            # ~ target_e = cur_e + new_offset[0]
+        # ~ await asyncio.sleep(0.1)
+    # ~ lat, lon = await fetch_current_gps_coordinates(drone)
+    # ~ coord_bytes = f"{lat},{lon}\n".encode("utf-8")
+    # ~ print(f"[DEBUG] approach_and_land: sending final GPS {lat},{lon} over serial")
+    # ~ for i in range(100):
+        # ~ ser.write(coord_bytes)
+        # ~ await asyncio.sleep(0.05)
+    # ~ print("[DEBUG] approach_and_land: backing off")
+    # ~ await drone.offboard.set_velocity_ned(VelocityNedYaw(-1,0,0,0))
+    # ~ await asyncio.sleep(10)
+    # ~ try:
+        # ~ print("[DEBUG] approach_and_land: stopping offboard")
+        # ~ await drone.offboard.stop()
+    # ~ except OffboardError as e:
+        # ~ print(f"[ERROR] approach_and_land: stop offboard failed: {e}")
+    # ~ print("[DEBUG] approach_and_land: landing")
+    # ~ await drone.action.land()
+    # ~ return True
 
 def gps_to_ned_meters(lat_ref, lon_ref, lat, lon):
     print("[DEBUG] Converting GPS to NED meters")
@@ -234,7 +301,8 @@ async def execute_mission():
         drone = await initialize_drone_and_takeoff()
 
         print("[DEBUG] Going to start point")
-        lat_start, lon_start = 34.4192290, -119.8549169
+        #lat_start, lon_start = 34.4043866, -119.6955729
+        lat_start, lon_start = 34.4043988, -119.6955675
         async for hp in drone.telemetry.home():
             home_abs = hp.absolute_altitude_m
             break
@@ -263,11 +331,13 @@ async def execute_mission():
             return
 
         # snake-pattern parameters
-        dist1, dist2 = 5, 0.5
+        ytm = 0.9144
+        dist1 = ytm * 23
+        dist2 = ytm * 2.5
         time_long = dist1 / VELOCITY_MS
         time_shift = dist2 / VELOCITY_MS
-        angle1 = math.radians(30)
-        angle2 = math.radians(120)
+        angle1 = math.radians(25)
+        angle2 = math.radians(115)
         vx_out, vy_out = -VELOCITY_MS*math.cos(angle1), VELOCITY_MS*math.sin(angle1)
         vx_back, vy_back = VELOCITY_MS*math.cos(angle1), -VELOCITY_MS*math.sin(angle1)
         vx_lat, vy_lat = VELOCITY_MS*math.cos(angle2), -VELOCITY_MS*math.sin(angle2)
@@ -278,17 +348,17 @@ async def execute_mission():
             vx, vy = (vx_out, vy_out) if i % 2 == 0 else (vx_back, vy_back)
             print(f"[DEBUG] Leg {i+1} ({leg}): moving for {time_long:.2f}s")
             offset = await move_and_detect(drone, vx, vy, time_long, yaw)
-            if offset:
+            if offset is not None:
                 print(f"[DEBUG] Marker found on leg {i+1}")
-                await approach_and_land(drone, offset)
+                await approach_and_land(drone)
                 return
 
             if i < num_lengths - 1:
                 print(f"[DEBUG] Leg {i+1} shift: moving for {time_shift:.2f}s")
                 offset = await move_and_detect(drone, vx_lat, vy_lat, time_shift, yaw)
-                if offset:
+                if offset is not None:
                     print(f"[DEBUG] Marker found during shift on leg {i+1}")
-                    await approach_and_land(drone, offset)
+                    await approach_and_land(drone)
                     return
 
         print("[DEBUG] Snake sweep complete, landing")
