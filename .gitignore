@@ -2,3 +2,4 @@ venv
 UGV_software/venv
 .DS_Store
 
+.venv/
