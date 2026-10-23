@@ -3,7 +3,7 @@
 
 ## Push/Pull Edit with Git
 
-1. Clone the repository on **your own computer** https://github.com/TonyJohnsonUCSB/Raytheon-Capstone-2025.git
+1. Clone the repository on **your own computer** https://github.com/tonyjohnson-projects/Raytheon-Capstone-2025.git
 
 2. Code on it
 
